@@ -1,0 +1,208 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+// 获取所有文章
+const posts = await getCollection('posts');
+
+// 统计所有标签及其文章数量
+const tagMap = new Map<string, number>();
+posts.forEach(post => {
+  post.data.tags?.forEach(tag => {
+    tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
+  });
+});
+
+// 按文章数量排序
+const sortedTags = Array.from(tagMap.entries()).sort((a, b) => b[1] - a[1]);
+---
+
+<Layout title="Tags | Rosydawn">
+  <main class="container">
+    <header class="site-header">
+      <div class="logo">
+        <a href="/">
+          <span class="prompt">$</span> rosydawn
+          <span class="cursor">_</span>
+        </a>
+      </div>
+      <nav class="nav">
+        <a href="/">blog</a>
+        <a href="/tags" class="active">tags</a>
+        <a href="/about">about</a>
+      </nav>
+    </header>
+
+    <section class="page-intro">
+      <h1 class="page-title">// tags</h1>
+      <p class="page-desc">按标签浏览文章 · {tagMap.size} 个标签</p>
+    </section>
+
+    <section class="tags-grid">
+      {sortedTags.map(([tag, count]) => (
+        <a href={`/tags/${tag}`} class="tag-card">
+          <span class="tag-name">#{tag}</span>
+          <span class="tag-count">{count} 篇</span>
+        </a>
+      ))}
+    </section>
+
+    <footer class="site-footer">
+      <p>© 2026 rosydawn · built with astro</p>
+    </footer>
+  </main>
+</Layout>
+
+<style>
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Header */
+  .site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo a {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .prompt {
+    color: var(--accent);
+  }
+
+  .cursor {
+    color: var(--accent);
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .nav {
+    display: flex;
+    gap: 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+  }
+
+  .nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav a:hover,
+  .nav a.active {
+    color: var(--accent);
+  }
+
+  /* Page Intro */
+  .page-intro {
+    margin-bottom: 2.5rem;
+  }
+
+  .page-title {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .page-desc {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* Tags Grid */
+  .tags-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+
+  .tag-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .tag-card:hover {
+    border-color: var(--accent);
+    background: var(--bg-secondary);
+    transform: translateY(-2px);
+  }
+
+  .tag-name {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .tag-count {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  /* Footer */
+  .site-footer {
+    margin-top: 2rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .site-footer p {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .container {
+      padding: 1rem;
+    }
+
+    .site-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .nav {
+      gap: 1.5rem;
+    }
+
+    .tags-grid {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+  }
+</style>
