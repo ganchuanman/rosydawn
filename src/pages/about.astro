@@ -11,8 +11,8 @@ import Layout from '../layouts/Layout.astro';
       </a>
       <nav class="nav">
         <a href="/">blog</a>
+        <a href="/tags">tags</a>
         <a href="/about" class="active">about</a>
-        <a href="https://github.com" target="_blank">github ↗</a>
       </nav>
     </header>
 
@@ -37,14 +37,6 @@ import Layout from '../layouts/Layout.astro';
         </div>
       </div>
 
-      <div class="links">
-        <h2>$ ls -la ~/links</h2>
-        <ul>
-          <li><a href="https://github.com" target="_blank">github.com/username</a></li>
-          <li><a href="https://twitter.com" target="_blank">twitter.com/username</a></li>
-          <li><a href="mailto:hello@example.com">hello@example.com</a></li>
-        </ul>
-      </div>
     </section>
 
     <footer class="site-footer">
@@ -177,32 +169,6 @@ import Layout from '../layouts/Layout.astro';
 
   .terminal-body .empty { height: 1.5rem; }
 
-  .links ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-  }
-
-  .links li { margin: 0.75rem 0; }
-
-  .links li::before {
-    content: '→ ';
-    color: var(--text-muted);
-  }
-
-  .links a {
-    color: var(--text);
-    text-decoration: none;
-    border-bottom: 1px solid var(--border);
-    transition: border-color 0.2s, color 0.2s;
-  }
-
-  .links a:hover {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
 
   .site-footer {
     margin-top: 2rem;
