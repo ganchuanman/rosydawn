@@ -48,7 +48,7 @@ const CONFIG = {
     // 是否启用 HTTPS（环境变量 ENABLE_SSL=true 可启用）
     enabled: false,
     // 证书邮箱（用于 Let's Encrypt 注册和续期通知）
-    email: '',
+    email: 'aaron_oh@163.com',
     // 证书目录（由 Certbot 自动管理）
     certPath: '/etc/letsencrypt/live',
   },
