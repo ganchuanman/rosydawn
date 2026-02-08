@@ -10,8 +10,11 @@ export async function getStaticPaths({ paginate }) {
     new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
   );
   
-  // 每页 5 篇文章
-  return paginate(sortedPosts, { pageSize: 5 });
+  // 每页 5 篇文章，从第 2 页开始生成（第 1 页由 index.astro 处理）
+  const allPages = paginate(sortedPosts, { pageSize: 5 });
+  
+  // 过滤掉第一页，只保留 /blog/2, /blog/3 等
+  return allPages.filter(page => page.params.page !== undefined);
 }
 
 const { page } = Astro.props;
@@ -72,7 +75,7 @@ function formatDate(date: Date): string {
         </div>
         <div class="pagination-links">
           {page.url.prev ? (
-            <a href={page.url.prev} class="pagination-link prev">
+            <a href={page.currentPage === 2 ? '/' : page.url.prev} class="pagination-link prev">
               <span class="arrow">←</span>
               <span>上一页</span>
             </a>
