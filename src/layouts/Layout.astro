@@ -16,10 +16,6 @@ const { title = 'Rosydawn' } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content="记录技术思考与实践的个人博客" />
 		<title>{title}</title>
-		
-		<!-- Preload fonts - 使用国内 CDN -->
-		<link rel="preconnect" href="https://fonts.loli.net" crossorigin />
-		<link href="https://fonts.loli.net/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 	</head>
 	<body>
 		<slot />
@@ -40,7 +36,8 @@ const { title = 'Rosydawn' } = Astro.props;
 		--border: #d0d7de;
 		--border-light: #e1e4e8;
 		--code-bg: #f6f8fa;
-		--font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', Menlo, monospace;
+		/* 使用系统等宽字体，零网络请求，首屏秒开 */
+		--font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 		--font-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
 	}
 
