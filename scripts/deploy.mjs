@@ -29,6 +29,7 @@
 import { execSync } from 'child_process';
 import { existsSync, mkdirSync, rmSync, cpSync } from 'fs';
 import { join, dirname } from 'path';
+import { userInfo } from 'os';
 
 // ==================== 环境修复 ====================
 
@@ -126,8 +127,8 @@ async function buildAndDeploy() {
     // 复制文件
     execSync(`sudo cp -r ${distDir}/* ${CONFIG.webRoot}/`, { stdio: 'inherit' });
 
-    // 设置权限
-    const user = process.env.USER;
+    // 设置权限（兼容 cron 环境，process.env.USER 可能为空）
+    const user = process.env.USER || userInfo().username;
     const group = getUserGroup();
     execSync(`sudo chown -R ${user}:${group} ${CONFIG.webRoot}`, { stdio: 'inherit' });
     execSync(`sudo chmod -R 755 ${CONFIG.webRoot}`, { stdio: 'inherit' });
