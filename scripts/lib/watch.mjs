@@ -12,7 +12,7 @@
  */
 
 import { execSync } from 'child_process';
-import { existsSync, appendFileSync, readFileSync, mkdirSync } from 'fs';
+import { existsSync, appendFileSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
 import { homedir } from 'os';
 import { CONFIG, PROJECT_ROOT } from './config.mjs';
@@ -72,6 +72,9 @@ function getGitExecOptions() {
 
 // ==================== 日志 ====================
 
+// 日志保留行数上限
+const MAX_LOG_LINES = 500;
+
 /**
  * 写入日志文件
  * @param {string} message - 日志消息
@@ -93,6 +96,33 @@ export function writeLog(message) {
   } catch (err) {
     // 日志写入失败不影响主流程，但打印错误方便调试
     console.error(`日志写入失败: ${err.message}`);
+  }
+}
+
+/**
+ * 清理日志文件，只保留最近的 N 行
+ * @param {number} maxLines - 保留的最大行数，默认 500
+ */
+export function trimLogFile(maxLines = MAX_LOG_LINES) {
+  try {
+    if (!existsSync(CONFIG.watch.logFile)) {
+      return;
+    }
+    
+    const content = readFileSync(CONFIG.watch.logFile, 'utf-8');
+    const lines = content.split('\n').filter(line => line.trim());
+    
+    if (lines.length <= maxLines) {
+      return; // 行数未超过限制，无需清理
+    }
+    
+    // 只保留最后 maxLines 行
+    const trimmedLines = lines.slice(-maxLines);
+    writeFileSync(CONFIG.watch.logFile, trimmedLines.join('\n') + '\n');
+    
+    writeLog(`日志已清理，保留最近 ${maxLines} 行（清理了 ${lines.length - maxLines} 行）`);
+  } catch (err) {
+    console.error(`日志清理失败: ${err.message}`);
   }
 }
 
@@ -406,6 +436,9 @@ export async function checkAndDeploy(buildAndDeploy) {
     
     const fileCount = countFiles(CONFIG.webRoot);
     writeLog(`部署成功！共 ${fileCount} 个文件`);
+    
+    // 部署完成后清理日志
+    trimLogFile();
     
     await sendDeployNotification(true, {
       commitHash: remoteHash,
