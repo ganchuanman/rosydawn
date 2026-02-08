@@ -356,7 +356,7 @@ async function obtainSSLCertificate() {
       `--email ${CONFIG.ssl.email}`,
       '--agree-tos',
       '--non-interactive',
-      '--redirect',
+      '--keep-until-expiring',  // 如果证书存在且未过期，保持不变
     ].join(' ');
 
     logger.info('执行 Certbot...');
@@ -370,6 +370,16 @@ async function obtainSSLCertificate() {
       return false;
     }
   } catch (err) {
+    // Certbot 可能因为"证书已存在且未到期"返回非零退出码
+    // 检查证书是否实际存在
+    if (checkSSLCertificate()) {
+      const certInfo = getSSLCertificateInfo();
+      if (certInfo && !certInfo.isExpired) {
+        logger.success(`证书已存在且有效，${certInfo.daysRemaining} 天后过期`);
+        return true;
+      }
+    }
+    
     logger.error(`证书申请失败: ${err.message}`);
     console.log('');
     console.log(colorize('yellow', '常见问题：'));
