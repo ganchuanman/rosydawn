@@ -2,7 +2,7 @@
 title: "Rosydawn：一个极简主义的 Astro 博客框架"
 date: 2026-02-08
 description: "介绍 Rosydawn 博客框架的架构设计、核心特性与自动化部署能力，包括基于 Cron 的 Git 自动部署和 HTTPS 证书管理。"
-tags: ["Astro", "博客", "开源", "部署"]
+tags: ["Astro"]
 ---
 
 这是 Rosydawn 博客框架的完整技术文档。Rosydawn 是一个基于 [Astro](https://astro.build) 构建的个人技术博客，采用极简主义设计风格，强调良好的阅读体验和代码展示能力。
