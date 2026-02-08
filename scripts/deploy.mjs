@@ -28,7 +28,27 @@
 
 import { execSync } from 'child_process';
 import { existsSync, mkdirSync, rmSync, cpSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+
+// ==================== 环境修复 ====================
+
+/**
+ * 修复 Cron 环境的 PATH 问题
+ * 确保使用当前 Node.js 的 bin 目录，而不是系统默认的
+ */
+function fixCronEnvironment() {
+  // 获取当前 Node.js 可执行文件的目录
+  const nodeBinDir = dirname(process.execPath);
+  const currentPath = process.env.PATH || '';
+  
+  // 如果当前 Node 的 bin 目录不在 PATH 最前面，则添加
+  if (!currentPath.startsWith(nodeBinDir)) {
+    process.env.PATH = `${nodeBinDir}:${currentPath}`;
+  }
+}
+
+// 在导入其他模块之前先修复环境
+fixCronEnvironment();
 
 // 导入模块
 import {
