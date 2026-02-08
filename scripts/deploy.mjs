@@ -16,7 +16,7 @@
  */
 
 import { execSync, spawn } from 'child_process';
-import { existsSync, mkdirSync, rmSync, cpSync, readdirSync, statSync } from 'fs';
+import { existsSync, mkdirSync, rmSync, cpSync, readdirSync, statSync, readFileSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -323,7 +323,7 @@ function showStatus() {
   console.log(colorize('cyan', '项目信息:'));
   
   if (existsSync(packagePath)) {
-    const pkg = JSON.parse(require('fs').readFileSync(packagePath, 'utf-8'));
+    const pkg = JSON.parse(readFileSync(packagePath, 'utf-8'));
     console.log(`  名称:     ${pkg.name || 'rosydawn'}`);
     console.log(`  版本:     ${pkg.version || '-'}`);
   }

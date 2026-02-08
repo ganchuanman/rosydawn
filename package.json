@@ -8,7 +8,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "deploy": "node scripts/deploy.mjs build",
-    "deploy:status": "node scripts/deploy.mjs status"
+    "deploy:status": "node scripts/deploy.mjs status",
+    "deploy:help": "node scripts/deploy.mjs help"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
