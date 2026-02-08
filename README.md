@@ -29,11 +29,12 @@
 框架: Astro 5.17.x
 语言: TypeScript
 样式: Scoped CSS (无预处理器)
-字体: 
-  - 正文: 系统原生字体 (PingFang SC / Microsoft YaHei)
-  - 代码: JetBrains Mono (fonts.loli.net 国内 CDN)
+字体: 系统原生字体栈（零网络请求）
+  - 正文: -apple-system, PingFang SC, Microsoft YaHei
+  - 代码: ui-monospace, SF Mono, Menlo, Monaco, Consolas
 代码高亮: Shiki (内置于 Astro)
 图表: astro-plantuml
+部署: Nginx + Let's Encrypt (自动化脚本)
 ```
 
 ---
@@ -123,7 +124,7 @@ const postsCollection = defineCollection({
 包含：
 - HTML 基础结构
 - 全局 CSS 变量定义
-- 字体引入（fonts.loli.net 国内 CDN + 系统原生字体）
+- 系统原生字体栈（零外部请求，首屏秒开）
 - 通用样式（滚动条、链接、代码块等）
 
 **CSS 变量定义**：
@@ -136,8 +137,9 @@ const postsCollection = defineCollection({
   --accent: #0969da;       /* 主题色 */
   --border: #d0d7de;       /* 边框色 */
   --code-bg: #f6f8fa;      /* 代码背景 */
-  --font-mono: 'JetBrains Mono', ...;
-  --font-sans: -apple-system, 'PingFang SC', ...;
+  /* 系统原生字体栈，无网络请求 */
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 ```
 
@@ -244,9 +246,10 @@ coverImage: ./cover.jpg  # 可选
 
 ### 字体规范
 
-- **正文**：系统原生字体（PingFang SC / Microsoft YaHei）
-- **代码**：JetBrains Mono（回退到 SF Mono、Menlo）
+- **正文**：系统原生字体（-apple-system, PingFang SC, Microsoft YaHei）
+- **代码**：系统等宽字体（ui-monospace, SF Mono, Menlo, Monaco, Consolas）
 - **代码块**：13px, 行高 1.5
+- **优势**：零网络请求，首屏渲染无阻塞
 
 ### 响应式断点
 
@@ -496,6 +499,61 @@ SSL 证书:
 
 ---
 
+## ⚡ 性能优化
+
+### 前端优化
+
+| 优化项 | 实现方式 | 效果 |
+|--------|----------|------|
+| 零字体请求 | 使用系统原生字体栈 | 首屏渲染无阻塞 |
+| 单一 Favicon | 仅使用 SVG 格式 | 减少 1 次网络请求 |
+| 静态生成 | Astro SSG 预渲染 | 无服务端渲染开销 |
+
+### Nginx 服务端优化
+
+部署脚本自动配置以下性能优化：
+
+```nginx
+# 零拷贝传输
+sendfile on;
+tcp_nopush on;
+tcp_nodelay on;
+
+# 文件缓存（减少磁盘 I/O）
+open_file_cache max=1000 inactive=20s;
+open_file_cache_valid 30s;
+
+# Gzip 压缩
+gzip on;
+gzip_comp_level 5;
+gzip_types text/plain text/css application/json application/javascript;
+
+# 静态预压缩（如有 .gz 文件直接使用）
+gzip_static on;
+
+# 静态资源长期缓存（Astro 带 hash，可永久缓存）
+location ~* \.(css|js|woff2)$ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+}
+```
+
+### URL 策略
+
+采用无尾部斜杠的 URL 格式，消除 301 重定向：
+
+```javascript
+// astro.config.mjs
+build: { format: 'file' },      // 生成 /blog/post.html
+trailingSlash: 'never',         // 链接不带斜杠
+```
+
+Nginx 配置自动处理兼容性：
+- `/blog/post` → 直接返回内容（无重定向）
+- `/blog/post/` → 301 重定向到 `/blog/post`
+
+---
+
 ## ⚠️ 开发注意事项
 
 ### 1. CSS 优先级问题
@@ -574,22 +632,6 @@ code.style.setProperty('--line-number-width', `${maxLineDigits}ch`);
 
 ---
 
-## 🗂️ 现有文章列表
-
-```
-src/content/posts/
-├── 2025/12/rust-wasm-web/
-├── 2026/01/kubernetes-devops/
-├── 2026/01/spec-driven-development/
-├── 2026/02/android-remote-dev/
-├── 2026/02/multi-agent-testing/
-├── 2026/03/llm-prompt-engineering/
-├── 2026/03/system-design-diagrams/
-└── 2026/03/typescript-patterns/
-```
-
----
-
 ## 🤖 AI 操作指南
 
 ### 添加新文章
@@ -641,4 +683,4 @@ src/content/posts/
 
 ---
 
-*本文档最后更新：2026-03*
+*本文档最后更新：2026-06*
