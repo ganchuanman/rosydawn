@@ -9,4 +9,10 @@ export default defineConfig({
     mdx(),
     plantuml(),
   ],
+  markdown: {
+    shikiConfig: {
+      theme: 'one-light',
+      wrap: false,
+    },
+  },
 });

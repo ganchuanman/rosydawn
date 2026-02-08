@@ -22,26 +22,27 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 ---
 
 <Layout title={`${post.data.title} | Rosydawn`}>
-  <header class="site-header">
-    <div class="header-inner">
-      <a href="/" class="logo">
-        <span class="prompt">$</span> rosydawn
-        <span class="cursor">_</span>
-      </a>
+  <div class="page-container">
+    <header class="site-header">
+      <div class="logo">
+        <a href="/">
+          <span class="prompt">$</span> rosydawn
+          <span class="cursor">_</span>
+        </a>
+      </div>
       <nav class="nav">
         <a href="/">blog</a>
         <a href="/tags">tags</a>
         <a href="/about">about</a>
       </nav>
-    </div>
-  </header>
+    </header>
 
   <main class="main-wrapper">
     <article class="article">
       <header class="article-header">
-        <a href="/" class="back-link">
+        <a href="/" class="back-link" onclick="event.preventDefault(); history.back();">
           <span class="back-arrow">←</span>
-          <span>cd ..</span>
+          <span>返回</span>
         </a>
 
         <h1 class="title">{post.data.title}</h1>
@@ -69,9 +70,9 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
       </div>
 
       <footer class="article-footer">
-        <a href="/" class="back-link">
+        <a href="/" class="back-link" onclick="event.preventDefault(); history.back();">
           <span class="back-arrow">←</span>
-          <span>返回文章列表</span>
+          <span>返回</span>
         </a>
       </footer>
     </article>
@@ -94,9 +95,10 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
     )}
   </main>
 
-  <footer class="site-footer">
-    <p>© 2026 rosydawn · built with astro</p>
-  </footer>
+    <footer class="site-footer">
+      <p>© 2026 rosydawn · built with astro</p>
+    </footer>
+  </div>
 </Layout>
 
 <script>
@@ -125,62 +127,170 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
       headings.forEach((heading) => observer.observe(heading));
     }
 
-    // 代码块复制功能
-    document.querySelectorAll('.content pre').forEach((block) => {
+    // 代码块复制功能、语言标签、行号和展开收起
+    const COLLAPSED_MAX_LINES = 15; // 超过这个行数时显示展开/收起按钮
+
+    document.querySelectorAll('.content pre').forEach((block, index) => {
+      const pre = block as HTMLPreElement;
       const wrapper = document.createElement('div');
       wrapper.className = 'code-wrapper';
-      block.parentNode?.insertBefore(wrapper, block);
-      wrapper.appendChild(block);
+      pre.parentNode?.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
 
-      const btn = document.createElement('button');
-      btn.className = 'copy-btn';
-      btn.setAttribute('aria-label', '复制代码');
-      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-      wrapper.appendChild(btn);
+      // 获取语言类型 - 从 pre 标签的 data-language 属性获取
+      const lang = pre.getAttribute('data-language') || 'text';
+      const code = pre.querySelector('code');
 
-      btn.addEventListener('click', async () => {
-        const code = block.querySelector('code');
-        if (code) {
-          await navigator.clipboard.writeText(code.textContent || '');
-          btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
-          btn.classList.add('copied');
-          setTimeout(() => {
-            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-            btn.classList.remove('copied');
-          }, 2000);
+      // 创建顶部工具栏
+      const toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      
+      // 左侧容器（展开按钮 + 语言标签）
+      const leftGroup = document.createElement('div');
+      leftGroup.className = 'code-left-group';
+
+      // 语言标签
+      const langLabel = document.createElement('span');
+      langLabel.className = 'code-lang';
+      langLabel.textContent = lang.toLowerCase();
+
+      // 右侧按钮组
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'code-btn-group';
+
+      // 复制按钮
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-btn';
+      copyBtn.setAttribute('aria-label', '复制代码');
+      copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制</span>';
+      btnGroup.appendChild(copyBtn);
+      
+      toolbar.appendChild(leftGroup);
+      toolbar.appendChild(btnGroup);
+      wrapper.insertBefore(toolbar, pre);
+
+      // 添加行号 - Shiki 已经用 span.line 包裹每行
+      if (code) {
+        // 移除 span.line 之间的空白文本节点
+        Array.from(code.childNodes).forEach(node => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            node.remove();
+          }
+        });
+
+        const lines = code.querySelectorAll(':scope > .line');
+        const lineCount = lines.length;
+        
+        lines.forEach((line, i) => {
+          const lineNum = document.createElement('span');
+          lineNum.className = 'line-number';
+          lineNum.textContent = String(i + 1);
+          line.insertBefore(lineNum, line.firstChild);
+        });
+        code.classList.add('has-line-numbers');
+
+        // 根据最大行号计算宽度，保证所有行号等宽
+        const maxLineDigits = String(lineCount).length;
+        code.style.setProperty('--line-number-width', `${maxLineDigits}ch`);
+
+        // 展开/收起功能
+        if (lineCount > COLLAPSED_MAX_LINES) {
+          wrapper.classList.add('collapsible');
+          wrapper.classList.add('collapsed');
+          
+          // 创建渐变遮罩
+          const fadeOverlay = document.createElement('div');
+          fadeOverlay.className = 'code-fade-overlay';
+          wrapper.appendChild(fadeOverlay);
+          
+          // 创建展开/收起按钮（放在工具栏左侧）
+          const expandBtn = document.createElement('button');
+          expandBtn.className = 'expand-btn';
+          expandBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg><span>${lineCount} 行</span>`;
+          leftGroup.appendChild(expandBtn);
+          leftGroup.appendChild(langLabel);
+          
+          expandBtn.addEventListener('click', () => {
+            const isCollapsed = wrapper.classList.contains('collapsed');
+            
+            // 记录切换前 wrapper 顶部相对于视口的位置
+            const rectBefore = wrapper.getBoundingClientRect();
+            const topBefore = rectBefore.top;
+            
+            if (isCollapsed) {
+              wrapper.classList.remove('collapsed');
+            } else {
+              wrapper.classList.add('collapsed');
+            }
+            
+            // 切换后，补偿滚动偏移以保持 wrapper 位置不变
+            const rectAfter = wrapper.getBoundingClientRect();
+            const topAfter = rectAfter.top;
+            const scrollDiff = topAfter - topBefore;
+            
+            if (scrollDiff !== 0) {
+              window.scrollBy(0, scrollDiff);
+            }
+          });
+        } else {
+          // 不需要展开收起时，只添加语言标签
+          leftGroup.appendChild(langLabel);
         }
+      }
+
+      copyBtn.addEventListener('click', async () => {
+        // 获取纯代码文本（排除行号）
+        const lines = code?.querySelectorAll(':scope > .line');
+        let textContent = '';
+        lines?.forEach(line => {
+          const lineContent = Array.from(line.childNodes)
+            .filter(node => !(node as Element).classList?.contains('line-number'))
+            .map(node => node.textContent)
+            .join('');
+          textContent += lineContent + '\n';
+        });
+        textContent = textContent.trimEnd();
+        
+        await navigator.clipboard.writeText(textContent);
+        copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>已复制</span>';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制</span>';
+          copyBtn.classList.remove('copied');
+        }, 2000);
       });
     });
   });
 </script>
 
 <style>
-  .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
+  .page-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
-  .header-inner {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 1rem 2rem;
+  .site-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 1rem 0;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border);
   }
 
-  .logo {
+  .logo a {
     font-family: var(--font-mono);
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--text);
     text-decoration: none;
   }
 
-  .logo:hover { text-decoration: none; }
+  .logo a:hover { text-decoration: none; }
   .prompt { color: var(--accent); }
   .cursor { color: var(--accent); animation: blink 1s step-end infinite; }
   @keyframes blink { 50% { opacity: 0; } }
@@ -205,10 +315,14 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
     position: relative;
   }
 
+  .main-wrapper {
+    flex: 1;
+  }
+
   .article {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 2.5rem 2rem;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   .article-header {
@@ -368,33 +482,57 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
   .content :global(.code-wrapper) {
     position: relative;
     margin: 1.25rem 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
   }
 
-  .content :global(.code-wrapper pre) { margin: 0; }
+  .content :global(.code-toolbar) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .content :global(.code-lang) {
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
 
   .content :global(.copy-btn) {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    border-radius: 4px;
-    padding: 0.35rem;
-    cursor: pointer;
-    color: #666;
-    transition: all 0.2s;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    opacity: 0;
+    gap: 0.35rem;
+    background: transparent;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    border-radius: 4px;
+    transition: all 0.2s;
   }
 
-  .content :global(.code-wrapper:hover .copy-btn) { opacity: 1; }
-  .content :global(.copy-btn:hover) { background: rgba(255, 255, 255, 0.2); color: #fff; }
-  .content :global(.copy-btn.copied) { color: #4ade80; }
+  .content :global(.copy-btn:hover) { 
+    background: var(--bg-tertiary);
+    color: var(--text);
+  }
+
+  .content :global(.copy-btn.copied) { color: #16a34a; }
+
+  .content :global(.code-wrapper pre) { 
+    margin: 0;
+    border: none;
+    border-radius: 0;
+  }
 
   .content :global(pre) {
-    background: #1a1a2e;
+    background: var(--code-bg);
     padding: 1rem 1.25rem;
     border-radius: 6px;
     overflow-x: auto;
@@ -405,10 +543,111 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
   .content :global(pre code) {
     background: transparent;
     padding: 0;
-    color: #e1e4e8;
-    font-size: 0.85rem;
-    line-height: 1.6;
+    color: var(--text);
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', 'Droid Sans Mono', 'Source Code Pro', 'Menlo', 'Consolas', monospace !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
     border: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .content :global(pre code *) {
+    font-family: inherit !important;
+    line-height: inherit !important;
+  }
+
+  .content :global(pre code.has-line-numbers) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Shiki 生成的行样式 */
+  .content :global(pre code .line) {
+    display: block;
+    padding: 0;
+    margin: 0;
+    height: 1.5em;
+  }
+
+  .content :global(.line-number) {
+    display: inline-block;
+    width: var(--line-number-width, 2ch);
+    margin-right: 1em;
+    text-align: right;
+    color: var(--text-dim);
+    user-select: none;
+    opacity: 0.4;
+    font-size: inherit;
+    flex-shrink: 0;
+  }
+
+  /* 左侧容器和按钮组 */
+  .content :global(.code-left-group) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .content :global(.code-btn-group) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* 工具栏内的展开按钮 */
+  .content :global(.code-left-group .expand-btn) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: transparent;
+    border: none;
+    padding: 0.15rem 0.4rem;
+    cursor: pointer;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+
+  .content :global(.code-left-group .expand-btn:hover) {
+    background: var(--bg-tertiary);
+    color: var(--text);
+  }
+
+  .content :global(.code-left-group .expand-btn svg) {
+    transition: transform 0.2s;
+  }
+
+  .content :global(.code-wrapper:not(.collapsed) .code-left-group .expand-btn svg) {
+    transform: rotate(180deg);
+  }
+
+  /* 展开收起功能 */
+  .content :global(.code-wrapper.collapsible.collapsed pre) {
+    max-height: 312px !important; /* 约15行: 15 * 19.5px (13px * 1.5) + 20px padding */
+    overflow: hidden !important;
+  }
+
+  .content :global(.code-wrapper.collapsible:not(.collapsed) pre) {
+    max-height: none !important;
+  }
+
+  .content :global(.code-wrapper.collapsed .code-fade-overlay) {
+    display: block;
+  }
+
+  .content :global(.code-fade-overlay) {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--code-bg));
+    pointer-events: none;
+    z-index: 5;
   }
 
   .content :global(blockquote) {
@@ -476,9 +715,8 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
   }
 
   .site-footer {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 1.25rem 2rem;
+    margin-top: 2rem;
+    padding: 2rem 0;
     border-top: 1px solid var(--border);
   }
 
@@ -494,10 +732,8 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
   }
 
   @media (max-width: 640px) {
-    .header-inner { padding: 1rem; }
-    .article { padding: 1.5rem 1rem; }
-    .site-header { position: relative; }
-    .header-inner { flex-direction: column; gap: 1rem; align-items: flex-start; }
+    .page-container { padding: 1rem; }
+    .site-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
     .nav { gap: 1.5rem; }
     .title { font-size: 1.5rem; }
     .content { font-size: 0.95rem; }
@@ -506,14 +742,14 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
     .content :global(pre) {
       padding: 0.875rem;
       font-size: 0.8rem;
-      border-radius: 0;
-      margin-left: -1rem;
+    }
+    .content :global(.code-wrapper) { 
+      margin-left: -1rem; 
       margin-right: -1rem;
+      border-radius: 0;
       border-left: none;
       border-right: none;
     }
-    .content :global(.code-wrapper) { margin-left: -1rem; margin-right: -1rem; }
-    .content :global(.copy-btn) { opacity: 1; }
     .site-footer { padding: 1.25rem 1rem; }
   }
 </style>

@@ -83,7 +83,7 @@ coverImage: ./cover.jpg
 同一问题多次采样，取多数投票结果：
 
 ```python
-def self_consistency_answer(question: str, n_samples: int = 5) -> str:
+def self_consistency_answer_self_consistency_answer(question: str, n_samples: int = 5) -> str:
     responses = []
     for _ in range(n_samples):
         response = llm.generate(
