@@ -8,6 +8,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "deploy": "node scripts/deploy.mjs build",
+    "deploy:ssl": "node scripts/deploy.mjs ssl",
+    "deploy:renew": "node scripts/deploy.mjs renew",
     "deploy:status": "node scripts/deploy.mjs status",
     "deploy:help": "node scripts/deploy.mjs help"
   },

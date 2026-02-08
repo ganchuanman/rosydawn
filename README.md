@@ -278,28 +278,33 @@ npm run preview
 
 ## 🚀 部署命令
 
-部署脚本位于 `scripts/deploy.mjs`，基于 Node.js 实现，提供完整的一键部署能力，包括**自动配置 Nginx**。
+部署脚本位于 `scripts/deploy.mjs`，基于 Node.js 实现，提供完整的一键部署能力，包括**自动配置 Nginx** 和 **HTTPS 证书管理**。
 
 ### 可用命令
 
 | 命令 | npm 脚本 | 说明 |
 |------|----------|------|
-| `build` | `npm run deploy` | 构建项目、部署文件、自动配置 Nginx |
-| `status` | `npm run deploy:status` | 显示部署状态和 Nginx 配置信息 |
-| `help` | `node scripts/deploy.mjs help` | 显示帮助信息 |
+| `build` | `npm run deploy` | 构建项目、部署文件、自动配置 Nginx (HTTP) |
+| `ssl` | `npm run deploy:ssl` | 申请 SSL 证书并配置 HTTPS (Let's Encrypt) |
+| `renew` | `npm run deploy:renew` | 手动续期 SSL 证书 |
+| `status` | `npm run deploy:status` | 显示部署状态、Nginx 和 SSL 证书信息 |
+| `help` | `npm run deploy:help` | 显示帮助信息 |
 
 ```bash
-# 一键构建部署（自动配置 Nginx）
+# 一键构建部署（HTTP）
 npm run deploy
 
 # 指定域名部署
 DOMAIN=blog.example.com npm run deploy
 
+# 启用 HTTPS（需要先完成 HTTP 部署）
+SSL_EMAIL=admin@example.com npm run deploy:ssl
+
+# 手动续期证书
+npm run deploy:renew
+
 # 查看部署状态
 npm run deploy:status
-
-# 查看帮助
-node scripts/deploy.mjs help
 ```
 
 ### 部署配置
@@ -311,10 +316,15 @@ const CONFIG = {
   buildOutput: 'dist',                 // Astro 构建输出目录
   webRoot: '/var/www/html/rosydawn',   // Nginx 网站根目录
   nodeVersionRequired: 18,             // Node.js 版本要求
+  domain: 'www.rosydawn.space',        // 服务器域名
   nginx: {
     siteName: 'rosydawn',              // Nginx 配置文件名
-    serverName: process.env.DOMAIN || 'localhost',  // 服务器域名
     port: 80,                          // 监听端口
+  },
+  ssl: {
+    enabled: false,                    // 是否启用 HTTPS
+    email: '',                         // Let's Encrypt 邮箱
+    certPath: '/etc/letsencrypt/live', // 证书目录
   },
 };
 ```
@@ -323,9 +333,13 @@ const CONFIG = {
 
 | 变量 | 说明 | 默认值 |
 |------|------|--------|
-| `DOMAIN` | 服务器域名 | `localhost` |
+| `DOMAIN` | 服务器域名 | `www.rosydawn.space` |
+| `SSL_EMAIL` | SSL 证书邮箱（用于续期通知） | - |
+| `ENABLE_SSL` | 设为 `true` 启用 HTTPS 配置 | `false` |
 
 ### 部署流程
+
+#### HTTP 部署
 
 运行 `npm run deploy` 后，脚本会自动完成以下步骤：
 
@@ -335,6 +349,16 @@ const CONFIG = {
 4. ✅ **部署文件** - 复制构建产物到 `/var/www/html/rosydawn`
 5. ✅ **配置 Nginx** - 自动生成并写入 Nginx 站点配置
 6. ✅ **重载 Nginx** - 自动测试配置并重载服务
+
+#### HTTPS 部署
+
+运行 `SSL_EMAIL=your@email.com npm run deploy:ssl` 后，脚本会自动完成：
+
+1. ✅ **检查 Certbot** - 验证 Certbot 是否已安装
+2. ✅ **检查现有证书** - 如证书有效则跳过申请
+3. ✅ **申请证书** - 使用 Let's Encrypt 申请免费 SSL 证书
+4. ✅ **更新 Nginx** - 自动生成 HTTPS 配置并重载
+5. ✅ **配置自动续期** - 检查并提示设置定时续期任务
 
 ### 支持的平台
 
@@ -348,12 +372,12 @@ const CONFIG = {
 
 ### 自动生成的 Nginx 配置
 
-脚本会自动生成包含以下优化的 Nginx 配置：
+#### HTTP 配置
 
 ```nginx
 server {
     listen 80;
-    server_name localhost;  # 或通过 DOMAIN 环境变量设置
+    server_name www.rosydawn.space;
     
     root /var/www/html/rosydawn;
     index index.html;
@@ -372,6 +396,102 @@ server {
         try_files $uri $uri/ $uri.html =404;
     }
 }
+```
+
+#### HTTPS 配置
+
+启用 SSL 后，脚本会生成包含以下安全特性的配置：
+
+```nginx
+# HTTP -> HTTPS 重定向
+server {
+    listen 80;
+    server_name www.rosydawn.space;
+    
+    location /.well-known/acme-challenge/ {
+        root /var/www/html/rosydawn;
+    }
+    
+    location / {
+        return 301 https://$server_name$request_uri;
+    }
+}
+
+# HTTPS 主配置
+server {
+    listen 443 ssl http2;
+    server_name www.rosydawn.space;
+    
+    # SSL 证书 (Let's Encrypt)
+    ssl_certificate /etc/letsencrypt/live/www.rosydawn.space/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/www.rosydawn.space/privkey.pem;
+    
+    # 现代 SSL 配置
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:...;
+    
+    # HSTS（强制 HTTPS）
+    add_header Strict-Transport-Security "max-age=63072000" always;
+    
+    # OCSP Stapling
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    
+    # 安全响应头
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    
+    # ... 其他配置同 HTTP
+}
+```
+
+### SSL 证书管理
+
+#### 安装 Certbot
+
+脚本会自动检测 Certbot，如未安装会提示安装命令：
+
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install certbot python3-certbot-nginx -y
+
+# CentOS/RHEL 8+
+sudo dnf install certbot python3-certbot-nginx -y
+
+# macOS (仅测试用)
+brew install certbot
+```
+
+#### 证书续期
+
+Let's Encrypt 证书有效期为 90 天。Certbot 通常会自动设置续期任务。
+
+```bash
+# 手动续期
+npm run deploy:renew
+
+# 检查续期状态
+sudo certbot certificates
+
+# 添加定时任务（如自动续期未配置）
+sudo crontab -e
+# 添加: 0 3 * * * certbot renew --quiet --nginx
+```
+
+#### 查看证书状态
+
+运行 `npm run deploy:status` 可查看证书详情：
+
+```
+SSL 证书:
+  Certbot:  已安装 ✓
+  证书状态: ✓ 已配置
+  证书域名: www.rosydawn.space
+  过期时间: 2025/9/15
+  剩余天数: 87 天 (有效)
+  证书路径: /etc/letsencrypt/live/www.rosydawn.space
 ```
 
 ---
