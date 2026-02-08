@@ -83,6 +83,8 @@ rosydawn/
 │       ├── mail.mjs            # 邮件通知
 │       ├── watch.mjs           # Cron 自动部署
 │       └── index.mjs           # 模块统一导出
+├── logs/                       # 日志目录 (git ignored)
+│   └── deploy.log              # 自动部署日志
 ├── .env.example                # 环境变量模板
 ├── tsconfig.json
 └── README.md                   # 项目文档
@@ -553,7 +555,29 @@ npm run deploy:cron:install
 npm run deploy:cron:status
 
 # 4. 查看实时日志
-tail -f /var/log/rosydawn-deploy.log
+tail -f logs/deploy.log
+```
+
+#### SSH 配置
+
+Cron 环境没有 SSH Agent，脚本会自动检测并使用 SSH key 进行 Git 认证。
+
+**自动检测顺序**：
+1. 环境变量 `SSH_KEY_PATH`（如已设置）
+2. `~/.ssh/id_github`（GitHub 专用 key）
+3. `~/.ssh/id_ed25519`（现代默认）
+4. `~/.ssh/id_rsa`（传统默认）
+
+**手动指定 SSH key**：
+```bash
+# 在 .env 中指定
+SSH_KEY_PATH=/path/to/your/private_key
+```
+
+**验证 SSH key 是否可用**：
+```bash
+# 测试 GitHub 连接
+ssh -i ~/.ssh/id_github -T git@github.com
 ```
 
 #### 配置项
@@ -564,11 +588,28 @@ tail -f /var/log/rosydawn-deploy.log
 |------|------|--------|
 | `WATCH_INTERVAL` | 检查间隔（分钟） | `5` |
 | `GIT_BRANCH` | Git 分支 | `main` |
-| `SMTP_HOST` | SMTP 服务器 | `smtp.qq.com` |
+| `SSH_KEY_PATH` | SSH 私钥路径（可选） | 自动检测 |
+| `SMTP_HOST` | SMTP 服务器 | `smtp.163.com` |
 | `SMTP_PORT` | SMTP 端口 | `465` |
 | `SMTP_USER` | 发件人邮箱 | - |
 | `SMTP_PASS` | 邮箱授权码 | - |
 | `NOTIFY_EMAIL` | 收件人邮箱 | - |
+
+#### 日志文件
+
+日志保存在项目目录下，无需 root 权限：
+
+```
+logs/deploy.log
+```
+
+日志格式示例：
+```
+[2026-02-08T08:37:00.418Z] 检查 Git 更新...
+[2026-02-08T08:37:04.425Z] 无更新 (当前版本: 0d7634b)
+[2026-02-08T08:45:02.123Z] 检测到新提交: abc1234
+[2026-02-08T08:45:30.456Z] 部署成功！共 42 个文件
+```
 
 #### 查看任务状态
 
@@ -584,7 +625,7 @@ npm run deploy:cron:status
 配置信息:
   检查间隔: 每 5 分钟
   Git 分支: main
-  日志文件: /var/log/rosydawn-deploy.log
+  日志文件: /path/to/project/logs/deploy.log
   邮件通知: ✓ 已启用
 
 Cron 任务:
@@ -594,6 +635,27 @@ Cron 任务:
 最近日志:
   [2026-06-15T10:00:01.123Z] 检查 Git 更新...
   [2026-06-15T10:00:02.456Z] 无更新 (当前版本: abc1234)
+```
+
+#### 故障排查
+
+**问题：Git fetch 失败 (Permission denied)**
+
+原因：Cron 环境没有 SSH Agent，无法访问 SSH key。
+
+解决：
+1. 确保 SSH key 存在于 `~/.ssh/` 目录
+2. 验证 key 权限：`chmod 600 ~/.ssh/id_github`
+3. 测试连接：`ssh -i ~/.ssh/id_github -T git@github.com`
+4. 如使用非标准路径，在 `.env` 中设置 `SSH_KEY_PATH`
+
+**问题：日志文件无法写入**
+
+原因：`logs/` 目录不存在或权限不足。
+
+解决：脚本会自动创建目录，如仍有问题：
+```bash
+mkdir -p logs && chmod 755 logs
 ```
 
 #### 移除自动部署

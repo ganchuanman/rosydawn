@@ -102,11 +102,11 @@ export const CONFIG = {
   // 自动部署监控配置
   watch: {
     // 检查间隔（毫秒），默认 5 分钟
-    interval: 5 * 60 * 1000,
+    interval: 1 * 60 * 1000,
     // Git 分支
     branch: 'main',
-    // 日志文件路径
-    logFile: '/var/log/rosydawn-deploy.log',
+    // 日志文件路径（默认在项目目录下，避免权限问题）
+    logFile: join(PROJECT_ROOT, 'logs/deploy.log'),
   },
 
   // 邮件通知配置 (SMTP)

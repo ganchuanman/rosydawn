@@ -12,8 +12,9 @@
  */
 
 import { execSync } from 'child_process';
-import { existsSync, appendFileSync, readFileSync } from 'fs';
+import { existsSync, appendFileSync, readFileSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
+import { homedir } from 'os';
 import { CONFIG, PROJECT_ROOT } from './config.mjs';
 import { logger, colorize } from './logger.mjs';
 import { commandExists, countFiles } from './utils.mjs';
@@ -22,6 +23,52 @@ import { sendDeployNotification } from './mail.mjs';
 // ==================== 常量 ====================
 
 const CRON_MARKER = '# rosydawn-auto-deploy';
+
+// ==================== SSH 配置 ====================
+
+/**
+ * 获取 SSH key 路径
+ * 优先使用环境变量 SSH_KEY_PATH，否则尝试常见位置
+ */
+function getSSHKeyPath() {
+  // 1. 环境变量指定
+  if (process.env.SSH_KEY_PATH && existsSync(process.env.SSH_KEY_PATH)) {
+    return process.env.SSH_KEY_PATH;
+  }
+  
+  // 2. 常见 SSH key 位置
+  const home = homedir();
+  const candidates = [
+    `${home}/.ssh/id_github`,      // GitHub 专用 key
+    `${home}/.ssh/id_ed25519`,     // 现代默认
+    `${home}/.ssh/id_rsa`,         // 传统默认
+  ];
+  
+  for (const keyPath of candidates) {
+    if (existsSync(keyPath)) {
+      return keyPath;
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * 获取 Git 执行选项（包含 SSH 配置）
+ */
+function getGitExecOptions() {
+  const sshKeyPath = getSSHKeyPath();
+  const options = { encoding: 'utf-8' };
+  
+  if (sshKeyPath) {
+    options.env = {
+      ...process.env,
+      GIT_SSH_COMMAND: `ssh -i ${sshKeyPath} -o StrictHostKeyChecking=no -o BatchMode=yes`,
+    };
+  }
+  
+  return options;
+}
 
 // ==================== 日志 ====================
 
@@ -39,18 +86,13 @@ export function writeLog(message) {
     // 确保日志目录存在
     const logDir = dirname(CONFIG.watch.logFile);
     if (!existsSync(logDir)) {
-      execSync(`sudo mkdir -p ${logDir}`, { stdio: 'pipe' });
-      execSync(`sudo chmod 755 ${logDir}`, { stdio: 'pipe' });
+      mkdirSync(logDir, { recursive: true });
     }
     
-    // 尝试直接写入，如果权限不足则使用 sudo
-    try {
-      appendFileSync(CONFIG.watch.logFile, logLine);
-    } catch {
-      execSync(`echo '${logLine.replace(/'/g, "\\'")}' | sudo tee -a ${CONFIG.watch.logFile}`, { stdio: 'pipe' });
-    }
-  } catch {
-    // 日志写入失败不影响主流程
+    appendFileSync(CONFIG.watch.logFile, logLine);
+  } catch (err) {
+    // 日志写入失败不影响主流程，但打印错误方便调试
+    console.error(`日志写入失败: ${err.message}`);
   }
 }
 
@@ -72,10 +114,15 @@ export function getLocalCommitHash() {
  */
 export function getRemoteCommitHash() {
   try {
-    // 先 fetch 最新的远程信息
-    execSync(`git -C ${PROJECT_ROOT} fetch origin ${CONFIG.watch.branch}`, { stdio: 'pipe' });
+    const options = getGitExecOptions();
+    // 先 fetch 最新的远程信息（使用 SSH key）
+    execSync(`git -C ${PROJECT_ROOT} fetch origin ${CONFIG.watch.branch}`, { 
+      stdio: 'pipe',
+      env: options.env,
+    });
     return execSync(`git -C ${PROJECT_ROOT} rev-parse origin/${CONFIG.watch.branch}`, { encoding: 'utf-8' }).trim();
-  } catch {
+  } catch (err) {
+    writeLog(`Git fetch 失败: ${err.message}`);
     return null;
   }
 }
@@ -99,7 +146,11 @@ export function getCommitInfo(hash) {
  */
 export function pullLatestCode() {
   try {
-    execSync(`git -C ${PROJECT_ROOT} pull origin ${CONFIG.watch.branch}`, { stdio: 'inherit' });
+    const options = getGitExecOptions();
+    execSync(`git -C ${PROJECT_ROOT} pull origin ${CONFIG.watch.branch}`, { 
+      stdio: 'inherit',
+      env: options.env,
+    });
     return true;
   } catch (err) {
     writeLog(`Git pull 失败: ${err.message}`);
