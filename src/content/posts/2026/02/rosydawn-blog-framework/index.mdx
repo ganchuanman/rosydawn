@@ -1,21 +1,22 @@
 ---
-title: "Rosydawn：一个极简主义的 Astro 博客框架"
+title: "Rosydawn：一个极简但是完整的 Astro 博客框架"
 date: 2026-02-08
 description: "介绍 Rosydawn 博客框架的架构设计、核心特性与自动化部署能力，包括基于 Cron 的 Git 自动部署和 HTTPS 证书管理。"
 tags: ["Astro"]
 ---
 
-这是 Rosydawn 博客框架的完整技术文档。Rosydawn 是一个基于 [Astro](https://astro.build) 构建的个人技术博客，采用极简主义设计风格，强调良好的阅读体验和代码展示能力。
+这是 Rosydawn 博客框架的介绍文档。
+一句话概括 Rosydawn： 一个基于 Astro 进行构建，完全由 AI 设计和开发实现的博客框架，集成了一键部署、自动化部署、https 集成等等能力。
 
 ## 核心特性
 
 | 特性 | 描述 |
 |------|------|
 | 静态生成 | 基于 Astro SSG，无需服务器 |
-| 内容管理 | 使用 Astro Content Collections 管理博客文章 |
+| 内容管理 | 使用 Astro Content Collections 管理博客文章，能够通过文件夹的方式组织和管理内容 |
 | Markdown/MDX | 支持标准 Markdown 和 MDX 扩展语法 |
 | 代码高亮 | 集成 Shiki（使用 `one-light` 主题） |
-| 图表支持 | 集成 PlantUML 绘图能力 |
+| 图表支持 | 集成 PlantUML、Drawio 绘图能力 |
 | 响应式设计 | 移动端友好，自适应布局 |
 | 自动部署 | 基于 Cron 的 Git 监控与自动构建 |
 | HTTPS | Let's Encrypt 证书自动申请与续期 |
@@ -26,9 +27,6 @@ tags: ["Astro"]
 框架: Astro 5.17.x
 语言: TypeScript
 样式: Scoped CSS (无预处理器)
-字体: 系统原生字体栈（零网络请求）
-  - 正文: -apple-system, PingFang SC, Microsoft YaHei
-  - 代码: ui-monospace, SF Mono, Menlo, Monaco, Consolas
 代码高亮: Shiki (内置于 Astro)
 图表: astro-plantuml
 部署: Nginx + Let's Encrypt (自动化脚本)
@@ -96,6 +94,61 @@ coverImage: ./cover.jpg  # 可选
 ---
 ```
 
+### 图表内嵌
+#### PlantUML内嵌：
+语法如下，指定代码块的语言为 plantuml，并使用 `@startuml` 和 `@enduml` 标记代码块。
+```plantuml
+@startuml
+!theme plain
+skinparam backgroundColor white
+skinparam componentStyle rectangle
+
+title 电商系统微服务架构
+
+actor "用户" as user
+component "API Gateway" as gateway
+component "用户服务" as userSvc
+component "商品服务" as productSvc
+component "订单服务" as orderSvc
+component "支付服务" as paySvc
+database "MySQL" as mysql
+database "Redis" as redis
+queue "Kafka" as kafka
+
+user --> gateway
+gateway --> userSvc
+gateway --> productSvc
+gateway --> orderSvc
+orderSvc --> paySvc
+orderSvc --> kafka
+userSvc --> mysql
+productSvc --> mysql
+orderSvc --> mysql
+userSvc --> redis
+productSvc --> redis
+
+@enduml
+```
+
+#### Drawio内嵌：
+Drawio 是通过 svg 内嵌实现的，如果你要使用 drawio，需要按照下列步骤进行：
+
+1、文档需要指定格式为 MDX，即文件命名为`xxx.mdx` 
+
+2、在本地将 drawio 导出为 svg 格式，并将 svg 文件命名为 `xxx.drawio.svg`
+
+3、在文档中使用 `?raw` 内嵌 svg：
+```mdx
+import deploySvg from './assets/deploy-flow.svg?raw';
+
+<div class="drawio-container" set:html={deploySvg} />
+```
+
+import deploySvg from './assets/deployment-flow.svg?raw';
+
+<div class="drawio-container" set:html={deploySvg} />
+
+
 ## 部署系统
 
 Rosydawn 提供了完整的自动化部署能力，基于 Node.js 实现。
@@ -107,7 +160,8 @@ Rosydawn 提供了完整的自动化部署能力，基于 Node.js 实现。
 npm run deploy
 
 # 启用 HTTPS
-SSL_EMAIL=admin@example.com npm run deploy:ssl
+# 更改配置文件中的 `SSL_EMAIL` 变量，并运行以下命令即可完成 SSL 配置
+npm run deploy:ssl
 
 # 查看部署状态
 npm run deploy:status
@@ -119,6 +173,7 @@ npm run deploy:status
 
 ```bash
 # 安装 Cron 任务
+# 定时任务配置在 scripts/deploy.mjs 文件中
 npm run deploy:cron:install
 
 # 查看状态
@@ -134,7 +189,7 @@ tail -f logs/deploy.log
 2. **Git 检查** - 比较本地和远程 commit hash
 3. **自动拉取** - 检测到更新后执行 `git pull`
 4. **构建部署** - 自动执行构建和部署流程
-5. **邮件通知** - 部署完成后发送邮件通知（可选）
+5. **邮件通知** - 部署完成后发送邮件通知（待实现）
 
 #### Cron 环境兼容性
 
@@ -150,6 +205,9 @@ tail -f logs/deploy.log
 ### SSL 证书管理
 
 ```bash
+# 首次安装证书
+# 更改配置文件中的 `SSL_EMAIL` 变量， 用于接收 Let-Encrypt 的信息，运行以下命令即可完成 SSL 配置
+npm run deploy:ssl
 # 手动续期
 npm run deploy:renew
 
@@ -191,16 +249,6 @@ location ~* \.(css|js|woff2)$ {
 }
 ```
 
-### URL 策略
-
-采用无尾部斜杠的 URL 格式，消除 301 重定向：
-
-```javascript
-// astro.config.mjs
-build: { format: 'file' },      // 生成 /blog/post.html
-trailingSlash: 'never',         // 链接不带斜杠
-```
-
 ## 代码块增强
 
 文章详情页对代码块做了以下增强：
@@ -226,35 +274,33 @@ if (scrollDiff !== 0) {
 ```
 
 ## 开发注意事项
+重要❗：开发前把这段提示词发给你的大模型工具：
+```text
+这是 rosydawn 个人博客项目。
 
-### CSS 优先级
+## 开始前
+请阅读 README.md，其中包含：
+- 项目架构与技术栈（Astro 5 + TypeScript + Tailwind）
+- 开发规范与代码风格
+- 部署流程（Git 驱动 + Cron 监控）
+- AI 协作专属指南
 
-Astro 的 scoped CSS 无法直接选择 Markdown 生成的 HTML，需使用 `:global()` 选择器：
+## 限制
+- 不要读取 src/content/**/*.md 文件（博客文章）
+- 不要读取 public/images/ 下的资源文件
 
-```css
-/* ❌ 不生效 */
-.content pre { ... }
-
-/* ✅ 正确写法 */
-.content :global(pre) { ... }
-```
-
-### Shiki 样式覆盖
-
-Shiki 生成的代码块有内联样式，覆盖时需使用 `!important`：
-
-```css
-.content :global(.code-wrapper.collapsed pre) {
-  max-height: 312px !important;
-  overflow: hidden !important;
-}
+## 关注范围
+- src/components/ - 组件开发
+- src/layouts/ - 布局模板
+- src/pages/ - 页面路由
+- scripts/lib/ - 部署脚本
+- astro.config.mjs - 构建配置
 ```
 
 ## 快速开始
 
 ```bash
-# 克隆项目
-git clone https://github.com/ganchuanman/rosydawn.git
+# fork 本项目并 克隆项目到本地
 cd rosydawn
 
 # 安装依赖
@@ -263,11 +309,11 @@ npm install
 # 开发模式
 npm run dev
 
-# 构建
-npm run build
-
-# 部署到服务器
+# 服务端部署
 npm run deploy
+
+# 查看部署帮助信息
+npm run deploy:help
 ```
 
 ---
