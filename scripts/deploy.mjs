@@ -219,29 +219,43 @@ function formatSize(bytes) {
 
 /**
  * 检查 SSL 证书是否存在
+ * 注意：/etc/letsencrypt/live/ 需要 root 权限访问
  */
 function checkSSLCertificate() {
   const certDir = join(CONFIG.ssl.certPath, CONFIG.domain);
   const fullchain = join(certDir, 'fullchain.pem');
   const privkey = join(certDir, 'privkey.pem');
   
-  return existsSync(fullchain) && existsSync(privkey);
+  // 先尝试直接检查（如果有权限）
+  if (existsSync(fullchain) && existsSync(privkey)) {
+    return true;
+  }
+  
+  // 使用 sudo 检查（处理权限问题）
+  try {
+    execSync(`sudo test -f ${fullchain} && sudo test -f ${privkey}`, { stdio: 'pipe' });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
  * 获取证书信息
+ * 注意：/etc/letsencrypt/live/ 需要 root 权限访问
  */
 function getSSLCertificateInfo() {
   const certDir = join(CONFIG.ssl.certPath, CONFIG.domain);
   const fullchain = join(certDir, 'fullchain.pem');
   
-  if (!existsSync(fullchain)) {
+  // 检查证书是否存在（需要先调用 checkSSLCertificate）
+  if (!checkSSLCertificate()) {
     return null;
   }
   
   try {
-    // 使用 openssl 检查证书过期时间
-    const result = execSync(`openssl x509 -enddate -noout -in ${fullchain}`, { 
+    // 使用 sudo openssl 检查证书过期时间（处理权限问题）
+    const result = execSync(`sudo openssl x509 -enddate -noout -in ${fullchain}`, { 
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'pipe']
     });
