@@ -71,8 +71,10 @@ rosydawn/
 │
 ├── astro.config.mjs            # Astro 配置
 ├── package.json
+├── scripts/
+│   └── deploy.mjs              # Node.js 部署脚本
 ├── tsconfig.json
-└── deploy.sh                   # 部署脚本
+└── README.md                   # 项目文档
 ```
 
 ---
@@ -276,26 +278,25 @@ npm run preview
 
 ## 🚀 部署命令
 
-部署脚本位于 `scripts/deploy.mjs`，基于 Node.js 实现。
+部署脚本位于 `scripts/deploy.mjs`，基于 Node.js 实现，提供简洁的一键部署能力。
+
+### 可用命令
+
+| 命令 | npm 脚本 | 说明 |
+|------|----------|------|
+| `build` | `npm run deploy` | 构建项目并部署到 Nginx 网站目录 |
+| `status` | `npm run deploy:status` | 显示当前部署状态和配置信息 |
+| `help` | `node scripts/deploy.mjs help` | 显示帮助信息 |
 
 ```bash
-# 查看帮助
-npm run deploy:help
+# 一键构建部署
+npm run deploy
 
-# 首次部署（克隆项目、安装依赖、构建）
-npm run deploy:init
-
-# 检测更新并重新部署（用于定时任务）
-npm run deploy:update
-
-# 强制重新构建（不拉取更新）
-npm run deploy:build
-
-# 显示部署状态
+# 查看部署状态
 npm run deploy:status
 
-# 安装定时任务（每 5 分钟检测更新）
-npm run deploy:cron
+# 查看帮助
+node scripts/deploy.mjs help
 ```
 
 ### 部署配置
@@ -304,20 +305,34 @@ npm run deploy:cron
 
 ```javascript
 const CONFIG = {
-  repoUrl: 'https://github.com/YOUR_USERNAME/rosydawn.git',  // GitHub 仓库
-  deployDir: '/var/www/rosydawn',     // 项目部署目录
-  webRoot: '/var/www/html/rosydawn',  // Nginx 网站根目录
-  cronInterval: 5,                     // 自动更新间隔（分钟）
-  mainBranch: 'main',                  // 主分支名称
+  buildOutput: 'dist',                 // Astro 构建输出目录
+  webRoot: '/var/www/html/rosydawn',   // Nginx 网站根目录
+  nodeVersionRequired: 18,             // Node.js 版本要求
 };
 ```
 
 ### 部署流程
 
-1. 修改 `scripts/deploy.mjs` 中的配置
-2. 执行 `npm run deploy:init` 完成首次部署
-3. 配置 Nginx 指向 `webRoot` 目录
-4. 执行 `npm run deploy:cron` 启用自动更新
+1. 确保服务器已安装 Nginx（脚本会自动检测并提示安装命令）
+2. 将项目代码上传到服务器
+3. 运行 `npm run deploy` 一键构建部署
+4. 配置 Nginx 指向 `/var/www/html/rosydawn` 目录
+5. 重启 Nginx：`sudo nginx -s reload`
+
+### Nginx 配置示例
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
+    root /var/www/html/rosydawn;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
 
 ---
 

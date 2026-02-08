@@ -5,35 +5,24 @@
  * Rosydawn 博客部署脚本 (Node.js 版本)
  * ============================================
  * 用法:
- *   node scripts/deploy.mjs init     - 首次部署（克隆项目并构建）
- *   node scripts/deploy.mjs update   - 检测更新并重新部署
- *   node scripts/deploy.mjs build    - 强制重新构建
+ *   node scripts/deploy.mjs build    - 构建并部署到 Nginx 目录
  *   node scripts/deploy.mjs status   - 显示部署状态
- *   node scripts/deploy.mjs cron     - 安装定时任务
+ *   node scripts/deploy.mjs help     - 显示帮助信息
  * 
  * 或通过 npm 脚本:
- *   npm run deploy:init
- *   npm run deploy:update
- *   npm run deploy:build
+ *   npm run deploy
  *   npm run deploy:status
  * ============================================
  */
 
 import { execSync, spawn } from 'child_process';
-import { existsSync, mkdirSync, rmSync, cpSync, readdirSync, statSync, appendFileSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, rmSync, cpSync, readdirSync, statSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
-import { createInterface } from 'readline';
 
 // ==================== 配置区域 ====================
 
 const CONFIG = {
-  // GitHub 仓库地址
-  repoUrl: 'https://github.com/YOUR_USERNAME/rosydawn.git',
-
-  // 项目部署目录
-  deployDir: '/var/www/rosydawn',
-
   // Astro 构建输出目录（相对于项目根目录）
   buildOutput: 'dist',
 
@@ -42,15 +31,6 @@ const CONFIG = {
 
   // Node.js 版本要求
   nodeVersionRequired: 18,
-
-  // 日志文件
-  logFile: '/var/log/rosydawn-deploy.log',
-
-  // 检测更新的间隔（分钟），用于 cron
-  cronInterval: 5,
-
-  // 主分支名称
-  mainBranch: 'main',
 };
 
 // ==================== 颜色输出 ====================
@@ -63,6 +43,7 @@ const colors = {
   blue: '\x1b[34m',
   cyan: '\x1b[36m',
   gray: '\x1b[90m',
+  bold: '\x1b[1m',
 };
 
 function colorize(color, text) {
@@ -70,7 +51,6 @@ function colorize(color, text) {
 }
 
 function log(level, message) {
-  const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
   const levelColors = {
     INFO: 'blue',
     SUCCESS: 'green',
@@ -80,17 +60,6 @@ function log(level, message) {
 
   const coloredLevel = colorize(levelColors[level] || 'reset', `[${level}]`);
   console.log(`${coloredLevel} ${message}`);
-
-  // 写入日志文件
-  try {
-    const logDir = dirname(CONFIG.logFile);
-    if (!existsSync(logDir)) {
-      mkdirSync(logDir, { recursive: true });
-    }
-    appendFileSync(CONFIG.logFile, `[${timestamp}] [${level}] ${message}\n`);
-  } catch (err) {
-    // 忽略日志写入错误
-  }
 }
 
 const logger = {
@@ -103,22 +72,11 @@ const logger = {
 // ==================== 工具函数 ====================
 
 /**
- * 执行命令并返回输出
+ * 获取项目根目录
  */
-function exec(command, options = {}) {
-  try {
-    return execSync(command, {
-      encoding: 'utf-8',
-      stdio: options.silent ? 'pipe' : 'inherit',
-      cwd: options.cwd,
-      ...options,
-    });
-  } catch (err) {
-    if (options.ignoreError) {
-      return err.stdout || '';
-    }
-    throw err;
-  }
+function getProjectDir() {
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  return resolve(__dirname, '..');
 }
 
 /**
@@ -136,7 +94,7 @@ function execStream(command, args = [], options = {}) {
       if (code === 0) {
         resolve();
       } else {
-        reject(new Error(`Command failed with code ${code}`));
+        reject(new Error(`命令执行失败，退出码: ${code}`));
       }
     });
 
@@ -165,23 +123,6 @@ function getNodeMajorVersion() {
 }
 
 /**
- * 询问用户确认
- */
-function askConfirm(question) {
-  return new Promise((resolve) => {
-    const rl = createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
-    rl.question(`${question} (y/N): `, (answer) => {
-      rl.close();
-      resolve(answer.toLowerCase() === 'y');
-    });
-  });
-}
-
-/**
  * 递归计算目录文件数
  */
 function countFiles(dir) {
@@ -201,6 +142,32 @@ function countFiles(dir) {
   return count;
 }
 
+/**
+ * 获取目录大小（MB）
+ */
+function getDirSize(dir) {
+  let size = 0;
+  if (!existsSync(dir)) return 0;
+
+  const items = readdirSync(dir);
+  for (const item of items) {
+    const fullPath = join(dir, item);
+    const stat = statSync(fullPath);
+    if (stat.isFile()) {
+      size += stat.size;
+    } else if (stat.isDirectory()) {
+      size += getDirSize(fullPath);
+    }
+  }
+  return size;
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+}
+
 // ==================== 检查函数 ====================
 
 /**
@@ -209,23 +176,33 @@ function countFiles(dir) {
 function checkEnvironment() {
   logger.info('检查部署环境...');
 
-  // 检查 git
-  if (!commandExists('git')) {
-    logger.error('git 未安装，请先安装 git');
-    process.exit(1);
-  }
-
   // 检查 Node.js 版本
   const nodeVersion = getNodeMajorVersion();
   if (nodeVersion < CONFIG.nodeVersionRequired) {
     logger.error(`Node.js 版本过低，需要 v${CONFIG.nodeVersionRequired}+，当前为 ${process.version}`);
     process.exit(1);
   }
-  logger.info(`Node.js 版本: ${process.version}`);
 
   // 检查 npm
   if (!commandExists('npm')) {
     logger.error('npm 未安装');
+    process.exit(1);
+  }
+
+  // 检查 nginx
+  if (!commandExists('nginx')) {
+    console.log('');
+    logger.warn('未检测到 Nginx，请先安装 Nginx：');
+    console.log('');
+    console.log(colorize('gray', '  # Ubuntu/Debian'));
+    console.log(colorize('cyan', '  sudo apt update && sudo apt install nginx -y'));
+    console.log('');
+    console.log(colorize('gray', '  # CentOS/RHEL'));
+    console.log(colorize('cyan', '  sudo yum install nginx -y'));
+    console.log('');
+    console.log(colorize('gray', '  # macOS'));
+    console.log(colorize('cyan', '  brew install nginx'));
+    console.log('');
     process.exit(1);
   }
 
@@ -235,225 +212,172 @@ function checkEnvironment() {
 // ==================== 部署函数 ====================
 
 /**
- * 构建项目
+ * 构建并部署项目
  */
-async function buildProject() {
+async function buildAndDeploy() {
+  console.log('');
+  console.log(colorize('bold', '🚀 Rosydawn 博客部署'));
+  console.log('');
+
+  checkEnvironment();
+
+  const projectDir = getProjectDir();
+  const buildPath = join(projectDir, CONFIG.buildOutput);
+
+  // 安装依赖
   logger.info('安装依赖...');
-  await execStream('npm', ['install'], { cwd: CONFIG.deployDir });
+  await execStream('npm', ['install'], { cwd: projectDir });
 
+  // 构建项目
   logger.info('构建 Astro 项目...');
-  await execStream('npm', ['run', 'build'], { cwd: CONFIG.deployDir });
+  await execStream('npm', ['run', 'build'], { cwd: projectDir });
 
-  // 复制构建产物到网站目录
-  logger.info('部署到网站目录...');
-  const buildPath = join(CONFIG.deployDir, CONFIG.buildOutput);
-  
+  // 验证构建产物
   if (!existsSync(buildPath)) {
     logger.error(`构建输出目录不存在: ${buildPath}`);
     process.exit(1);
   }
 
-  // 创建目标目录
-  mkdirSync(CONFIG.webRoot, { recursive: true });
+  const fileCount = countFiles(buildPath);
+  const dirSize = formatSize(getDirSize(buildPath));
+  logger.success(`构建完成！${fileCount} 个文件，共 ${dirSize}`);
+
+  // 部署到 Nginx 目录
+  logger.info(`部署到 ${CONFIG.webRoot}...`);
+
+  // 创建目标目录（可能需要 sudo 权限）
+  try {
+    mkdirSync(CONFIG.webRoot, { recursive: true });
+  } catch (err) {
+    if (err.code === 'EACCES') {
+      logger.warn('需要管理员权限创建目录，尝试使用 sudo...');
+      execSync(`sudo mkdir -p ${CONFIG.webRoot}`, { stdio: 'inherit' });
+      execSync(`sudo chown -R $USER:$USER ${CONFIG.webRoot}`, { stdio: 'inherit' });
+    } else {
+      throw err;
+    }
+  }
 
   // 清空目标目录
-  const items = readdirSync(CONFIG.webRoot);
-  for (const item of items) {
-    rmSync(join(CONFIG.webRoot, item), { recursive: true, force: true });
+  try {
+    const items = readdirSync(CONFIG.webRoot);
+    for (const item of items) {
+      rmSync(join(CONFIG.webRoot, item), { recursive: true, force: true });
+    }
+  } catch (err) {
+    if (err.code === 'EACCES') {
+      execSync(`sudo rm -rf ${CONFIG.webRoot}/*`, { stdio: 'inherit' });
+    }
   }
 
   // 复制文件
-  cpSync(buildPath, CONFIG.webRoot, { recursive: true });
-
-  logger.success('构建完成！');
-}
-
-/**
- * 首次部署
- */
-async function initDeploy() {
-  logger.info('开始首次部署...');
-
-  checkEnvironment();
-
-  // 检查部署目录
-  if (existsSync(CONFIG.deployDir)) {
-    logger.warn(`部署目录已存在: ${CONFIG.deployDir}`);
-    const confirm = await askConfirm('是否删除并重新克隆？');
-    
-    if (confirm) {
-      rmSync(CONFIG.deployDir, { recursive: true, force: true });
+  try {
+    cpSync(buildPath, CONFIG.webRoot, { recursive: true });
+  } catch (err) {
+    if (err.code === 'EACCES') {
+      execSync(`sudo cp -r ${buildPath}/* ${CONFIG.webRoot}/`, { stdio: 'inherit' });
     } else {
-      logger.info('跳过克隆，直接构建...');
-      await buildProject();
-      return;
+      throw err;
     }
   }
 
-  // 克隆项目
-  logger.info(`克隆项目: ${CONFIG.repoUrl}`);
-  mkdirSync(dirname(CONFIG.deployDir), { recursive: true });
-  exec(`git clone ${CONFIG.repoUrl} ${CONFIG.deployDir}`);
-
-  // 构建项目
-  await buildProject();
-
-  logger.success('首次部署完成！');
-  logger.info(`网站目录: ${CONFIG.webRoot}`);
-  logger.info('请配置 Nginx 指向该目录');
-}
-
-/**
- * 检测更新并部署
- */
-async function updateDeploy() {
-  logger.info('检测项目更新...');
-
-  if (!existsSync(CONFIG.deployDir)) {
-    logger.error(`项目目录不存在: ${CONFIG.deployDir}`);
-    logger.info('请先执行: npm run deploy:init');
-    process.exit(1);
-  }
-
-  // 获取远程更新
-  exec('git fetch origin', { cwd: CONFIG.deployDir, silent: true });
-
-  // 比较本地和远程
-  const local = exec('git rev-parse HEAD', { cwd: CONFIG.deployDir, silent: true }).trim();
-  
-  let remote;
-  try {
-    remote = exec(`git rev-parse origin/${CONFIG.mainBranch}`, { cwd: CONFIG.deployDir, silent: true }).trim();
-  } catch {
-    remote = exec('git rev-parse origin/master', { cwd: CONFIG.deployDir, silent: true }).trim();
-  }
-
-  if (local === remote) {
-    logger.info('没有检测到更新，当前已是最新版本');
-    logger.info(`本地 commit: ${local.substring(0, 8)}`);
-    return;
-  }
-
-  logger.info('检测到更新！');
-  logger.info(`本地: ${local.substring(0, 8)} -> 远程: ${remote.substring(0, 8)}`);
-
-  // 显示更新内容
-  logger.info('更新内容:');
-  const logs = exec(`git log --oneline ${local}..${remote}`, { cwd: CONFIG.deployDir, silent: true });
-  console.log(colorize('gray', logs.split('\n').slice(0, 10).join('\n')));
-
-  // 拉取更新
-  logger.info('拉取更新...');
-  try {
-    exec(`git pull origin ${CONFIG.mainBranch}`, { cwd: CONFIG.deployDir });
-  } catch {
-    exec('git pull origin master', { cwd: CONFIG.deployDir });
-  }
-
-  // 重新构建
-  await buildProject();
-
-  logger.success('更新部署完成！');
-}
-
-/**
- * 强制重新构建
- */
-async function forceBuild() {
-  logger.info('强制重新构建...');
-
-  if (!existsSync(CONFIG.deployDir)) {
-    logger.error(`项目目录不存在: ${CONFIG.deployDir}`);
-    process.exit(1);
-  }
-
-  await buildProject();
-
-  logger.success('重新构建完成！');
-}
-
-/**
- * 安装定时任务
- */
-async function installCron() {
-  logger.info('安装定时任务...');
-
-  const scriptPath = resolve(fileURLToPath(import.meta.url));
-  const cronCmd = `*/${CONFIG.cronInterval} * * * * /usr/bin/node ${scriptPath} update >> ${CONFIG.logFile} 2>&1`;
-
-  // 检查是否已存在
-  let currentCron = '';
-  try {
-    currentCron = exec('crontab -l', { silent: true, ignoreError: true }) || '';
-  } catch {
-    currentCron = '';
-  }
-
-  if (currentCron.includes('rosydawn') && currentCron.includes('update')) {
-    logger.warn('定时任务已存在');
-    const confirm = await askConfirm('是否替换？');
-    if (!confirm) {
-      logger.info('取消安装');
-      return;
-    }
-    // 移除旧的
-    currentCron = currentCron.split('\n').filter(line => !line.includes('rosydawn') || !line.includes('update')).join('\n');
-  }
-
-  // 添加新的定时任务
-  const newCron = currentCron.trim() + '\n' + cronCmd + '\n';
-  exec(`echo "${newCron}" | crontab -`);
-
-  logger.success('定时任务安装完成！');
-  logger.info(`每 ${CONFIG.cronInterval} 分钟检测一次更新`);
-  logger.info(`日志文件: ${CONFIG.logFile}`);
-
+  // 完成
   console.log('');
-  logger.info('当前定时任务:');
-  console.log(colorize('gray', cronCmd));
+  logger.success('🎉 部署完成！');
+  console.log('');
+  console.log(`  ${colorize('gray', '网站目录:')} ${CONFIG.webRoot}`);
+  console.log(`  ${colorize('gray', '文件数量:')} ${fileCount} 个`);
+  console.log(`  ${colorize('gray', '占用空间:')} ${dirSize}`);
+  console.log('');
+
+  // 提示 Nginx 配置
+  console.log(colorize('yellow', '📝 Nginx 配置示例:'));
+  console.log('');
+  console.log(colorize('gray', `  server {
+      listen 80;
+      server_name your-domain.com;
+      root ${CONFIG.webRoot};
+      index index.html;
+
+      location / {
+          try_files $uri $uri/ =404;
+      }
+  }`));
+  console.log('');
 }
 
 /**
- * 显示状态
+ * 显示部署状态
  */
 function showStatus() {
   console.log('');
-  console.log('==================== Rosydawn 部署状态 ====================');
+  console.log(colorize('bold', '📊 Rosydawn 部署状态'));
+  console.log('');
+  console.log('─'.repeat(50));
 
-  if (existsSync(CONFIG.deployDir)) {
-    const branch = exec('git branch --show-current', { cwd: CONFIG.deployDir, silent: true }).trim();
-    const commit = exec('git rev-parse --short HEAD', { cwd: CONFIG.deployDir, silent: true }).trim();
-    const lastUpdate = exec('git log -1 --format="%ci"', { cwd: CONFIG.deployDir, silent: true }).trim();
-
-    console.log(`项目目录: ${CONFIG.deployDir} ${colorize('green', '✓')}`);
-    console.log(`当前分支: ${branch}`);
-    console.log(`当前版本: ${commit}`);
-    console.log(`最后更新: ${lastUpdate}`);
-  } else {
-    console.log(`项目目录: ${CONFIG.deployDir} ${colorize('red', '✗')} (未部署)`);
+  // 项目信息
+  const projectDir = getProjectDir();
+  const packagePath = join(projectDir, 'package.json');
+  
+  console.log('');
+  console.log(colorize('cyan', '项目信息:'));
+  
+  if (existsSync(packagePath)) {
+    const pkg = JSON.parse(require('fs').readFileSync(packagePath, 'utf-8'));
+    console.log(`  名称:     ${pkg.name || 'rosydawn'}`);
+    console.log(`  版本:     ${pkg.version || '-'}`);
   }
+  console.log(`  目录:     ${projectDir}`);
+
+  // 部署配置
+  console.log('');
+  console.log(colorize('cyan', '部署配置:'));
+  console.log(`  构建目录: ${CONFIG.buildOutput}/`);
+  console.log(`  网站目录: ${CONFIG.webRoot}`);
+
+  // 部署状态
+  console.log('');
+  console.log(colorize('cyan', '部署状态:'));
 
   if (existsSync(CONFIG.webRoot)) {
     const fileCount = countFiles(CONFIG.webRoot);
-    console.log(`网站目录: ${CONFIG.webRoot} ${colorize('green', '✓')}`);
-    console.log(`文件数量: ${fileCount} 个文件`);
-  } else {
-    console.log(`网站目录: ${CONFIG.webRoot} ${colorize('red', '✗')} (未构建)`);
-  }
+    const dirSize = formatSize(getDirSize(CONFIG.webRoot));
+    
+    if (fileCount > 0) {
+      console.log(`  状态:     ${colorize('green', '✓ 已部署')}`);
+      console.log(`  文件数:   ${fileCount} 个`);
+      console.log(`  占用:     ${dirSize}`);
 
-  // 检查 cron
-  try {
-    const cron = exec('crontab -l', { silent: true, ignoreError: true }) || '';
-    if (cron.includes('rosydawn') && cron.includes('update')) {
-      console.log(`定时任务: ${colorize('green', '已启用 ✓')}`);
+      // 获取最后修改时间
+      try {
+        const stat = statSync(CONFIG.webRoot);
+        console.log(`  更新时间: ${stat.mtime.toLocaleString('zh-CN')}`);
+      } catch {}
     } else {
-      console.log('定时任务: 未启用');
+      console.log(`  状态:     ${colorize('yellow', '○ 目录为空')}`);
     }
-  } catch {
-    console.log('定时任务: 未启用');
+  } else {
+    console.log(`  状态:     ${colorize('red', '✗ 未部署')}`);
   }
 
-  console.log('===========================================================');
+  // 环境信息
+  console.log('');
+  console.log(colorize('cyan', '环境信息:'));
+  console.log(`  Node.js:  ${process.version}`);
+  console.log(`  Nginx:    ${commandExists('nginx') ? colorize('green', '已安装 ✓') : colorize('red', '未安装 ✗')}`);
+
+  // 检查 Nginx 是否运行
+  if (commandExists('nginx')) {
+    try {
+      execSync('pgrep nginx', { stdio: 'pipe' });
+      console.log(`  运行状态: ${colorize('green', '运行中 ✓')}`);
+    } catch {
+      console.log(`  运行状态: ${colorize('yellow', '未运行')}`);
+    }
+  }
+
+  console.log('');
+  console.log('─'.repeat(50));
   console.log('');
 }
 
@@ -462,30 +386,30 @@ function showStatus() {
  */
 function showHelp() {
   console.log(`
-${colorize('cyan', 'Rosydawn 博客部署脚本')} (Node.js 版本)
+${colorize('bold', 'Rosydawn 博客部署脚本')}
 
-${colorize('yellow', '用法:')} node scripts/deploy.mjs <command>
-${colorize('yellow', '或者:')} npm run deploy:<command>
+${colorize('yellow', '用法:')}
+  node scripts/deploy.mjs <命令>
+  npm run deploy            # 等同于 build
+  npm run deploy:status     # 查看状态
 
 ${colorize('yellow', '命令:')}
-  ${colorize('green', 'init')}      首次部署（克隆项目、安装依赖、构建）
-  ${colorize('green', 'update')}    检测更新并重新部署（用于定时任务）
-  ${colorize('green', 'build')}     强制重新构建（不拉取更新）
-  ${colorize('green', 'status')}    显示部署状态
-  ${colorize('green', 'cron')}      安装定时任务（每 ${CONFIG.cronInterval} 分钟检测更新）
+  ${colorize('green', 'build')}     构建项目并部署到 Nginx 网站目录
+  ${colorize('green', 'status')}    显示当前部署状态和配置信息
   ${colorize('green', 'help')}      显示此帮助信息
 
-${colorize('yellow', '配置说明:')}
-  请在脚本开头的 CONFIG 对象中修改以下配置:
-  - repoUrl:    GitHub 仓库地址
-  - deployDir:  项目部署目录
-  - webRoot:    Nginx 网站根目录
+${colorize('yellow', '部署配置:')}
+  构建输出:   ${CONFIG.buildOutput}/
+  网站目录:   ${CONFIG.webRoot}
 
 ${colorize('yellow', '部署流程:')}
-  1. 修改脚本配置
-  2. 执行 npm run deploy:init 完成首次部署
-  3. 配置 Nginx 指向 ${CONFIG.webRoot}
-  4. 执行 npm run deploy:cron 启用自动更新
+  1. 运行 ${colorize('cyan', 'npm run deploy')} 构建并部署
+  2. 配置 Nginx 指向 ${CONFIG.webRoot}
+  3. 重启 Nginx: ${colorize('cyan', 'sudo nginx -s reload')}
+
+${colorize('yellow', '示例:')}
+  npm run deploy            # 一键构建部署
+  npm run deploy:status     # 查看部署状态
 `);
 }
 
@@ -496,25 +420,13 @@ async function main() {
 
   try {
     switch (command) {
-      case 'init':
-        await initDeploy();
-        showStatus();
-        break;
-
-      case 'update':
-        await updateDeploy();
-        break;
-
       case 'build':
-        await forceBuild();
+      case 'deploy':
+        await buildAndDeploy();
         break;
 
       case 'status':
         showStatus();
-        break;
-
-      case 'cron':
-        await installCron();
         break;
 
       case 'help':
@@ -525,10 +437,12 @@ async function main() {
 
       default:
         logger.error(`未知命令: ${command}`);
-        showHelp();
+        console.log('');
+        console.log(`运行 ${colorize('cyan', 'node scripts/deploy.mjs help')} 查看可用命令`);
         process.exit(1);
     }
   } catch (err) {
+    console.log('');
     logger.error(err.message);
     process.exit(1);
   }
