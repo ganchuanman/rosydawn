@@ -923,4 +923,4 @@ code.style.setProperty('--line-number-width', `${maxLineDigits}ch`);
 
 ---
 
-*本文档最后更新：2026-02-08*
+*本文档最后更新于：2026-02-08*
