@@ -15,4 +15,8 @@ export default defineConfig({
       wrap: false,
     },
   },
+  build: {
+    format: 'file', // 生成 /blog/post.html 而非 /blog/post/index.html
+  },
+  trailingSlash: 'never', // URL 不带尾部斜杠，消除 301 重定向
 });

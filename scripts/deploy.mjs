@@ -562,9 +562,9 @@ server {
         access_log off;
     }
 
-    # 主路由
+    # 主路由 (配合 Astro build.format: 'file' 模式)
     location / {
-        try_files $uri $uri/ $uri.html =404;
+        try_files $uri $uri.html $uri/ =404;
     }
 
     # 404 错误页面
@@ -668,9 +668,9 @@ server {
         access_log off;
     }
 
-    # 主路由
+    # 主路由 (配合 Astro build.format: 'file' 模式)
     location / {
-        try_files $uri $uri/ $uri.html =404;
+        try_files $uri $uri.html $uri/ =404;
     }
 
     # 404 错误页面
@@ -833,14 +833,19 @@ function setupNginx() {
   console.log('');
   console.log(`  ${colorize('gray', '配置文件:')} ${configPath}`);
   console.log(`  ${colorize('gray', '域名:')}     ${CONFIG.domain}`);
-  console.log(`  ${colorize('gray', '端口:')}     ${CONFIG.nginx.port}`);
+  console.log(`  ${colorize('gray', 'HTTPS:')}    ${CONFIG.ssl.enabled ? '✓ 已启用' : '○ 未启用'}`);
   console.log(`  ${colorize('gray', '网站目录:')} ${CONFIG.webRoot}`);
   console.log('');
 
-  // 提示访问
-  const url = CONFIG.domain === 'localhost' 
-    ? `http://localhost:${CONFIG.nginx.port}` 
-    : `http://${CONFIG.domain}`;
+  // 提示访问（根据 SSL 状态决定协议）
+  let url;
+  if (CONFIG.domain === 'localhost') {
+    url = `http://localhost:${CONFIG.nginx.port}`;
+  } else if (CONFIG.ssl.enabled) {
+    url = `https://${CONFIG.domain}`;
+  } else {
+    url = `http://${CONFIG.domain}`;
+  }
   console.log(`  ${colorize('green', '立即访问:')} ${colorize('cyan', url)}`);
   console.log('');
 
