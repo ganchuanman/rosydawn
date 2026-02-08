@@ -16,7 +16,7 @@
  */
 
 import { execSync, spawn } from 'child_process';
-import { existsSync, mkdirSync, rmSync, cpSync, readdirSync, statSync, readFileSync } from 'fs';
+import { existsSync, mkdirSync, rmSync, cpSync, readdirSync, statSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -31,7 +31,23 @@ const CONFIG = {
 
   // Node.js 版本要求
   nodeVersionRequired: 18,
+
+  // 服务器域名（环境变量 DOMAIN 可覆盖此配置）
+  domain: 'www.rosydawn.space',
+
+  // Nginx 配置
+  nginx: {
+    // 站点配置文件名
+    siteName: 'rosydawn',
+    // 监听端口
+    port: 80,
+  },
 };
+
+// 环境变量覆盖配置
+if (process.env.DOMAIN) {
+  CONFIG.domain = process.env.DOMAIN;
+}
 
 // ==================== 颜色输出 ====================
 
@@ -123,6 +139,21 @@ function getNodeMajorVersion() {
 }
 
 /**
+ * 获取当前用户的主用户组
+ * macOS: staff
+ * Linux: 通常与用户名相同
+ */
+function getUserGroup() {
+  try {
+    // 使用 id -gn 获取当前用户的主组名
+    return execSync('id -gn', { encoding: 'utf-8' }).trim();
+  } catch {
+    // 降级处理：macOS 默认 staff，Linux 默认用户名
+    return process.platform === 'darwin' ? 'staff' : process.env.USER;
+  }
+}
+
+/**
  * 递归计算目录文件数
  */
 function countFiles(dir) {
@@ -166,6 +197,288 @@ function formatSize(bytes) {
   if (bytes < 1024) return bytes + ' B';
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
   return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+}
+
+// ==================== Nginx 配置管理 ====================
+
+/**
+ * 获取 Nginx 配置目录信息
+ */
+function getNginxPaths() {
+  const platform = process.platform;
+  
+  // macOS (Homebrew)
+  if (platform === 'darwin') {
+    // Apple Silicon
+    if (existsSync('/opt/homebrew/etc/nginx')) {
+      return {
+        configDir: '/opt/homebrew/etc/nginx/servers',
+        enabledDir: null, // macOS 不需要 sites-enabled
+        needsSymlink: false,
+      };
+    }
+    // Intel Mac
+    if (existsSync('/usr/local/etc/nginx')) {
+      return {
+        configDir: '/usr/local/etc/nginx/servers',
+        enabledDir: null,
+        needsSymlink: false,
+      };
+    }
+  }
+  
+  // Ubuntu/Debian
+  if (existsSync('/etc/nginx/sites-available')) {
+    return {
+      configDir: '/etc/nginx/sites-available',
+      enabledDir: '/etc/nginx/sites-enabled',
+      needsSymlink: true,
+    };
+  }
+  
+  // CentOS/RHEL/其他 Linux
+  if (existsSync('/etc/nginx/conf.d')) {
+    return {
+      configDir: '/etc/nginx/conf.d',
+      enabledDir: null,
+      needsSymlink: false,
+    };
+  }
+  
+  return null;
+}
+
+/**
+ * 生成 Nginx 配置内容
+ */
+function generateNginxConfig() {
+  const { port } = CONFIG.nginx;
+  
+  return `# Rosydawn 博客 Nginx 配置
+# 由部署脚本自动生成于 ${new Date().toLocaleString('zh-CN')}
+
+server {
+    listen ${port};
+    listen [::]:${port};
+    
+    server_name ${CONFIG.domain};
+    
+    root ${CONFIG.webRoot};
+    index index.html;
+
+    # 字符集
+    charset utf-8;
+
+    # 启用 gzip 压缩
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml text/javascript 
+               application/json application/javascript application/xml 
+               application/rss+xml application/atom+xml image/svg+xml;
+
+    # 静态资源缓存（Astro 构建产物带 hash，可长期缓存）
+    location ~* \\.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+        access_log off;
+    }
+
+    # 主路由
+    location / {
+        try_files $uri $uri/ $uri.html =404;
+    }
+
+    # 404 错误页面
+    error_page 404 /404.html;
+
+    # 禁止访问隐藏文件
+    location ~ /\\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+}
+`;
+}
+
+/**
+ * 获取现有 Nginx 配置路径
+ */
+function getExistingNginxConfigPath() {
+  const paths = getNginxPaths();
+  if (!paths) return null;
+  
+  const configFile = paths.needsSymlink 
+    ? join(paths.configDir, CONFIG.nginx.siteName)
+    : join(paths.configDir, `${CONFIG.nginx.siteName}.conf`);
+  
+  return existsSync(configFile) ? configFile : null;
+}
+
+/**
+ * 配置 Nginx
+ */
+function setupNginx() {
+ console.log('');
+  console.log(colorize('bold', '⚙️  配置 Nginx'));
+  console.log('');
+
+  // 检查 Nginx 是否安装
+  if (!commandExists('nginx')) {
+    logger.error('Nginx 未安装，请先安装 Nginx');
+    return false;
+  }
+
+  // 获取配置路径
+  const paths = getNginxPaths();
+  if (!paths) {
+    logger.error('无法检测 Nginx 配置目录');
+    return false;
+  }
+
+  logger.info(`检测到 Nginx 配置目录: ${paths.configDir}`);
+
+  // 确定配置文件路径
+  const configFileName = paths.needsSymlink 
+    ? CONFIG.nginx.siteName 
+    : `${CONFIG.nginx.siteName}.conf`;
+  const configPath = join(paths.configDir, configFileName);
+  const enabledPath = paths.enabledDir 
+    ? join(paths.enabledDir, configFileName) 
+    : null;
+
+  // 生成配置内容
+  const configContent = generateNginxConfig();
+
+  // 写入配置文件
+  logger.info(`写入配置文件: ${configPath}`);
+  
+  try {
+    // 确保目录存在
+    if (!existsSync(paths.configDir)) {
+      execSync(`sudo mkdir -p ${paths.configDir}`, { stdio: 'inherit' });
+    }
+
+    // 写入临时文件然后移动（处理权限问题）
+    const tempFile = `/tmp/${configFileName}`;
+    writeFileSync(tempFile, configContent);
+    execSync(`sudo cp ${tempFile} ${configPath}`, { stdio: 'inherit' });
+    rmSync(tempFile, { force: true });
+
+    logger.success('配置文件已创建');
+  } catch (err) {
+    logger.error(`写入配置文件失败: ${err.message}`);
+    return false;
+  }
+
+  // Ubuntu/Debian: 创建软链接
+  if (paths.needsSymlink && enabledPath) {
+    logger.info('创建软链接到 sites-enabled...');
+    try {
+      // 删除旧的软链接（如果存在）
+      if (existsSync(enabledPath)) {
+        execSync(`sudo rm -f ${enabledPath}`, { stdio: 'inherit' });
+      }
+      execSync(`sudo ln -s ${configPath} ${enabledPath}`, { stdio: 'inherit' });
+      logger.success('软链接已创建');
+    } catch (err) {
+      logger.error(`创建软链接失败: ${err.message}`);
+      return false;
+    }
+  }
+
+  // 测试 Nginx 配置
+  logger.info('测试 Nginx 配置...');
+  try {
+    execSync('sudo nginx -t', { stdio: 'inherit' });
+    logger.success('配置语法正确');
+  } catch {
+    logger.error('Nginx 配置测试失败，请检查配置文件');
+    return false;
+  }
+
+  // 重载 Nginx
+  logger.info('重载 Nginx...');
+  try {
+    // 检查 Nginx 是否在运行
+    try {
+      execSync('pgrep nginx', { stdio: 'pipe' });
+      // Nginx 正在运行，重载配置
+      execSync('sudo nginx -s reload', { stdio: 'inherit' });
+    } catch {
+      // Nginx 未运行，启动它
+      logger.info('Nginx 未运行，正在启动...');
+      if (process.platform === 'darwin') {
+        execSync('sudo nginx', { stdio: 'inherit' });
+      } else {
+        execSync('sudo systemctl start nginx', { stdio: 'inherit' });
+      }
+    }
+    logger.success('Nginx 已重载');
+  } catch (err) {
+    logger.warn(`Nginx 重载失败: ${err.message}`);
+    console.log('');
+    console.log(colorize('yellow', '请手动重载 Nginx:'));
+    console.log(colorize('cyan', '  sudo nginx -s reload'));
+    console.log('');
+  }
+
+  // 输出结果
+  console.log('');
+  console.log('─'.repeat(50));
+  console.log('');
+  logger.success('🎉 Nginx 配置完成！');
+  console.log('');
+  console.log(`  ${colorize('gray', '配置文件:')} ${configPath}`);
+  console.log(`  ${colorize('gray', '域名:')}     ${CONFIG.domain}`);
+  console.log(`  ${colorize('gray', '端口:')}     ${CONFIG.nginx.port}`);
+  console.log(`  ${colorize('gray', '网站目录:')} ${CONFIG.webRoot}`);
+  console.log('');
+
+  // 提示访问
+  const url = CONFIG.domain === 'localhost' 
+    ? `http://localhost:${CONFIG.nginx.port}` 
+    : `http://${CONFIG.domain}`;
+  console.log(`  ${colorize('green', '立即访问:')} ${colorize('cyan', url)}`);
+  console.log('');
+
+  return true;
+}
+
+/**
+ * 显示 Nginx 配置状态
+ */
+function showNginxStatus() {
+  const paths = getNginxPaths();
+  const existingConfig = getExistingNginxConfigPath();
+  
+  console.log('');
+  console.log(colorize('cyan', 'Nginx 配置:'));
+  
+  if (!paths) {
+    console.log(`  状态:     ${colorize('yellow', '○ 未检测到配置目录')}`);
+    return;
+  }
+  
+  console.log(`  配置目录: ${paths.configDir}`);
+  
+  if (existingConfig) {
+    console.log(`  站点配置: ${colorize('green', '✓ 已配置')}`);
+    console.log(`  配置文件: ${existingConfig}`);
+    
+    // 读取配置文件检查域名
+    try {
+      const content = readFileSync(existingConfig, 'utf-8');
+      const serverNameMatch = content.match(/server_name\s+([^;]+);/);
+      if (serverNameMatch) {
+        console.log(`  域名:     ${serverNameMatch[1].trim()}`);
+      }
+    } catch {}
+  } else {
+    console.log(`  站点配置: ${colorize('yellow', '○ 未配置')}`);
+    console.log(`  ${colorize('gray', '运行 npm run deploy 自动配置')}`);
+  }
 }
 
 // ==================== 检查函数 ====================
@@ -251,8 +564,9 @@ async function buildAndDeploy() {
   } catch (err) {
     if (err.code === 'EACCES') {
       logger.warn('需要管理员权限创建目录，尝试使用 sudo...');
+      const userGroup = getUserGroup();
       execSync(`sudo mkdir -p ${CONFIG.webRoot}`, { stdio: 'inherit' });
-      execSync(`sudo chown -R $USER:$USER ${CONFIG.webRoot}`, { stdio: 'inherit' });
+      execSync(`sudo chown -R ${process.env.USER}:${userGroup} ${CONFIG.webRoot}`, { stdio: 'inherit' });
     } else {
       throw err;
     }
@@ -281,29 +595,16 @@ async function buildAndDeploy() {
     }
   }
 
-  // 完成
+  // 完成文件部署
   console.log('');
-  logger.success('🎉 部署完成！');
+  logger.success('📦 文件部署完成！');
   console.log('');
   console.log(`  ${colorize('gray', '网站目录:')} ${CONFIG.webRoot}`);
   console.log(`  ${colorize('gray', '文件数量:')} ${fileCount} 个`);
   console.log(`  ${colorize('gray', '占用空间:')} ${dirSize}`);
-  console.log('');
 
-  // 提示 Nginx 配置
-  console.log(colorize('yellow', '📝 Nginx 配置示例:'));
-  console.log('');
-  console.log(colorize('gray', `  server {
-      listen 80;
-      server_name your-domain.com;
-      root ${CONFIG.webRoot};
-      index index.html;
-
-      location / {
-          try_files $uri $uri/ =404;
-      }
-  }`));
-  console.log('');
+  // 自动配置 Nginx
+  setupNginx();
 }
 
 /**
@@ -360,6 +661,9 @@ function showStatus() {
     console.log(`  状态:     ${colorize('red', '✗ 未部署')}`);
   }
 
+  // Nginx 配置状态
+  showNginxStatus();
+
   // 环境信息
   console.log('');
   console.log(colorize('cyan', '环境信息:'));
@@ -390,26 +694,32 @@ ${colorize('bold', 'Rosydawn 博客部署脚本')}
 
 ${colorize('yellow', '用法:')}
   node scripts/deploy.mjs <命令>
-  npm run deploy            # 等同于 build
+  npm run deploy            # 构建并部署
   npm run deploy:status     # 查看状态
 
 ${colorize('yellow', '命令:')}
-  ${colorize('green', 'build')}     构建项目并部署到 Nginx 网站目录
+  ${colorize('green', 'build')}     构建项目并部署到 Nginx（自动配置 Nginx）
   ${colorize('green', 'status')}    显示当前部署状态和配置信息
   ${colorize('green', 'help')}      显示此帮助信息
 
 ${colorize('yellow', '部署配置:')}
   构建输出:   ${CONFIG.buildOutput}/
   网站目录:   ${CONFIG.webRoot}
+  域名:       ${CONFIG.domain}
+
+${colorize('yellow', '环境变量:')}
+  DOMAIN      覆盖配置中的域名设置
+              示例: DOMAIN=example.com npm run deploy
 
 ${colorize('yellow', '部署流程:')}
-  1. 运行 ${colorize('cyan', 'npm run deploy')} 构建并部署
-  2. 配置 Nginx 指向 ${CONFIG.webRoot}
-  3. 重启 Nginx: ${colorize('cyan', 'sudo nginx -s reload')}
+  1. 运行 ${colorize('cyan', 'npm run deploy')}
+  2. 脚本自动完成: 构建 → 部署文件 → 配置 Nginx → 重载 Nginx
+  3. 访问网站！
 
 ${colorize('yellow', '示例:')}
-  npm run deploy            # 一键构建部署
-  npm run deploy:status     # 查看部署状态
+  npm run deploy                        # 本地部署
+  DOMAIN=blog.example.com npm run deploy  # 生产环境部署
+  npm run deploy:status                 # 查看部署状态
 `);
 }
 

@@ -278,19 +278,22 @@ npm run preview
 
 ## 🚀 部署命令
 
-部署脚本位于 `scripts/deploy.mjs`，基于 Node.js 实现，提供简洁的一键部署能力。
+部署脚本位于 `scripts/deploy.mjs`，基于 Node.js 实现，提供完整的一键部署能力，包括**自动配置 Nginx**。
 
 ### 可用命令
 
 | 命令 | npm 脚本 | 说明 |
 |------|----------|------|
-| `build` | `npm run deploy` | 构建项目并部署到 Nginx 网站目录 |
-| `status` | `npm run deploy:status` | 显示当前部署状态和配置信息 |
+| `build` | `npm run deploy` | 构建项目、部署文件、自动配置 Nginx |
+| `status` | `npm run deploy:status` | 显示部署状态和 Nginx 配置信息 |
 | `help` | `node scripts/deploy.mjs help` | 显示帮助信息 |
 
 ```bash
-# 一键构建部署
+# 一键构建部署（自动配置 Nginx）
 npm run deploy
+
+# 指定域名部署
+DOMAIN=blog.example.com npm run deploy
 
 # 查看部署状态
 npm run deploy:status
@@ -308,28 +311,65 @@ const CONFIG = {
   buildOutput: 'dist',                 // Astro 构建输出目录
   webRoot: '/var/www/html/rosydawn',   // Nginx 网站根目录
   nodeVersionRequired: 18,             // Node.js 版本要求
+  nginx: {
+    siteName: 'rosydawn',              // Nginx 配置文件名
+    serverName: process.env.DOMAIN || 'localhost',  // 服务器域名
+    port: 80,                          // 监听端口
+  },
 };
 ```
 
+### 环境变量
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `DOMAIN` | 服务器域名 | `localhost` |
+
 ### 部署流程
 
-1. 确保服务器已安装 Nginx（脚本会自动检测并提示安装命令）
-2. 将项目代码上传到服务器
-3. 运行 `npm run deploy` 一键构建部署
-4. 配置 Nginx 指向 `/var/www/html/rosydawn` 目录
-5. 重启 Nginx：`sudo nginx -s reload`
+运行 `npm run deploy` 后，脚本会自动完成以下步骤：
 
-### Nginx 配置示例
+1. ✅ **环境检查** - 验证 Node.js 版本和 Nginx 安装
+2. ✅ **安装依赖** - 运行 `npm install`
+3. ✅ **构建项目** - 运行 `npm run build`
+4. ✅ **部署文件** - 复制构建产物到 `/var/www/html/rosydawn`
+5. ✅ **配置 Nginx** - 自动生成并写入 Nginx 站点配置
+6. ✅ **重载 Nginx** - 自动测试配置并重载服务
+
+### 支持的平台
+
+脚本自动检测并适配不同平台的 Nginx 配置目录：
+
+| 平台 | 配置目录 |
+|------|----------|
+| Ubuntu/Debian | `/etc/nginx/sites-available/` |
+| CentOS/RHEL | `/etc/nginx/conf.d/` |
+| macOS (Homebrew) | `/opt/homebrew/etc/nginx/servers/` |
+
+### 自动生成的 Nginx 配置
+
+脚本会自动生成包含以下优化的 Nginx 配置：
 
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com;
+    server_name localhost;  # 或通过 DOMAIN 环境变量设置
+    
     root /var/www/html/rosydawn;
     index index.html;
 
+    # Gzip 压缩
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript;
+
+    # 静态资源缓存（30天）
+    location ~* \.(css|js|jpg|png|gif|ico|svg|woff|woff2)$ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+
     location / {
-        try_files $uri $uri/ =404;
+        try_files $uri $uri/ $uri.html =404;
     }
 }
 ```
