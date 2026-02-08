@@ -33,16 +33,11 @@ const sortedTags = Array.from(tagMap.entries()).sort((a, b) => b[1] - a[1]);
       </nav>
     </header>
 
-    <section class="page-intro">
-      <h1 class="page-title">// tags</h1>
-      <p class="page-desc">按标签浏览文章 · {tagMap.size} 个标签</p>
-    </section>
-
-    <section class="tags-grid">
+    <section class="tags-cloud">
       {sortedTags.map(([tag, count]) => (
-        <a href={`/tags/${tag}`} class="tag-card">
-          <span class="tag-name">#{tag}</span>
-          <span class="tag-count">{count} 篇</span>
+        <a href={`/tags/${tag}`} class="tag-item">
+          <span class="tag-name">{tag}</span>
+          <span class="tag-count">{count}</span>
         </a>
       ))}
     </section>
@@ -55,7 +50,7 @@ const sortedTags = Array.from(tagMap.entries()).sort((a, b) => b[1] - a[1]);
 
 <style>
   .container {
-    max-width: 900px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 2rem;
     min-height: 100vh;
@@ -112,63 +107,48 @@ const sortedTags = Array.from(tagMap.entries()).sort((a, b) => b[1] - a[1]);
     color: var(--accent);
   }
 
-  /* Page Intro */
-  .page-intro {
-    margin-bottom: 2.5rem;
-  }
-
-  .page-title {
-    font-family: var(--font-mono);
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--text);
-    margin: 0 0 0.5rem 0;
-  }
-
-  .page-desc {
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin: 0;
-  }
-
-  /* Tags Grid */
-  .tags-grid {
+  /* Tags Cloud */
+  .tags-cloud {
     flex: 1;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 1rem;
-  }
-
-  .tag-card {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1.25rem;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    text-decoration: none;
-    transition: all 0.2s ease;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-content: flex-start;
   }
 
-  .tag-card:hover {
+  .tag-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.875rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .tag-item:hover {
+    color: var(--accent);
     border-color: var(--accent);
-    background: var(--bg-secondary);
-    transform: translateY(-2px);
+    background: rgba(88, 166, 255, 0.05);
   }
 
   .tag-name {
-    font-family: var(--font-mono);
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--accent);
+    color: inherit;
   }
 
   .tag-count {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  .tag-item:hover .tag-count {
+    opacity: 1;
   }
 
   /* Footer */
@@ -201,8 +181,13 @@ const sortedTags = Array.from(tagMap.entries()).sort((a, b) => b[1] - a[1]);
       gap: 1.5rem;
     }
 
-    .tags-grid {
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    .tags-cloud {
+      gap: 0.5rem;
+    }
+
+    .tag-item {
+      padding: 0.4rem 0.7rem;
+      font-size: 0.8rem;
     }
   }
 </style>
