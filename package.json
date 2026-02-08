@@ -10,6 +10,7 @@
     "deploy": "node scripts/deploy.mjs build",
     "deploy:ssl": "node scripts/deploy.mjs ssl",
     "deploy:renew": "node scripts/deploy.mjs renew",
+    "deploy:watch": "node scripts/deploy.mjs watch",
     "deploy:status": "node scripts/deploy.mjs status",
     "deploy:help": "node scripts/deploy.mjs help"
   },
@@ -17,6 +18,7 @@
     "@astrojs/mdx": "^4.3.13",
     "astro": "^5.17.1",
     "astro-plantuml": "^0.1.4",
+    "nodemailer": "^6.9.15",
     "pako": "^2.1.0",
     "unist-util-visit": "^5.1.0"
   }
