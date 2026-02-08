@@ -658,6 +658,32 @@ Cron 任务:
 mkdir -p logs && chmod 755 logs
 ```
 
+**问题：Astro 构建失败 (Node.js 版本不匹配)**
+
+原因：Cron 使用指定版本的 Node 启动脚本，但脚本内部执行 `npm run build` 时使用了系统默认的 Node。
+
+解决：脚本已内置自动修复，会将当前 Node 的 bin 目录添加到 PATH 开头。如仍有问题，可在 crontab 中手动设置 PATH：
+```bash
+PATH=/home/user/.nvm/versions/node/v20.20.0/bin:/usr/local/bin:/usr/bin:/bin
+```
+
+**问题：chown 失败 (invalid user: undefined)**
+
+原因：Cron 环境中 `process.env.USER` 环境变量为空。
+
+解决：脚本已使用 `id -un` 命令获取用户名，不依赖环境变量。如使用旧版本脚本，请更新到最新版本。
+
+#### Cron 环境兼容性
+
+脚本针对 Cron 的特殊环境做了以下适配：
+
+| 问题 | 解决方案 |
+|------|----------|
+| PATH 环境变量精简 | 脚本启动时自动将当前 Node.js 的 bin 目录添加到 PATH |
+| USER 环境变量缺失 | 使用 `id -un` 系统命令获取用户名 |
+| SSH Agent 不可用 | 自动检测 SSH key 并通过 `GIT_SSH_COMMAND` 注入 |
+| 日志目录不存在 | 写入日志前自动创建 `logs/` 目录 |
+
 #### 移除自动部署
 
 ```bash
