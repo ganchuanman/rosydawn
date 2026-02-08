@@ -1,0 +1,242 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="404 Not Found | Rosydawn">
+  <main class="container">
+    <header class="site-header">
+      <a href="/" class="logo">
+        <span class="prompt">$</span> rosydawn
+        <span class="cursor">_</span>
+      </a>
+      <nav class="nav">
+        <a href="/">文章</a>
+        <a href="/tags">分类</a>
+        <a href="/about">关于</a>
+      </nav>
+    </header>
+
+    <section class="error-page">
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="terminal-title">~/404</span>
+        </div>
+        <div class="terminal-body">
+          <p class="command"><span class="prompt">$</span> cat /page/you/requested</p>
+          <p class="empty"></p>
+          <p class="error-code">cat: /page/you/requested: No such file or directory</p>
+          <p class="empty"></p>
+          <p class="error-number">
+            <span class="big-number">404</span>
+          </p>
+          <p class="empty"></p>
+          <p class="message"><span class="prompt">$</span> <span class="comment"># 页面不存在或已被移动</span></p>
+          <p class="empty"></p>
+          <p class="suggestion"><span class="prompt">$</span> cd <a href="/" class="link">~</a> <span class="comment"># 返回首页</span></p>
+          <p class="suggestion"><span class="prompt">$</span> ls <a href="/blog" class="link">/blog</a> <span class="comment"># 浏览文章</span></p>
+          <p class="suggestion"><span class="prompt">$</span> find <a href="/tags" class="link">/tags</a> <span class="comment"># 按标签查找</span></p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>built with <a href="https://astro.build" target="_blank" rel="noopener">astro</a> · developed with llm</p>
+    </footer>
+  </main>
+</Layout>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .logo:hover { text-decoration: none; }
+  .prompt { color: var(--accent); }
+
+  .cursor {
+    color: var(--accent);
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .nav {
+    display: flex;
+    gap: 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+  }
+
+  .nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav a:hover {
+    color: var(--accent);
+  }
+
+  .error-page {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .terminal {
+    background: #24292e;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .terminal-header {
+    background: #1b1f23;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .dot.red { background: #ff5f56; }
+  .dot.yellow { background: #ffbd2e; }
+  .dot.green { background: #27ca40; }
+
+  .terminal-title {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: #6a737d;
+  }
+
+  .terminal-body {
+    padding: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: #e1e4e8;
+  }
+
+  .terminal-body p { margin: 0; }
+
+  .terminal-body .prompt {
+    color: #85e89d;
+    margin-right: 0.5rem;
+  }
+
+  .terminal-body .empty { height: 1rem; }
+
+  .terminal-body .command {
+    color: #e1e4e8;
+  }
+
+  .terminal-body .error-code {
+    color: #f97583;
+  }
+
+  .terminal-body .error-number {
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  .terminal-body .big-number {
+    font-size: 4rem;
+    font-weight: 700;
+    color: #f97583;
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 20px rgba(249, 117, 131, 0.3);
+  }
+
+  .terminal-body .message .comment,
+  .terminal-body .suggestion .comment {
+    color: #6a737d;
+  }
+
+  .terminal-body .link {
+    color: #79b8ff;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .terminal-body .link:hover {
+    color: #85e89d;
+    text-decoration: underline;
+  }
+
+  .site-footer {
+    margin-top: 2rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .site-footer p {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .site-footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .site-footer a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 640px) {
+    .container { padding: 1rem; }
+
+    .site-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .nav { gap: 1.5rem; }
+
+    .terminal-body {
+      padding: 1rem;
+      font-size: 0.8rem;
+    }
+
+    .terminal-body .big-number {
+      font-size: 3rem;
+    }
+  }
+</style>
