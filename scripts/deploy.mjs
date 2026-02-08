@@ -591,7 +591,7 @@ server {
 
     # 主路由 (配合 Astro build.format: 'file' 模式)
     location / {
-        try_files $uri $uri.html $uri/ =404;
+        try_files $uri $uri/ /index.html =404;
     }
 
     # 404 错误页面
@@ -724,7 +724,7 @@ server {
 
     # 主路由 (配合 Astro build.format: 'file' 模式)
     location / {
-        try_files $uri $uri.html $uri/ =404;
+        try_files $uri $uri/ /index.html =404;
     }
 
     # 404 错误页面
