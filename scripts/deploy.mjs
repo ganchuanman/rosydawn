@@ -589,9 +589,15 @@ server {
         access_log off;
     }
 
+    # 去除尾部斜杠（301 重定向到无斜杠版本）
+    # 例如 /blog/post/ -> /blog/post
+    location ~ ^(.+)/$ {
+        return 301 $1;
+    }
+
     # 主路由 (配合 Astro build.format: 'file' 模式)
     location / {
-        try_files $uri $uri/ /index.html =404;
+        try_files $uri $uri.html $uri/ =404;
     }
 
     # 404 错误页面
@@ -722,9 +728,15 @@ server {
         access_log off;
     }
 
+    # 去除尾部斜杠（301 重定向到无斜杠版本）
+    # 例如 /blog/post/ -> /blog/post
+    location ~ ^(.+)/$ {
+        return 301 $1;
+    }
+
     # 主路由 (配合 Astro build.format: 'file' 模式)
     location / {
-        try_files $uri $uri/ /index.html =404;
+        try_files $uri $uri.html $uri/ =404;
     }
 
     # 404 错误页面
