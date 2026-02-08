@@ -4,18 +4,25 @@
  * ============================================
  * Rosydawn 博客部署脚本 (Node.js 版本)
  * ============================================
- * 用法:
- *   node scripts/deploy.mjs build    - 构建并部署到 Nginx 目录
- *   node scripts/deploy.mjs ssl      - 配置 HTTPS
- *   node scripts/deploy.mjs watch    - 自动监控部署
- *   node scripts/deploy.mjs status   - 显示部署状态
- *   node scripts/deploy.mjs help     - 显示帮助信息
  * 
- * 或通过 npm 脚本:
- *   npm run deploy
- *   npm run deploy:ssl
- *   npm run deploy:watch
- *   npm run deploy:status
+ * 基础命令:
+ *   node scripts/deploy.mjs build         - 构建并部署到 Nginx 目录
+ *   node scripts/deploy.mjs ssl           - 配置 HTTPS
+ *   node scripts/deploy.mjs status        - 显示部署状态
+ *   node scripts/deploy.mjs help          - 显示帮助信息
+ * 
+ * 自动部署命令 (Cron):
+ *   node scripts/deploy.mjs cron          - 单次检查更新（供 cron 调用）
+ *   node scripts/deploy.mjs cron:install  - 安装 cron 定时任务
+ *   node scripts/deploy.mjs cron:remove   - 移除 cron 定时任务
+ *   node scripts/deploy.mjs cron:status   - 查看任务状态
+ * 
+ * npm 脚本:
+ *   npm run deploy              # 构建并部署
+ *   npm run deploy:ssl          # 配置 HTTPS
+ *   npm run deploy:status       # 查看状态
+ *   npm run deploy:cron:install # 安装自动部署
+ *   npm run deploy:cron:status  # 查看任务状态
  * ============================================
  */
 
@@ -43,7 +50,11 @@ import {
   renewSSLCertificate,
   setupAutoRenewal,
   checkSSLCertificate,
-  startWatch,
+  // Cron 自动部署
+  runCronCheck,
+  installCronJob,
+  removeCronJob,
+  showCronStatus,
 } from './lib/index.mjs';
 
 // ==================== 构建部署 ====================
@@ -214,18 +225,27 @@ ${colorize('bold', 'Rosydawn 博客部署脚本')}
 
 ${colorize('yellow', '用法:')}
   node scripts/deploy.mjs <命令>
-  npm run deploy            # 构建并部署 (HTTP)
-  npm run deploy:ssl        # 配置 HTTPS
-  npm run deploy:status     # 查看状态
-  npm run deploy:watch      # 自动监控部署
 
-${colorize('yellow', '命令:')}
-  ${colorize('green', 'build')}     构建项目并部署到 Nginx（自动配置 Nginx）
-  ${colorize('green', 'ssl')}       申请 SSL 证书并配置 HTTPS（Let's Encrypt）
-  ${colorize('green', 'renew')}     手动续期 SSL 证书
-  ${colorize('green', 'watch')}     启动自动部署监控（定时拉取 Git 更新）
-  ${colorize('green', 'status')}    显示当前部署状态和配置信息
-  ${colorize('green', 'help')}      显示此帮助信息
+${colorize('yellow', '基础命令:')}
+  ${colorize('green', 'build')}          构建项目并部署到 Nginx
+  ${colorize('green', 'ssl')}            申请 SSL 证书并配置 HTTPS
+  ${colorize('green', 'renew')}          手动续期 SSL 证书
+  ${colorize('green', 'status')}         显示当前部署状态
+  ${colorize('green', 'help')}           显示此帮助信息
+
+${colorize('yellow', '自动部署命令 (Cron):')}
+  ${colorize('green', 'cron')}           单次检查 Git 更新并部署（供 cron 调用）
+  ${colorize('green', 'cron:install')}   安装 cron 定时任务
+  ${colorize('green', 'cron:remove')}    移除 cron 定时任务
+  ${colorize('green', 'cron:status')}    查看 cron 任务状态
+
+${colorize('yellow', 'npm 脚本:')}
+  npm run deploy              # 构建并部署
+  npm run deploy:ssl          # 配置 HTTPS
+  npm run deploy:status       # 查看状态
+  npm run deploy:cron:install # 安装自动部署
+  npm run deploy:cron:status  # 查看自动部署状态
+  npm run deploy:cron:remove  # 移除自动部署
 
 ${colorize('yellow', '部署配置:')}
   构建输出:   ${CONFIG.buildOutput}/
@@ -255,7 +275,7 @@ ${colorize('yellow', '环境变量:')}
   NOTIFY_EMAIL   收件人邮箱
 
 ${colorize('yellow', '配置文件 (.env):')}
-  ${colorize('cyan', '推荐使用 .env 文件管理敏感配置（如授权码），避免泄露到 Git')}
+  推荐使用 .env 文件管理敏感配置（如授权码），避免泄露到 Git
   
   1. 复制配置模板:  cp .env.example .env
   2. 编辑配置文件:  nano .env
@@ -263,28 +283,28 @@ ${colorize('yellow', '配置文件 (.env):')}
 
 ${colorize('yellow', '部署流程:')}
   ${colorize('cyan', '1. 手动部署:')}
-     npm run deploy                              # 构建并部署
+     npm run deploy                               # 构建并部署
      SSL_EMAIL=you@example.com npm run deploy:ssl # 配置 HTTPS
   
-  ${colorize('cyan', '2. 自动部署（推荐生产环境使用）:')}
+  ${colorize('cyan', '2. 自动部署 (推荐):')}
      # 首次配置
      cp .env.example .env
-     nano .env                                   # 配置 SMTP 信息
+     nano .env                                    # 配置 SMTP 信息
      
-     # 前台运行
-     npm run deploy:watch
+     # 安装 cron 定时任务
+     npm run deploy:cron:install
      
-     # 后台运行（使用 pm2）
-     pm2 start scripts/deploy.mjs --name rosydawn-deploy -- watch
+     # 查看状态
+     npm run deploy:cron:status
      
-     # 后台运行（使用 nohup）
-     nohup node scripts/deploy.mjs watch > /dev/null 2>&1 &
+     # 查看实时日志
+     tail -f ${CONFIG.watch.logFile}
 
 ${colorize('yellow', '示例:')}
-  npm run deploy                                   # HTTP 部署
-  npm run deploy:status                            # 查看状态
-  SSL_EMAIL=admin@example.com npm run deploy:ssl   # 启用 HTTPS
-  npm run deploy:watch                             # 自动监控部署
+  npm run deploy                # HTTP 部署
+  npm run deploy:ssl            # 启用 HTTPS
+  npm run deploy:cron:install   # 安装自动部署
+  npm run deploy:cron:status    # 查看自动部署状态
 `);
 }
 
@@ -295,6 +315,7 @@ async function main() {
 
   try {
     switch (command) {
+      // 基础命令
       case 'build':
       case 'deploy':
         await buildAndDeploy();
@@ -310,13 +331,25 @@ async function main() {
         await renewSSLCertificate();
         break;
 
-      case 'watch':
-      case 'auto':
-        await startWatch(buildAndDeploy);
-        break;
-
       case 'status':
         showStatus();
+        break;
+
+      // Cron 自动部署命令
+      case 'cron':
+        await runCronCheck(buildAndDeploy);
+        break;
+
+      case 'cron:install':
+        installCronJob();
+        break;
+
+      case 'cron:remove':
+        removeCronJob();
+        break;
+
+      case 'cron:status':
+        showCronStatus();
         break;
 
       case 'help':

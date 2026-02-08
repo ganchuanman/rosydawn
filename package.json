@@ -10,9 +10,12 @@
     "deploy": "node scripts/deploy.mjs build",
     "deploy:ssl": "node scripts/deploy.mjs ssl",
     "deploy:renew": "node scripts/deploy.mjs renew",
-    "deploy:watch": "node scripts/deploy.mjs watch",
     "deploy:status": "node scripts/deploy.mjs status",
-    "deploy:help": "node scripts/deploy.mjs help"
+    "deploy:help": "node scripts/deploy.mjs help",
+    "deploy:cron": "node scripts/deploy.mjs cron",
+    "deploy:cron:install": "node scripts/deploy.mjs cron:install",
+    "deploy:cron:remove": "node scripts/deploy.mjs cron:remove",
+    "deploy:cron:status": "node scripts/deploy.mjs cron:status"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",

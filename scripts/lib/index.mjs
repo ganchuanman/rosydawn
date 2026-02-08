@@ -53,7 +53,7 @@ export {
   sendDeployNotification,
 } from './mail.mjs';
 
-// 自动部署监控
+// 自动部署 (Cron 模式)
 export {
   writeLog,
   getLocalCommitHash,
@@ -61,5 +61,9 @@ export {
   getCommitInfo,
   pullLatestCode,
   checkAndDeploy,
-  startWatch,
+  runCronCheck,
+  isCronInstalled,
+  installCronJob,
+  removeCronJob,
+  showCronStatus,
 } from './watch.mjs';
