@@ -635,7 +635,9 @@ server {
     # OCSP Stapling
     ssl_stapling on;
     ssl_stapling_verify on;
-    ssl_trusted_certificate ${certDir}/chain.pem;
+    # Let's Encrypt 的 chain 在 fullchain 中，可以使用 /etc/letsencrypt/live/DOMAIN/chain.pem
+    # 如果 chain.pem 不存在，可以注释掉下面这行
+    # ssl_trusted_certificate ${certDir}/chain.pem;
     resolver 8.8.8.8 8.8.4.4 valid=300s;
     resolver_timeout 5s;
     
@@ -688,9 +690,15 @@ server {
  * 生成 Nginx 配置内容
  */
 function generateNginxConfig() {
-  // 如果启用 SSL 且证书存在，使用 HTTPS 配置
-  if (CONFIG.ssl.enabled && checkSSLCertificate()) {
+  // 如果证书存在，自动使用 HTTPS 配置（无论是否显式启用）
+  if (checkSSLCertificate()) {
+    CONFIG.ssl.enabled = true;
     return generateNginxConfigHTTPS();
+  }
+  // 否则检查是否显式启用 SSL
+  if (CONFIG.ssl.enabled) {
+    logger.warn('SSL 已启用但证书不存在，使用 HTTP 配置');
+    logger.info('运行 npm run deploy:ssl 申请证书');
   }
   return generateNginxConfigHTTP();
 }
