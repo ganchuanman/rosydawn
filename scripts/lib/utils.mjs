@@ -73,6 +73,19 @@ export function getNodeMajorVersion() {
 // ==================== 用户/权限 ====================
 
 /**
+ * 获取当前用户名（兼容 cron 环境）
+ * 使用 id -un 命令，避免依赖 process.env.USER
+ */
+export function getCurrentUser() {
+  try {
+    return execSync('id -un', { encoding: 'utf-8' }).trim();
+  } catch {
+    // 降级处理
+    return process.env.USER || 'root';
+  }
+}
+
+/**
  * 获取当前用户的主用户组
  * macOS: staff
  * Linux: 通常与用户名相同

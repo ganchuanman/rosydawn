@@ -16,6 +16,7 @@ export {
   execStream,
   commandExists,
   getNodeMajorVersion,
+  getCurrentUser,
   getUserGroup,
   countFiles,
   getDirSize,
