@@ -6,7 +6,14 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "deploy": "node scripts/deploy.mjs",
+    "deploy:init": "node scripts/deploy.mjs init",
+    "deploy:update": "node scripts/deploy.mjs update",
+    "deploy:build": "node scripts/deploy.mjs build",
+    "deploy:status": "node scripts/deploy.mjs status",
+    "deploy:cron": "node scripts/deploy.mjs cron",
+    "deploy:help": "node scripts/deploy.mjs help"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",

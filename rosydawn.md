@@ -272,10 +272,52 @@ npm run build
 
 # 预览构建结果
 npm run preview
-
-# 部署（执行 deploy.sh）
-./deploy.sh
 ```
+
+## 🚀 部署命令
+
+部署脚本位于 `scripts/deploy.mjs`，基于 Node.js 实现。
+
+```bash
+# 查看帮助
+npm run deploy:help
+
+# 首次部署（克隆项目、安装依赖、构建）
+npm run deploy:init
+
+# 检测更新并重新部署（用于定时任务）
+npm run deploy:update
+
+# 强制重新构建（不拉取更新）
+npm run deploy:build
+
+# 显示部署状态
+npm run deploy:status
+
+# 安装定时任务（每 5 分钟检测更新）
+npm run deploy:cron
+```
+
+### 部署配置
+
+在 `scripts/deploy.mjs` 文件开头的 `CONFIG` 对象中修改：
+
+```javascript
+const CONFIG = {
+  repoUrl: 'https://github.com/YOUR_USERNAME/rosydawn.git',  // GitHub 仓库
+  deployDir: '/var/www/rosydawn',     // 项目部署目录
+  webRoot: '/var/www/html/rosydawn',  // Nginx 网站根目录
+  cronInterval: 5,                     // 自动更新间隔（分钟）
+  mainBranch: 'main',                  // 主分支名称
+};
+```
+
+### 部署流程
+
+1. 修改 `scripts/deploy.mjs` 中的配置
+2. 执行 `npm run deploy:init` 完成首次部署
+3. 配置 Nginx 指向 `webRoot` 目录
+4. 执行 `npm run deploy:cron` 启用自动更新
 
 ---
 
@@ -409,6 +451,17 @@ src/content/posts/
   <a href="/tags">分类</a>
   <a href="/about">关于</a>
 </nav>
+```
+
+---
+
+---
+
+## 🦶 Footer 声明
+
+所有页面底部统一显示：
+```html
+<p>built with <a href="https://astro.build" target="_blank" rel="noopener">astro</a> · developed with llm</p>
 ```
 
 ---
