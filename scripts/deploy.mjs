@@ -547,17 +547,44 @@ server {
     # 字符集
     charset utf-8;
 
+    # ==================== 性能优化 ====================
+    
+    # 启用 sendfile（零拷贝传输，减少 CPU 开销）
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    
     # 启用 gzip 压缩
     gzip on;
     gzip_vary on;
-    gzip_min_length 1024;
+    gzip_comp_level 5;
+    gzip_min_length 256;
+    gzip_proxied any;
     gzip_types text/plain text/css text/xml text/javascript 
                application/json application/javascript application/xml 
-               application/rss+xml application/atom+xml image/svg+xml;
+               application/rss+xml application/atom+xml image/svg+xml
+               font/woff font/woff2 application/font-woff;
+    
+    # 启用 gzip 静态预压缩（如果存在 .gz 文件则直接使用）
+    gzip_static on;
+
+    # 开启文件缓存（减少磁盘 I/O）
+    open_file_cache max=1000 inactive=20s;
+    open_file_cache_valid 30s;
+    open_file_cache_min_uses 2;
+    open_file_cache_errors on;
+
+    # ==================== 缓存策略 ====================
+
+    # HTML 文件 - 短期缓存（允许更新）
+    location ~* \\.html$ {
+        expires 1h;
+        add_header Cache-Control "public, must-revalidate";
+    }
 
     # 静态资源缓存（Astro 构建产物带 hash，可长期缓存）
-    location ~* \\.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$ {
-        expires 30d;
+    location ~* \\.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot|webp|avif)$ {
+        expires 1y;
         add_header Cache-Control "public, immutable";
         access_log off;
     }
@@ -647,13 +674,32 @@ server {
     # 字符集
     charset utf-8;
 
+    # ==================== 性能优化 ====================
+    
+    # 启用 sendfile（零拷贝传输，减少 CPU 开销）
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    
     # 启用 gzip 压缩
     gzip on;
     gzip_vary on;
-    gzip_min_length 1024;
+    gzip_comp_level 5;
+    gzip_min_length 256;
+    gzip_proxied any;
     gzip_types text/plain text/css text/xml text/javascript 
                application/json application/javascript application/xml 
-               application/rss+xml application/atom+xml image/svg+xml;
+               application/rss+xml application/atom+xml image/svg+xml
+               font/woff font/woff2 application/font-woff;
+    
+    # 启用 gzip 静态预压缩（如果存在 .gz 文件则直接使用）
+    gzip_static on;
+
+    # 开启文件缓存（减少磁盘 I/O）
+    open_file_cache max=1000 inactive=20s;
+    open_file_cache_valid 30s;
+    open_file_cache_min_uses 2;
+    open_file_cache_errors on;
 
     # 安全响应头
     add_header X-Frame-Options "SAMEORIGIN" always;
@@ -661,9 +707,17 @@ server {
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
+    # ==================== 缓存策略 ====================
+
+    # HTML 文件 - 短期缓存（允许更新）
+    location ~* \\.html$ {
+        expires 1h;
+        add_header Cache-Control "public, must-revalidate";
+    }
+
     # 静态资源缓存（Astro 构建产物带 hash，可长期缓存）
-    location ~* \\.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$ {
-        expires 30d;
+    location ~* \\.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot|webp|avif)$ {
+        expires 1y;
         add_header Cache-Control "public, immutable";
         access_log off;
     }
