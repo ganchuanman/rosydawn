@@ -30,8 +30,8 @@
 语言: TypeScript
 样式: Scoped CSS (无预处理器)
 字体: 
-  - 正文: LXGW WenKai (霞鹜文楷)
-  - 代码: JetBrains Mono / SF Mono
+  - 正文: 系统原生字体 (PingFang SC / Microsoft YaHei)
+  - 代码: JetBrains Mono (fonts.loli.net 国内 CDN)
 代码高亮: Shiki (内置于 Astro)
 图表: astro-plantuml
 ```
@@ -123,7 +123,7 @@ const postsCollection = defineCollection({
 包含：
 - HTML 基础结构
 - 全局 CSS 变量定义
-- 字体引入（Google Fonts + LXGW WenKai）
+- 字体引入（fonts.loli.net 国内 CDN + 系统原生字体）
 - 通用样式（滚动条、链接、代码块等）
 
 **CSS 变量定义**：
@@ -137,7 +137,7 @@ const postsCollection = defineCollection({
   --border: #d0d7de;       /* 边框色 */
   --code-bg: #f6f8fa;      /* 代码背景 */
   --font-mono: 'JetBrains Mono', ...;
-  --font-sans: 'LXGW WenKai', ...;
+  --font-sans: -apple-system, 'PingFang SC', ...;
 }
 ```
 
@@ -244,7 +244,7 @@ coverImage: ./cover.jpg  # 可选
 
 ### 字体规范
 
-- **正文**：LXGW WenKai（霞鹜文楷）
+- **正文**：系统原生字体（PingFang SC / Microsoft YaHei）
 - **代码**：JetBrains Mono（回退到 SF Mono、Menlo）
 - **代码块**：13px, 行高 1.5
 

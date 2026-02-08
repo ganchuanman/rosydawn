@@ -17,12 +17,9 @@ const { title = 'Rosydawn' } = Astro.props;
 		<meta name="description" content="记录技术思考与实践的个人博客" />
 		<title>{title}</title>
 		
-		<!-- Preload fonts -->
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link rel="preconnect" href="https://unpkg.com" crossorigin />
-		<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-		<link href="https://unpkg.com/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet" />
+		<!-- Preload fonts - 使用国内 CDN -->
+		<link rel="preconnect" href="https://fonts.loli.net" crossorigin />
+		<link href="https://fonts.loli.net/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 	</head>
 	<body>
 		<slot />
@@ -44,7 +41,7 @@ const { title = 'Rosydawn' } = Astro.props;
 		--border-light: #e1e4e8;
 		--code-bg: #f6f8fa;
 		--font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', Menlo, monospace;
-		--font-sans: 'LXGW WenKai', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+		--font-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
 	}
 
 	*, *::before, *::after {
