@@ -61,6 +61,12 @@ The system SHALL persist the user's manual theme choice to localStorage and rest
 - **WHEN** a theme preference exists in localStorage
 - **THEN** the system SHALL apply the stored theme before the page renders (no flash of wrong theme)
 
+#### Scenario: Stored preference restored after View Transitions navigation
+- **WHEN** a theme preference exists in localStorage
+- **AND** the user navigates to another page via View Transitions (SPA navigation)
+- **THEN** the system SHALL restore the stored theme after the DOM swap completes
+- **AND** the new page SHALL display with the correct theme without flashing the wrong theme
+
 #### Scenario: localStorage unavailable
 - **WHEN** localStorage is not available (e.g., private browsing restrictions)
 - **THEN** the system SHALL fall back to system preference detection
