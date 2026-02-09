@@ -6,7 +6,7 @@
 > 3. 项目使用 Astro 5.x 框架，需理解其 `.astro` 单文件组件格式
 > 4. 修改样式时注意使用 `:global()` 选择器处理 Markdown 生成的 HTML
 > 5. 部署脚本在 `scripts/` 目录，支持 Cron 环境自动部署
-> 6. 404 页面采用终端风格设计，与 About 页面视觉一致
+> 6. About 和 404 页面采用极简风格，与全站视觉一致
 
 ---
 
@@ -25,7 +25,7 @@
 | 图表支持 | 集成 PlantUML 绘图能力 |
 | 响应式设计 | 移动端友好，自适应布局 |
 | 自动部署 | 基于 Cron 的 Git 监听自动部署 |
-| 终端风格页面 | About 和 404 页面采用统一的终端视觉风格 |
+| 极简风格页面 | About 和 404 页面采用统一的极简视觉风格 |
 
 ### 技术栈
 
@@ -65,8 +65,8 @@ rosydawn/
 │   │
 │   ├── pages/                  # 页面路由
 │   │   ├── index.astro         # 首页 (重定向到 /blog)
-│   │   ├── about.astro         # 关于页面 (终端风格)
-│   │   ├── 404.astro           # 404 错误页面 (终端风格)
+│   │   ├── about.astro         # 关于页面 (极简风格，含 GitHub 链接)
+│   │   ├── 404.astro           # 404 错误页面 (极简风格)
 │   │   ├── blog/
 │   │   │   ├── [...page].astro # 文章列表 (分页)
 │   │   │   └── [...slug].astro # 文章详情
@@ -169,9 +169,11 @@ const postsCollection = defineCollection({
 
 ### 4. `src/pages/404.astro` - 404 错误页面
 
-**终端风格设计**，与 About 页面视觉一致：
+**极简设计**，居中显示 404 数字、提示文字和返回首页链接。用户可通过顶部导航栏返回其他页面。
 
-用户可通过顶部导航栏返回其他页面。
+### 4.5 `src/pages/about.astro` - 关于页面
+
+**极简设计**，直接展示个人信息（无标题，避免与导航重复），底部通过分隔线展示 [GitHub](https://github.com/ganchuanman/rosydawn) 项目链接。
 
 ### 5. `src/pages/blog/[...slug].astro` - 文章详情页
 
@@ -273,17 +275,6 @@ coverImage: ./cover.jpg  # 可选
 | `--text-dim` | #999999 | 弱化文字 |
 | `--bg` | #fafafa | 页面背景 |
 | `--code-bg` | #f6f8fa | 代码块背景 |
-
-### 终端风格配色 (404/About 页面)
-
-| 元素 | 色值 | 用途 |
-|------|------|------|
-| 终端背景 | #24292e | 终端窗口主体 |
-| 终端头部 | #1b1f23 | 标题栏背景 |
-| 提示符 | #85e89d | `$` 符号 |
-| 错误信息 | #f97583 | 404 错误码、错误消息 |
-| 链接 | #79b8ff | 可点击链接 |
-| 注释 | #6a737d | `#` 注释文字 |
 
 ### 字体规范
 
@@ -866,8 +857,8 @@ code.style.setProperty('--line-number-width', `${maxLineDigits}ch`);
 | `/blog/{slug}` | `blog/[...slug].astro` | 文章详情页 |
 | `/tags` | `tags/index.astro` | 标签云 |
 | `/tags/{tag}` | `tags/[tag].astro` | 标签下的文章 |
-| `/about` | `about.astro` | 关于页面（终端风格） |
-| `/404` | `404.astro` | 404 错误页面（终端风格） |
+| `/about` | `about.astro` | 关于页面（极简风格，含 GitHub 链接） |
+| `/404` | `404.astro` | 404 错误页面（极简风格） |
 
 ---
 
@@ -884,14 +875,12 @@ code.style.setProperty('--line-number-width', `${maxLineDigits}ch`);
 1. **全局样式** → `src/layouts/Layout.astro` 的 `<style is:global>`
 2. **页面样式** → 对应 `.astro` 文件的 `<style>` 块
 3. **Markdown 内容样式** → 使用 `:global()` 选择器
-4. **终端风格页面** → 参考 `404.astro` 和 `about.astro` 的配色
 
 ### 添加新页面
 
 1. 在 `src/pages/` 下创建 `.astro` 文件
 2. 复制现有页面的 Header/Footer 结构保持一致性
 3. 导入并使用 `Layout.astro`
-4. 如需终端风格，参考 `404.astro` 的实现
 
 ### 修改导航
 
@@ -923,4 +912,4 @@ code.style.setProperty('--line-number-width', `${maxLineDigits}ch`);
 
 ---
 
-*本文档最后更新于：2026-02-08*
+*本文档最后更新于：2026-02-09*

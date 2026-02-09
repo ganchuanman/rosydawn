@@ -17,22 +17,14 @@ import Layout from '../layouts/Layout.astro';
     </header>
 
     <section class="about">
-      <h1>$ whoami</h1>
-      
-      <div class="terminal">
-        <div class="terminal-header">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span class="terminal-title">~/about</span>
-        </div>
-        <div class="terminal-body">
-          <p><span class="prompt">></span> Nothing</p>
-          <p class="empty"></p>
-          <p><span class="prompt">></span> <span class="keyword">技能</span>: Android, Java, Kotlin, TypeScript</p>
-        </div>
+      <div class="about-content">
+        <p>Nothing</p>
+        <p><span class="label">技能</span> Android, Java, Kotlin, TypeScript</p>
       </div>
 
+      <div class="about-links">
+        <a href="https://github.com/ganchuanman/rosydawn" target="_blank" rel="noopener">GitHub</a>
+      </div>
     </section>
 
     <footer class="site-footer">
@@ -98,73 +90,38 @@ import Layout from '../layouts/Layout.astro';
 
   .about { flex: 1; }
 
-  .about h1 {
-    font-family: var(--font-mono);
-    font-size: 1.5rem;
-    color: var(--accent);
-    margin: 0 0 2rem 0;
+  .about-content {
+    font-size: 0.95rem;
+    line-height: 2;
+    color: var(--text);
   }
 
-  .about h2 {
-    font-family: var(--font-mono);
-    font-size: 1.1rem;
-    color: var(--accent-dim);
-    margin: 3rem 0 1.5rem 0;
+  .about-content p {
+    margin: 0;
   }
 
-  .terminal {
-    background: #24292e;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  .terminal-header {
-    background: #1b1f23;
-    padding: 0.75rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-  }
-
-  .dot.red { background: #ff5f56; }
-  .dot.yellow { background: #ffbd2e; }
-  .dot.green { background: #27ca40; }
-
-  .terminal-title {
-    margin-left: auto;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: #6a737d;
-  }
-
-  .terminal-body {
-    padding: 1.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    line-height: 1.8;
-    color: #e1e4e8;
-  }
-
-  .terminal-body p { margin: 0; }
-
-  .terminal-body .prompt {
-    color: #85e89d;
+  .label {
+    color: var(--text-muted);
     margin-right: 0.5rem;
   }
 
-  .terminal-body .keyword {
-    color: #79b8ff;
+  .about-links {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
   }
 
-  .terminal-body .empty { height: 1.5rem; }
+  .about-links a {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
 
+  .about-links a:hover {
+    text-decoration: underline;
+  }
 
   .site-footer {
     margin-top: 2rem;
@@ -189,10 +146,5 @@ import Layout from '../layouts/Layout.astro';
     }
 
     .nav { gap: 1.5rem; }
-
-    .terminal-body {
-      padding: 1rem;
-      font-size: 0.8rem;
-    }
   }
 </style>
