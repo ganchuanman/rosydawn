@@ -4,13 +4,20 @@ import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
-  return posts.map((post) => ({
+  const sortedPosts = posts.sort((a, b) =>
+    new Date(a.data.date).getTime() - new Date(b.data.date).getTime()
+  );
+  return sortedPosts.map((post, index) => ({
     params: { slug: post.id },
-    props: { post },
+    props: {
+      post,
+      prevPost: index > 0 ? { id: sortedPosts[index - 1].id, title: sortedPosts[index - 1].data.title } : null,
+      nextPost: index < sortedPosts.length - 1 ? { id: sortedPosts[index + 1].id, title: sortedPosts[index + 1].data.title } : null,
+    },
   }));
 }
 
-const { post } = Astro.props;
+const { post, prevPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
 
 function formatDate(date: Date): string {
@@ -19,9 +26,15 @@ function formatDate(date: Date): string {
 
 // 过滤出 h2 和 h3 标题用于目录
 const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
+
+// 计算预计阅读时间（400 字/分钟）
+const bodyText = post.body || '';
+const charCount = bodyText.replace(/\s+/g, '').length;
+const readingTime = Math.max(1, Math.ceil(charCount / 400));
 ---
 
 <Layout title={`${post.data.title} | Rosydawn`}>
+  <div class="reading-progress" id="reading-progress"></div>
   <div class="page-container">
     <header class="site-header">
       <div class="logo">
@@ -34,6 +47,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
         <a href="/">文章</a>
         <a href="/tags">分类</a>
         <a href="/about">关于</a>
+        <button class="theme-toggle" aria-label="切换主题"></button>
       </nav>
     </header>
 
@@ -51,6 +65,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
           <time datetime={post.data.date.toISOString()}>
             {formatDate(post.data.date)}
           </time>
+          <span class="reading-time">· {readingTime} 分钟</span>
           {post.data.tags && (
             <div class="tags">
               {post.data.tags.map((tag) => (
@@ -74,6 +89,27 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
           <span class="back-arrow">←</span>
           <span>返回</span>
         </a>
+
+        {(prevPost || nextPost) && (
+          <nav class="post-nav">
+            <div class="post-nav-item post-nav-prev">
+              {prevPost && (
+                <a href={`/blog/${prevPost.id}`}>
+                  <span class="post-nav-label">← 上一篇</span>
+                  <span class="post-nav-title">{prevPost.title}</span>
+                </a>
+              )}
+            </div>
+            <div class="post-nav-item post-nav-next">
+              {nextPost && (
+                <a href={`/blog/${nextPost.id}`}>
+                  <span class="post-nav-label">下一篇 →</span>
+                  <span class="post-nav-title">{nextPost.title}</span>
+                </a>
+              )}
+            </div>
+          </nav>
+        )}
       </footer>
     </article>
 
@@ -103,6 +139,17 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    // 阅读进度条
+    const progressBar = document.getElementById('reading-progress');
+    if (progressBar) {
+      window.addEventListener('scroll', () => {
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+        progressBar.style.width = progress + '%';
+      });
+    }
+
     // 目录高亮
     const tocLinks = document.querySelectorAll('.toc-link');
     const headings = document.querySelectorAll('.content h2, .content h3');
@@ -264,6 +311,17 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 </script>
 
 <style>
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent);
+    z-index: 9999;
+    transition: none;
+  }
+
   .page-container {
     max-width: 800px;
     margin: 0 auto;
@@ -365,6 +423,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
   }
 
   .meta-line time { color: var(--text-muted); }
+  .reading-time { color: var(--text-muted); }
   .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .tag { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
   .tag:hover { color: var(--accent); text-decoration: none; }
@@ -708,10 +767,63 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
     margin: 2rem 0;
   }
 
-  .article-footer { 
+  .article-footer {
     margin-top: 2.5rem;
     padding-top: 1.25rem;
     border-top: 1px solid var(--border);
+  }
+
+  /* 上/下篇导航 */
+  .post-nav {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .post-nav-item {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .post-nav-next {
+    text-align: right;
+  }
+
+  .post-nav-item a {
+    display: block;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+
+  .post-nav-item a:hover {
+    border-color: var(--accent);
+    text-decoration: none;
+  }
+
+  .post-nav-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .post-nav-title {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text);
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+
+  .post-nav-item a:hover .post-nav-title {
+    color: var(--accent);
   }
 
   .site-footer {
@@ -751,5 +863,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
       border-right: none;
     }
     .site-footer { padding: 1.25rem 1rem; }
+    .post-nav { flex-direction: column; }
+    .post-nav-next { text-align: left; }
   }
 </style>

@@ -11,7 +11,10 @@ export default defineConfig({
   ],
   markdown: {
     shikiConfig: {
-      theme: 'one-light',
+      themes: {
+        light: 'one-light',
+        dark: 'github-dark',
+      },
       wrap: false,
     },
   },
