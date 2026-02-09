@@ -1,0 +1,93 @@
+---
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '/' } = Astro.props;
+
+// Determine active link based on currentPath
+const isActive = (path: string) => {
+  if (path === '/') {
+    return currentPath === '/' || currentPath.startsWith('/blog');
+  }
+  return currentPath.startsWith(path);
+};
+---
+
+<header class="site-header">
+  <div class="logo">
+    <a href="/">
+      <span class="prompt">$</span> rosydawn
+      <span class="cursor">_</span>
+    </a>
+  </div>
+  <nav class="nav">
+    <a href="/" class:list={[{ active: isActive('/') }]}>文章</a>
+    <a href="/tags" class:list={[{ active: isActive('/tags') }]}>分类</a>
+    <a href="/about" class:list={[{ active: isActive('/about') }]}>关于</a>
+    <button class="theme-toggle" aria-label="切换主题"></button>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo a {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .prompt {
+    color: var(--accent);
+  }
+
+  .cursor {
+    color: var(--accent);
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+  }
+
+  .nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav a:hover,
+  .nav a.active {
+    color: var(--accent);
+  }
+
+  @media (max-width: 640px) {
+    .site-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .nav {
+      gap: 1.5rem;
+    }
+  }
+</style>

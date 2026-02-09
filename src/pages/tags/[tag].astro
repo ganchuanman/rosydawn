@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
 
 // 获取所有文章
 const allPosts = await getCollection('posts');
@@ -12,7 +14,7 @@ const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))];
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
   const tags = [...new Set(posts.flatMap(post => post.data.tags || []))];
-  
+
   return tags.map(tag => ({
     params: { tag },
     props: {
@@ -33,20 +35,7 @@ function formatDate(date: Date): string {
 
 <Layout title={`#${tag} | Rosydawn`}>
   <main class="container">
-    <header class="site-header">
-      <div class="logo">
-        <a href="/">
-          <span class="prompt">$</span> rosydawn
-          <span class="cursor">_</span>
-        </a>
-      </div>
-      <nav class="nav">
-        <a href="/">文章</a>
-        <a href="/tags" class="active">分类</a>
-        <a href="/about">关于</a>
-        <button class="theme-toggle" aria-label="切换主题"></button>
-      </nav>
-    </header>
+    <Header currentPath="/tags" />
 
     <section class="page-intro">
       <a href="/tags" class="back-link" onclick="event.preventDefault(); history.back();">
@@ -76,9 +65,7 @@ function formatDate(date: Date): string {
       ))}
     </section>
 
-    <footer class="site-footer">
-      <p>built with <a href="https://astro.build" target="_blank" rel="noopener">astro</a> · developed with llm</p>
-    </footer>
+    <Footer />
   </main>
 </Layout>
 
@@ -90,55 +77,6 @@ function formatDate(date: Date): string {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-  }
-
-  /* Header */
-  .site-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 0;
-    margin-bottom: 3rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .logo a {
-    font-family: var(--font-mono);
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--text);
-    text-decoration: none;
-  }
-
-  .prompt {
-    color: var(--accent);
-  }
-
-  .cursor {
-    color: var(--accent);
-    animation: blink 1s step-end infinite;
-  }
-
-  @keyframes blink {
-    50% { opacity: 0; }
-  }
-
-  .nav {
-    display: flex;
-    gap: 2rem;
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-  }
-
-  .nav a {
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-
-  .nav a:hover,
-  .nav a.active {
-    color: var(--accent);
   }
 
   /* Page Intro */
@@ -225,14 +163,6 @@ function formatDate(date: Date): string {
     color: var(--accent);
   }
 
-  .post-index {
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    color: var(--text-dim);
-    min-width: 2rem;
-    padding-top: 0.25rem;
-  }
-
   .post-main {
     flex: 1;
   }
@@ -276,43 +206,15 @@ function formatDate(date: Date): string {
     padding-top: 0.25rem;
   }
 
-  /* Footer */
-  .site-footer {
-    margin-top: 2rem;
-    padding: 2rem 0;
-    border-top: 1px solid var(--border);
-  }
-
-  .site-footer p {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin: 0;
-  }
-
   /* Responsive */
   @media (max-width: 640px) {
     .container {
       padding: 1rem;
     }
 
-    .site-header {
-      flex-direction: column;
-      gap: 1rem;
-      align-items: flex-start;
-    }
-
-    .nav {
-      gap: 1.5rem;
-    }
-
     .post-item a {
       gap: 1rem;
       padding: 1.25rem 1rem;
-    }
-
-    .post-index {
-      display: none;
     }
 
     .post-title {

@@ -25,7 +25,7 @@ The system SHALL detect the user's OS color scheme preference via `prefers-color
 - **THEN** the system SHALL NOT set `data-theme` (light is default)
 
 ### Requirement: Manual theme toggle
-The system SHALL provide a toggle button in the site header navigation area that allows users to switch between light and dark themes.
+The system SHALL provide a toggle button in the site header navigation area that allows users to switch between light and dark themes. The toggle button SHALL be vertically centered with other navigation elements.
 
 #### Scenario: User toggles from light to dark
 - **WHEN** the current theme is light
@@ -44,6 +44,11 @@ The system SHALL provide a toggle button in the site header navigation area that
 - **THEN** the toggle button SHALL display a moon icon (indicating "switch to dark")
 - **WHEN** the theme is dark
 - **THEN** the toggle button SHALL display a sun icon (indicating "switch to light")
+
+#### Scenario: Toggle button vertical alignment
+- **WHEN** the Header is rendered
+- **THEN** the theme toggle button SHALL be vertically centered with adjacent navigation links
+- **AND** the button's visual center SHALL align with the text baseline of navigation links
 
 ### Requirement: Theme preference persistence
 The system SHALL persist the user's manual theme choice to localStorage and restore it on subsequent page loads, overriding the system preference.

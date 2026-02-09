@@ -1,21 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 ---
 
 <Layout title="About | Rosydawn">
   <main class="container">
-    <header class="site-header">
-      <a href="/" class="logo">
-        <span class="prompt">$</span> rosydawn
-        <span class="cursor">_</span>
-      </a>
-      <nav class="nav">
-        <a href="/">文章</a>
-        <a href="/tags">分类</a>
-        <a href="/about" class="active">关于</a>
-        <button class="theme-toggle" aria-label="切换主题"></button>
-      </nav>
-    </header>
+    <Header currentPath="/about" />
 
     <section class="about">
       <div class="about-content">
@@ -28,9 +19,7 @@ import Layout from '../layouts/Layout.astro';
       </div>
     </section>
 
-    <footer class="site-footer">
-      <p>built with <a href="https://astro.build" target="_blank" rel="noopener">astro</a> · developed with llm</p>
-    </footer>
+    <Footer />
   </main>
 </Layout>
 
@@ -42,51 +31,6 @@ import Layout from '../layouts/Layout.astro';
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-  }
-
-  .site-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 0;
-    margin-bottom: 3rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .logo {
-    font-family: var(--font-mono);
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--text);
-    text-decoration: none;
-  }
-
-  .logo:hover { text-decoration: none; }
-  .prompt { color: var(--accent); }
-
-  .cursor {
-    color: var(--accent);
-    animation: blink 1s step-end infinite;
-  }
-
-  @keyframes blink { 50% { opacity: 0; } }
-
-  .nav {
-    display: flex;
-    gap: 2rem;
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-  }
-
-  .nav a {
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-
-  .nav a:hover,
-  .nav a.active {
-    color: var(--accent);
   }
 
   .about { flex: 1; }
@@ -124,28 +68,7 @@ import Layout from '../layouts/Layout.astro';
     text-decoration: underline;
   }
 
-  .site-footer {
-    margin-top: 2rem;
-    padding: 2rem 0;
-    border-top: 1px solid var(--border);
-  }
-
-  .site-footer p {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin: 0;
-  }
-
   @media (max-width: 640px) {
     .container { padding: 1rem; }
-
-    .site-header {
-      flex-direction: column;
-      gap: 1rem;
-      align-items: flex-start;
-    }
-
-    .nav { gap: 1.5rem; }
   }
 </style>
