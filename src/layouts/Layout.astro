@@ -1,4 +1,6 @@
 ---
+import { ViewTransitions } from 'astro:transitions';
+
 interface Props {
   title?: string;
 }
@@ -15,6 +17,7 @@ const { title = 'Rosydawn' } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content="记录技术思考与实践的个人博客" />
 		<title>{title}</title>
+		<ViewTransitions />
 		<script is:inline>
 			(function() {
 				try {
@@ -38,7 +41,7 @@ const { title = 'Rosydawn' } = Astro.props;
 						: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 					btn.setAttribute('aria-label', isDark ? '切换浅色模式' : '切换暗色模式');
 				}
-				document.addEventListener('DOMContentLoaded', function() {
+				document.addEventListener('astro:page-load', function() {
 					var btn = document.querySelector('.theme-toggle');
 					if (!btn) return;
 					updateToggleIcon(btn);
