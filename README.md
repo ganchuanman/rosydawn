@@ -7,12 +7,15 @@
 > 4. 修改样式时注意使用 `:global()` 选择器处理 Markdown 生成的 HTML
 > 5. 部署脚本在 `scripts/` 目录，支持 Cron 环境自动部署
 > 6. About 和 404 页面采用极简风格，与全站视觉一致
+> 7. **开发模式**：采用 OpenSpec SDD（Spec-Driven Development）规范驱动开发
 
 ---
 
 ## 📌 项目概述
 
 **Rosydawn** 是一个基于 [Astro](https://astro.build) 构建的个人技术博客，采用极简主义设计风格，强调良好的阅读体验和代码展示能力。
+
+本项目采用 **[OpenSpec](https://github.com/Fission-AI/OpenSpec)** 的 SDD（Spec-Driven Development）开发模式，所有功能变更都通过规范驱动的方式进行设计、实现和归档。
 
 ### 核心特性
 
@@ -21,11 +24,13 @@
 | 静态生成 | 基于 Astro SSG，无需服务器 |
 | 内容管理 | 使用 Astro Content Collections 管理博客文章 |
 | Markdown/MDX | 支持标准 Markdown 和 MDX 扩展语法 |
-| 代码高亮 | 集成 Shiki（使用 `one-light` 主题） |
+| 代码高亮 | 集成 Shiki（支持 light/dark 双主题） |
+| 暗黑模式 | 支持系统偏好检测和手动切换，无 FOUC |
 | 图表支持 | 集成 PlantUML 绘图能力 |
 | 响应式设计 | 移动端友好，自适应布局 |
 | 自动部署 | 基于 Cron 的 Git 监听自动部署 |
-| 极简风格页面 | About 和 404 页面采用统一的极简视觉风格 |
+| 组件化 | Header/Footer 统一组件，单一维护点 |
+| SDD 开发 | 基于 OpenSpec 的规范驱动开发模式 |
 
 ### 技术栈
 
@@ -40,7 +45,69 @@
 图表: astro-plantuml
 部署: Nginx + Let's Encrypt (自动化脚本)
 自动化: Cron + Git 监听 + 邮件通知
+开发模式: OpenSpec SDD (Spec-Driven Development)
 ```
+
+---
+
+## 🔧 OpenSpec SDD 开发模式
+
+本项目采用 [OpenSpec](https://github.com/Fission-AI/OpenSpec) 的规范驱动开发（SDD）模式进行功能开发和维护。
+
+### 什么是 SDD？
+
+SDD（Spec-Driven Development）是一种以规范为中心的开发方法论：
+
+1. **Proposal**：明确变更的动机和范围
+2. **Specs**：定义功能的行为规范（WHAT）
+3. **Design**：设计实现方案（HOW）
+4. **Tasks**：分解为可执行的任务清单
+5. **Implementation**：按规范实现代码
+6. **Archive**：归档变更记录
+
+### 目录结构
+
+```
+openspec/
+├── specs/                      # 主规范目录
+│   ├── dark-mode/             # 暗黑模式规范
+│   │   └── spec.md
+│   ├── shared-layout-components/  # 共享布局组件规范
+│   │   └── spec.md
+│   ├── reading-progress/      # 阅读进度条规范
+│   │   └── spec.md
+│   └── ...
+│
+└── changes/                    # 变更目录
+    └── archive/               # 已归档的变更
+        └── 2026-02-09-extract-nav-components/
+            ├── proposal.md    # 变更提案
+            ├── design.md      # 技术设计
+            ├── specs/         # Delta 规范
+            └── tasks.md       # 任务清单
+```
+
+### 工作流程
+
+```bash
+# 1. 创建新变更
+/opsx:new <change-name>
+
+# 2. 逐步创建 artifacts
+/opsx:continue
+
+# 3. 实现任务
+/opsx:apply
+
+# 4. 归档变更
+/opsx:archive
+```
+
+### 已归档的变更
+
+| 日期 | 变更名称 | 描述 |
+|------|----------|------|
+| 2026-02-09 | `extract-nav-components` | 提取 Header/Footer 为独立组件，修复暗黑模式按钮对齐 |
 
 ---
 
@@ -53,6 +120,10 @@ rosydawn/
 │   └── favicon.svg
 │
 ├── src/
+│   ├── components/             # 可复用组件
+│   │   ├── Header.astro        # 全局头部（导航 + 主题切换）
+│   │   └── Footer.astro        # 全局底部（版权信息）
+│   │
 │   ├── content/                # 内容目录
 │   │   └── posts/              # 博客文章
 │   │       └── {year}/{month}/{slug}/
@@ -75,6 +146,14 @@ rosydawn/
 │   │       └── [tag].astro     # 标签详情
 │   │
 │   └── content.config.ts       # 内容集合配置
+│
+├── openspec/                   # OpenSpec SDD 目录
+│   ├── specs/                  # 主规范（capability specs）
+│   │   ├── dark-mode/
+│   │   ├── shared-layout-components/
+│   │   └── ...
+│   └── changes/                # 变更目录
+│       └── archive/            # 已归档变更
 │
 ├── scripts/                    # 部署脚本
 │   ├── deploy.mjs              # 部署脚本入口
@@ -824,15 +903,29 @@ code.style.setProperty('--line-number-width', `${maxLineDigits}ch`);
 }
 ```
 
-### 4. 导航一致性
+### 4. 导航组件化
 
-所有页面的 Header 必须保持完全一致的样式，避免页面切换时的视觉跳动：
+导航采用组件化设计，Header 和 Footer 作为独立组件复用于所有页面。
 
-```css
-/* 统一规范 */
-.site-header { padding: 1rem 0; }
-.logo a { font-size: 1.25rem; }
-.container / .page-container { padding: 2rem; max-width: 800px; }
+**`src/components/Header.astro`**：
+- 包含 logo、导航链接、主题切换按钮
+- 接收 `currentPath` prop 控制活跃链接高亮
+- 内置响应式布局（移动端自适应）
+
+**`src/components/Footer.astro`**：
+- 统一的版权信息
+- 包含 Astro 和 OpenSpec 链接
+
+**使用方式**：
+```astro
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Header currentPath="/" />
+<!-- 页面内容 -->
+<Footer />
 ```
 
 ### 5. 返回按钮行为
@@ -884,13 +977,12 @@ code.style.setProperty('--line-number-width', `${maxLineDigits}ch`);
 
 ### 修改导航
 
-导航菜单在以下文件中需要同步修改：
-- `src/pages/blog/[...page].astro`
-- `src/pages/blog/[...slug].astro`
-- `src/pages/tags/index.astro`
-- `src/pages/tags/[tag].astro`
-- `src/pages/about.astro`
-- `src/pages/404.astro`
+导航通过组件化管理，只需修改两个文件：
+
+- **Header**: `src/components/Header.astro`
+- **Footer**: `src/components/Footer.astro`
+
+修改后所有页面自动同步，无需逐个修改。
 
 当前导航结构：
 ```html
@@ -898,6 +990,7 @@ code.style.setProperty('--line-number-width', `${maxLineDigits}ch`);
   <a href="/">文章</a>
   <a href="/tags">分类</a>
   <a href="/about">关于</a>
+  <button class="theme-toggle">...</button>
 </nav>
 ```
 
@@ -905,9 +998,9 @@ code.style.setProperty('--line-number-width', `${maxLineDigits}ch`);
 
 ## 🦶 Footer 声明
 
-所有页面底部统一显示：
+所有页面底部统一显示（通过 `src/components/Footer.astro` 组件）：
 ```html
-<p>built with <a href="https://astro.build" target="_blank" rel="noopener">astro</a> · developed with llm</p>
+<p>built with <a href="https://astro.build">astro</a> · developed with llm and <a href="https://github.com/Fission-AI/OpenSpec">openspec</a></p>
 ```
 
 ---

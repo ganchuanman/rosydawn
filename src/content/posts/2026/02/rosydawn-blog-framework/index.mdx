@@ -1,11 +1,11 @@
 ---
 title: "Rosydawn：一个极简但是完整的 Astro 博客框架"
 date: 2026-02-08
-description: "一句话概括 Rosydawn： 一个基于 Astro 进行构建，完全由 AI 设计和开发实现的博客框架，集成了一键部署、自动化部署、https 集成等等能力。"
+description: "一句话概括 Rosydawn： 一个基于 Astro 进行构建，完全由 AI 设计和开发实现的博客框架，采用 OpenSpec SDD 规范驱动开发模式。"
 tags: ["rosydawn"]
 ---
 
-一句话概括 Rosydawn： 一个基于 Astro 进行构建，完全由 AI 设计和开发实现的博客框架，集成了一键部署、自动化部署、https 集成等等能力。
+一句话概括 Rosydawn： 一个基于 Astro 进行构建，完全由 AI 设计和开发实现的博客框架。采用 **[OpenSpec](https://github.com/Fission-AI/OpenSpec)** 的 SDD（Spec-Driven Development）规范驱动开发模式，集成了一键部署、自动化部署、HTTPS 等能力。
 
 ## 核心特性
 
@@ -14,11 +14,14 @@ tags: ["rosydawn"]
 | 静态生成 | 基于 Astro SSG，无需服务器 |
 | 内容管理 | 使用 Astro Content Collections 管理博客文章，能够通过文件夹的方式组织和管理内容 |
 | Markdown/MDX | 支持标准 Markdown 和 MDX 扩展语法 |
-| 代码高亮 | 集成 Shiki（使用 `one-light` 主题） |
+| 代码高亮 | 集成 Shiki（支持 light/dark 双主题） |
+| 暗黑模式 | 支持系统偏好检测和手动切换，无 FOUC |
 | 图表支持 | 集成 PlantUML、Drawio 绘图能力 |
 | 响应式设计 | 移动端友好，自适应布局 |
+| 组件化 | Header/Footer 统一组件，单一维护点 |
 | 自动部署 | 基于 Cron 的 Git 监控与自动构建 |
 | HTTPS | Let's Encrypt 证书自动申请与续期 |
+| SDD 开发 | 基于 OpenSpec 的规范驱动开发模式 |
 
 ## 技术栈
 
@@ -26,10 +29,124 @@ tags: ["rosydawn"]
 框架: Astro 5.17.x
 语言: TypeScript
 样式: Scoped CSS (无预处理器)
-代码高亮: Shiki (内置于 Astro)
+代码高亮: Shiki (内置于 Astro, 支持双主题)
 图表: astro-plantuml
 部署: Nginx + Let's Encrypt (自动化脚本)
+开发模式: OpenSpec SDD (Spec-Driven Development)
 ```
+
+## OpenSpec SDD 开发模式
+
+本项目采用 [OpenSpec](https://github.com/Fission-AI/OpenSpec) 的规范驱动开发（SDD）模式。这是一种以规范为中心的开发方法论，特别适合与 AI 协作开发。
+
+### 什么是 SDD？
+
+SDD（Spec-Driven Development）将每个功能变更分解为清晰的阶段：
+
+```
+Proposal → Specs → Design → Tasks → Implementation → Archive
+   ↓         ↓        ↓        ↓          ↓            ↓
+  WHY      WHAT      HOW     TODO       CODE        DONE
+```
+
+1. **Proposal**：明确变更的动机和范围（为什么要做）
+2. **Specs**：定义功能的行为规范（做什么）
+3. **Design**：设计实现方案（怎么做）
+4. **Tasks**：分解为可执行的任务清单
+5. **Implementation**：按规范实现代码
+6. **Archive**：归档变更记录，同步规范
+
+### 目录结构
+
+```
+openspec/
+├── specs/                      # 主规范目录（capability specs）
+│   ├── dark-mode/             # 暗黑模式规范
+│   │   └── spec.md
+│   ├── shared-layout-components/  # 共享布局组件规范
+│   │   └── spec.md
+│   └── ...
+│
+└── changes/                    # 变更目录
+    └── archive/               # 已归档的变更
+        └── 2026-02-09-extract-nav-components/
+            ├── proposal.md    # 变更提案
+            ├── design.md      # 技术设计
+            ├── specs/         # Delta 规范
+            └── tasks.md       # 任务清单
+```
+
+### 工作流程示例
+
+以「导航组件提取」为例，展示完整的 SDD 工作流程：
+
+**1. 创建变更**
+```bash
+/opsx:new extract-nav-components
+```
+
+**2. 编写 Proposal**（明确动机）
+```markdown
+## Why
+导航菜单代码在 6 个页面文件中完全重复，违反 DRY 原则。
+
+## What Changes
+- 创建 Header.astro / Footer.astro 组件
+- 更新 Footer 文案添加 OpenSpec 链接
+- 修复暗黑模式按钮垂直对齐问题
+```
+
+**3. 定义 Specs**（行为规范）
+```markdown
+### Requirement: Single source of truth
+All pages SHALL import and use the shared Header and Footer
+components instead of duplicating navigation markup.
+
+#### Scenario: No inline navigation in pages
+- **WHEN** examining any page file in `src/pages/`
+- **THEN** the page SHALL NOT contain duplicated header/nav markup
+- **AND** the page SHALL import and render the Header component
+```
+
+**4. 设计 Design**（技术方案）
+```markdown
+### Decision: 组件放置在 src/components/ 目录
+**选择**: Header.astro 和 Footer.astro 放在 src/components/
+**理由**: 符合 Astro 项目的标准约定
+
+### Decision: Theme Toggle 对齐修复
+**选择**: 在 .nav 容器上添加 align-items: center
+**理由**: 根本解决 flexbox 对齐问题
+```
+
+**5. 执行 Tasks**
+```markdown
+- [x] 1.1 创建 Header.astro 文件
+- [x] 1.2 创建 Footer.astro 文件
+- [x] 2.1 添加 align-items: center 修复对齐
+- [x] 4.1-4.6 重构 6 个页面文件
+```
+
+**6. 归档 Archive**
+```bash
+/opsx:archive
+# → 同步 delta specs 到主规范
+# → 移动到 archive/2026-02-09-extract-nav-components/
+```
+
+### SDD 的优势
+
+| 传统开发 | SDD 开发 |
+|---------|---------|
+| 直接写代码 | 先写规范再实现 |
+| 需求在脑中 | 需求在文档中 |
+| 修改难追溯 | 完整变更历史 |
+| AI 容易偏离 | AI 按规范执行 |
+
+**特别适合 AI 协作开发**：
+- 规范作为 AI 的"合约"，减少理解偏差
+- 任务清单提供明确的执行路径
+- 归档记录便于后续维护和回顾
 
 ## 目录结构
 
@@ -40,12 +157,16 @@ rosydawn/
 │   └── favicon.svg
 │
 ├── src/
+│   ├── components/             # 可复用组件
+│   │   ├── Header.astro        # 全局头部（导航 + 主题切换）
+│   │   └── Footer.astro        # 全局底部（版权信息）
+│   │
 │   ├── content/                # 内容目录
 │   │   └── posts/              # 博客文章
 │   │       └── {year}/{month}/{slug}/
 │   │           ├── index.md    # 文章内容
-│   │           ├── cover.jpg   # 封面图片 (可选)
-│   │           └── assets/     # 文章资源 (可选)
+│   │           ├── cover.jpg   # 封面图（可选）
+│   │           └── assets/     # 文章资源（可选）
 │   │
 │   ├── layouts/
 │   │   └── Layout.astro        # 全局布局组件
@@ -57,6 +178,10 @@ rosydawn/
 │   │   └── tags/               # 标签相关
 │   │
 │   └── content.config.ts       # 内容集合配置
+│
+├── openspec/                   # OpenSpec SDD 目录
+│   ├── specs/                  # 主规范
+│   └── changes/                # 变更目录
 │
 ├── scripts/
 │   ├── deploy.mjs              # 部署脚本入口
@@ -132,7 +257,7 @@ productSvc --> redis
 #### Drawio内嵌：
 Drawio 是通过 svg 内嵌实现的，如果你要使用 drawio，需要按照下列步骤进行：
 
-1、文档需要指定格式为 MDX，即文件命名为`xxx.mdx` 
+1、文档需要指定格式为 MDX，即文件命名为`xxx.mdx`
 
 2、在本地将 drawio 导出为 svg 格式，并将 svg 文件命名为 `xxx.drawio.svg`
 
@@ -188,7 +313,7 @@ tail -f logs/deploy.log
 2. **Git 检查** - 比较本地和远程 commit hash
 3. **自动拉取** - 检测到更新后执行 `git pull`
 4. **构建部署** - 自动执行构建和部署流程
-5. **邮件通知** - 部署完成后发送邮件通知（待实现）
+5. **邮件通知** - 部署完成后发送邮件通知（可选）
 
 #### Cron 环境兼容性
 
@@ -275,14 +400,21 @@ if (scrollDiff !== 0) {
 ## 开发注意事项
 重要❗：开发前把这段提示词发给你的大模型工具：
 ```text
-这是 rosydawn 个人博客项目。
+这是 rosydawn 个人博客项目，采用 OpenSpec SDD 开发模式。
 
 ## 开始前
 请阅读 README.md，其中包含：
-- 项目架构与技术栈（Astro 5 + TypeScript + Tailwind）
-- 开发规范与代码风格
+- 项目架构与技术栈（Astro 5 + TypeScript）
+- OpenSpec SDD 开发规范
 - 部署流程（Git 驱动 + Cron 监控）
 - AI 协作专属指南
+
+## OpenSpec SDD
+功能变更请使用 OpenSpec 工作流：
+- /opsx:new <name> - 创建新变更
+- /opsx:continue - 创建下一个 artifact
+- /opsx:apply - 实现任务
+- /opsx:archive - 归档变更
 
 ## 限制
 - 不要读取 src/content/**/*.md 文件（博客文章）
@@ -292,6 +424,7 @@ if (scrollDiff !== 0) {
 - src/components/ - 组件开发
 - src/layouts/ - 布局模板
 - src/pages/ - 页面路由
+- openspec/ - 规范文档
 - scripts/lib/ - 部署脚本
 - astro.config.mjs - 构建配置
 ```
