@@ -1,0 +1,35 @@
+@startuml
+' --- 基础设置 ---
+skinparam backgroundBackgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName "PingFang SC"
+
+header RosyDawn 自动渲染测试
+footer 页脚 - 内部测试文件
+
+title 示例：博客系统路由跳转逻辑
+
+' --- 定义参与者 ---
+actor "访客" as User #LightBlue
+control "LinkInfection 脚本" as Script #Gold
+entity "Astro 静态页面" as Page #Pink
+database "浏览器 URL" as Browser #LightGreen
+
+' --- 交互逻辑 ---
+User -> Page : 点击文章链接
+activate Page
+
+Page -> Script : 触发 Click 事件拦截
+activate Script
+Script -> Script : 识别当前 PageID (例如: tg)
+Script -> Browser : 注入参数 ?from=tg&p=/tags/ai
+deactivate Script
+
+Browser -> Page : 路由跳转至详情页
+Page -> Page : BackControl 组件解析参数
+note right of Page : 此时返回文案变为\n"返回标签详情"
+
+User <- Page : 渲染完成（无上一篇/下一篇）
+deactivate Page
+
+@enduml
