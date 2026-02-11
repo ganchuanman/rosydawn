@@ -321,6 +321,7 @@ artifacts:
     requires:
       - specs
       - design
+      - gen-review
 apply:
   requires:
     - tasks
