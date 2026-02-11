@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import BackButton from '../../components/BackButton.astro';
 
 // 获取所有文章
 const allPosts = await getCollection('posts');
@@ -28,6 +29,9 @@ export async function getStaticPaths() {
 
 const { tag, posts } = Astro.props;
 
+// 获取当前页面路径用于来源追踪
+const currentPath = `/tags/${tag}`;
+
 function formatDate(date: Date): string {
   return date.toISOString().split('T')[0];
 }
@@ -38,10 +42,7 @@ function formatDate(date: Date): string {
     <Header currentPath="/tags" />
 
     <section class="page-intro">
-      <a href="/tags" class="back-link" onclick="event.preventDefault(); history.back();">
-        <span class="back-arrow">←</span>
-        <span>返回</span>
-      </a>
+      <BackButton fallbackHref="/tags" fallbackLabel="返回标签列表" />
       <h1 class="page-title">#{tag}</h1>
       <p class="page-desc">{posts.length} 篇文章</p>
     </section>
@@ -49,7 +50,7 @@ function formatDate(date: Date): string {
     <section class="posts">
       {posts.map((post, index) => (
         <article class="post-item">
-          <a href={`/blog/${post.id}`}>
+          <a href={`/blog/${post.id}?from=tag-detail&ref=${currentPath}`}>
             <div class="post-main">
               <h2 class="post-title">{post.data.title}</h2>
               <p class="post-desc">{post.data.description}</p>
@@ -82,31 +83,6 @@ function formatDate(date: Date): string {
   /* Page Intro */
   .page-intro {
     margin-bottom: 2.5rem;
-  }
-
-  .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    text-decoration: none;
-    margin-bottom: 1.5rem;
-    transition: color 0.2s;
-  }
-
-  .back-link:hover {
-    color: var(--accent);
-    text-decoration: none;
-  }
-
-  .back-arrow {
-    transition: transform 0.2s;
-  }
-
-  .back-link:hover .back-arrow {
-    transform: translateX(-4px);
   }
 
   .page-title {

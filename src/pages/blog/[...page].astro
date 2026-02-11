@@ -21,6 +21,9 @@ export async function getStaticPaths({ paginate }) {
 
 const { page } = Astro.props;
 
+// 获取当前页面路径用于来源追踪
+const currentPath = `/blog/${page.currentPage}`;
+
 // 格式化日期
 function formatDate(date: Date): string {
   return date.toISOString().split('T')[0];
@@ -34,7 +37,7 @@ function formatDate(date: Date): string {
     <section class="posts">
       {page.data.map((post) => (
         <article class="post-item">
-          <a href={`/blog/${post.id}`}>
+          <a href={`/blog/${post.id}?from=blog-list&ref=${currentPath}`}>
             <div class="post-main">
               <h2 class="post-title">{post.data.title}</h2>
               <p class="post-desc">{post.data.description}</p>

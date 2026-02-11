@@ -41,7 +41,7 @@ function formatDate(date: Date): string {
     <section class="posts">
       {page.data.map((post) => (
         <article class="post-item">
-          <a href={`/blog/${post.id}`}>
+          <a href={`/blog/${post.id}?from=home`}>
             <div class="post-main">
               <h2 class="post-title">{post.data.title}</h2>
               <p class="post-desc">{post.data.description}</p>

@@ -25,7 +25,7 @@ const sortedTags = Array.from(tagMap.entries()).sort((a, b) => b[1] - a[1]);
 
     <section class="tags-cloud">
       {sortedTags.map(([tag, count]) => (
-        <a href={`/tags/${tag}`} class="tag-item">
+        <a href={`/tags/${tag}?from=tag-list`} class="tag-item">
           <span class="tag-name">{tag}</span>
           <span class="tag-count">{count}</span>
         </a>
