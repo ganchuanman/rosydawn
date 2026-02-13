@@ -65,6 +65,41 @@ const { title = 'Rosydawn' } = Astro.props;
 				});
 			})();
 		</script>
+		<script is:inline>
+			// PlantUML image/source toggle functionality
+			(function() {
+				function initPlantUMLToggle() {
+					// Handle "toggle to code" buttons on images
+					document.querySelectorAll('.plantuml-toggle-to-code').forEach(function(btn) {
+						var newBtn = btn.cloneNode(true);
+						btn.parentNode.replaceChild(newBtn, btn);
+
+						newBtn.addEventListener('click', function() {
+							var container = this.closest('.plantuml-container');
+							if (container) {
+								container.setAttribute('data-state', 'code');
+							}
+						});
+					});
+
+					// Handle "toggle to image" buttons in code toolbar (added by slug.astro script)
+					document.querySelectorAll('.plantuml-toggle-to-image').forEach(function(btn) {
+						var newBtn = btn.cloneNode(true);
+						btn.parentNode.replaceChild(newBtn, btn);
+
+						newBtn.addEventListener('click', function() {
+							var container = this.closest('.plantuml-container');
+							if (container) {
+								container.setAttribute('data-state', 'image');
+							}
+						});
+					});
+				}
+
+				// Initialize on page load and after View Transitions
+				document.addEventListener('astro:page-load', initPlantUMLToggle);
+			})();
+		</script>
 	</body>
 </html>
 
@@ -180,8 +215,102 @@ const { title = 'Rosydawn' } = Astro.props;
 		max-width: 100%;
 	}
 
-	.plantuml-diagram img {
+	/* PlantUML Container Styles */
+	.plantuml-container {
+		margin: 1.25rem 0;
+	}
+
+	.plantuml-image-wrapper {
+		position: relative;
+		text-align: center;
+	}
+
+	/* Toggle button floating on image */
+	.plantuml-toggle-to-code {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		padding: 0;
+		color: var(--text-muted);
+		background: var(--bg);
+		border: 1px solid var(--border);
+		border-radius: 4px;
+		cursor: pointer;
+		transition: all 0.2s;
+		opacity: 0;
+		z-index: 10;
+	}
+
+	.plantuml-image-wrapper:hover .plantuml-toggle-to-code {
+		opacity: 0.8;
+	}
+
+	.plantuml-toggle-to-code:hover {
+		color: var(--accent);
+		border-color: var(--accent);
+		opacity: 1 !important;
+	}
+
+	/* Image styles - no border, clean look */
+	.plantuml-image {
+		display: inline-block;
+		max-width: 100%;
+		height: auto;
 		background: white;
+		border-radius: 4px;
+	}
+
+	/* PlantUML code block - hidden by default */
+	.plantuml-code-placeholder {
+		display: none;
+	}
+
+	/* State-based visibility */
+	.plantuml-container[data-state="image"] .plantuml-image-wrapper {
+		display: block;
+	}
+
+	.plantuml-container[data-state="image"] .plantuml-code-wrapper {
+		display: none !important;
+	}
+
+	.plantuml-container[data-state="code"] .plantuml-image-wrapper {
+		display: none;
+	}
+
+	.plantuml-container[data-state="code"] .plantuml-code-wrapper {
+		display: block !important;
+	}
+
+	/* Dark mode: ensure image has white background */
+	html[data-theme="dark"] .plantuml-image {
+		background: white;
+	}
+
+	/* Toggle to image button in code toolbar */
+	.plantuml-toggle-to-image {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		background: transparent;
+		border: none;
+		padding: 0.25rem 0.5rem;
+		cursor: pointer;
+		color: var(--text-muted);
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		border-radius: 4px;
+		transition: all 0.2s;
+	}
+
+	.plantuml-toggle-to-image:hover {
+		background: var(--bg-tertiary);
+		color: var(--text);
 	}
 
 	.drawio-placeholder {

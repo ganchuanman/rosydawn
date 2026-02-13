@@ -1,15 +1,17 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
-import plantuml from 'astro-plantuml';
+import remarkPlantUMLUrl from './src/plugins/remark-plantuml-url.mjs';
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [
     mdx(),
-    plantuml(),
   ],
   markdown: {
+    remarkPlugins: [
+      [remarkPlantUMLUrl, { format: 'svg' }],
+    ],
     shikiConfig: {
       themes: {
         light: 'one-light',

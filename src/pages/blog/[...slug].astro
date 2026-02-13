@@ -181,8 +181,106 @@ const readingTime = Math.max(1, Math.ceil(charCount / 400));
     // 代码块复制功能、语言标签、行号和展开收起
     const COLLAPSED_MAX_LINES = 15; // 超过这个行数时显示展开/收起按钮
 
-    document.querySelectorAll('.content pre').forEach((block, index) => {
+    // First, create code blocks for PlantUML containers
+    document.querySelectorAll('.plantuml-container').forEach((container) => {
+      const base64Source = container.getAttribute('data-plantuml-source');
+      const placeholder = container.querySelector('.plantuml-code-placeholder');
+
+      if (base64Source && placeholder) {
+        // Decode the base64 source code
+        const sourceCode = atob(base64Source);
+
+        // Create wrapper
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-wrapper plantuml-code-wrapper';
+
+        // Create toolbar
+        const toolbar = document.createElement('div');
+        toolbar.className = 'code-toolbar';
+
+        const leftGroup = document.createElement('div');
+        leftGroup.className = 'code-left-group';
+
+        const langLabel = document.createElement('span');
+        langLabel.className = 'code-lang';
+        langLabel.textContent = 'plantuml';
+        leftGroup.appendChild(langLabel);
+
+        const btnGroup = document.createElement('div');
+        btnGroup.className = 'code-btn-group';
+
+        // Add "show image" button
+        const imageBtn = document.createElement('button');
+        imageBtn.className = 'plantuml-toggle-to-image';
+        imageBtn.setAttribute('aria-label', '显示图片');
+        imageBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg><span>图片</span>';
+        btnGroup.appendChild(imageBtn);
+
+        // Add copy button
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-btn';
+        copyBtn.setAttribute('aria-label', '复制代码');
+        copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制</span>';
+        btnGroup.appendChild(copyBtn);
+
+        toolbar.appendChild(leftGroup);
+        toolbar.appendChild(btnGroup);
+
+        // Create pre/code structure
+        const pre = document.createElement('pre');
+        pre.style.cssText = 'background-color:var(--code-bg);color:var(--text);overflow-x:auto';
+        pre.tabIndex = 0;
+
+        const code = document.createElement('code');
+        code.className = 'has-line-numbers';
+
+        // Split into lines and add line numbers
+        const lines = sourceCode.split('\n');
+        const maxLineDigits = String(lines.length).length;
+        code.style.setProperty('--line-number-width', `${maxLineDigits}ch`);
+
+        lines.forEach((lineText, i) => {
+          const lineSpan = document.createElement('span');
+          lineSpan.className = 'line';
+
+          const lineNum = document.createElement('span');
+          lineNum.className = 'line-number';
+          lineNum.textContent = String(i + 1);
+
+          const lineContent = document.createElement('span');
+          lineContent.textContent = lineText;
+
+          lineSpan.appendChild(lineNum);
+          lineSpan.appendChild(lineContent);
+          code.appendChild(lineSpan);
+        });
+
+        pre.appendChild(code);
+        wrapper.appendChild(toolbar);
+        wrapper.appendChild(pre);
+
+        // Replace placeholder with wrapper
+        placeholder.replaceWith(wrapper);
+
+        // Setup copy functionality
+        copyBtn.addEventListener('click', async () => {
+          await navigator.clipboard.writeText(sourceCode);
+          copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>已复制</span>';
+          copyBtn.classList.add('copied');
+          setTimeout(() => {
+            copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制</span>';
+            copyBtn.classList.remove('copied');
+          }, 2000);
+        });
+      }
+    });
+
+    document.querySelectorAll('.content pre:not(.plantuml-code-wrapper pre)').forEach((block, index) => {
       const pre = block as HTMLPreElement;
+
+      // Skip if already wrapped (e.g., PlantUML code blocks)
+      if (pre.closest('.code-wrapper')) return;
+
       const wrapper = document.createElement('div');
       wrapper.className = 'code-wrapper';
       pre.parentNode?.insertBefore(wrapper, pre);
@@ -195,7 +293,7 @@ const readingTime = Math.max(1, Math.ceil(charCount / 400));
       // 创建顶部工具栏
       const toolbar = document.createElement('div');
       toolbar.className = 'code-toolbar';
-      
+
       // 左侧容器（展开按钮 + 语言标签）
       const leftGroup = document.createElement('div');
       leftGroup.className = 'code-left-group';
@@ -215,7 +313,7 @@ const readingTime = Math.max(1, Math.ceil(charCount / 400));
       copyBtn.setAttribute('aria-label', '复制代码');
       copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制</span>';
       btnGroup.appendChild(copyBtn);
-      
+
       toolbar.appendChild(leftGroup);
       toolbar.appendChild(btnGroup);
       wrapper.insertBefore(toolbar, pre);

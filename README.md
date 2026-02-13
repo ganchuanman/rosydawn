@@ -42,7 +42,7 @@
   - 正文: -apple-system, PingFang SC, Microsoft YaHei
   - 代码: ui-monospace, SF Mono, Menlo, Monaco, Consolas
 代码高亮: Shiki (内置于 Astro)
-图表: astro-plantuml
+图表: PlantUML (自定义 remark 插件，URL 编码)
 部署: Nginx + Let's Encrypt (自动化脚本)
 自动化: Cron + Git 监听 + 邮件通知
 开发模式: OpenSpec SDD (Spec-Driven Development)
