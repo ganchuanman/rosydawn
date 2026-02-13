@@ -187,8 +187,13 @@ const readingTime = Math.max(1, Math.ceil(charCount / 400));
       const placeholder = container.querySelector('.plantuml-code-placeholder');
 
       if (base64Source && placeholder) {
-        // Decode the base64 source code
-        const sourceCode = atob(base64Source);
+        // Decode the base64 source code with proper UTF-8 handling
+        const binaryString = atob(base64Source);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const sourceCode = new TextDecoder('utf-8').decode(bytes);
 
         // Create wrapper
         const wrapper = document.createElement('div');

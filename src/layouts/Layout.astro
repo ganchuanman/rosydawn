@@ -68,36 +68,27 @@ const { title = 'Rosydawn' } = Astro.props;
 		<script is:inline>
 			// PlantUML image/source toggle functionality
 			(function() {
-				function initPlantUMLToggle() {
+				// Use event delegation to handle both static and dynamically created buttons
+				document.addEventListener('click', function(e) {
 					// Handle "toggle to code" buttons on images
-					document.querySelectorAll('.plantuml-toggle-to-code').forEach(function(btn) {
-						var newBtn = btn.cloneNode(true);
-						btn.parentNode.replaceChild(newBtn, btn);
-
-						newBtn.addEventListener('click', function() {
-							var container = this.closest('.plantuml-container');
-							if (container) {
-								container.setAttribute('data-state', 'code');
-							}
-						});
-					});
+					if (e.target.closest('.plantuml-toggle-to-code')) {
+						var container = e.target.closest('.plantuml-container');
+						if (container) {
+							container.setAttribute('data-state', 'code');
+						}
+					}
 
 					// Handle "toggle to image" buttons in code toolbar (added by slug.astro script)
-					document.querySelectorAll('.plantuml-toggle-to-image').forEach(function(btn) {
-						var newBtn = btn.cloneNode(true);
-						btn.parentNode.replaceChild(newBtn, btn);
+					if (e.target.closest('.plantuml-toggle-to-image')) {
+						var container = e.target.closest('.plantuml-container');
+						if (container) {
+							container.setAttribute('data-state', 'image');
+						}
+					}
+				});
 
-						newBtn.addEventListener('click', function() {
-							var container = this.closest('.plantuml-container');
-							if (container) {
-								container.setAttribute('data-state', 'image');
-							}
-						});
-					});
-				}
-
-				// Initialize on page load and after View Transitions
-				document.addEventListener('astro:page-load', initPlantUMLToggle);
+				// Event delegation handles both static and dynamically created buttons
+				// No need to reinitialize after View Transitions
 			})();
 		</script>
 	</body>
