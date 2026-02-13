@@ -51,7 +51,16 @@
 - **THEN** 右上角 SHALL 有一个悬浮的代码图标按钮
 - **AND** 按钮默认透明，hover 时显示
 
-#### Scenario: 源码代码块生成
+### Requirement: 源码代码块生成
+
+系统 SHALL 在客户端将 Base64 编码的源码正确解码并生成代码块。
+
+#### Scenario: 解码 UTF-8 字符
+- **WHEN** 源码包含 UTF-8 编码的中文字符或其他非 ASCII 字符
+- **THEN** 系统 SHALL 使用 TextDecoder API 正确解码 Base64 字符串为 UTF-8 文本
+- **AND** 解码后的源码 SHALL 正确显示中文字符，不出现乱码
+
+#### Scenario: 代码块结构生成
 - **WHEN** 页面加载时
 - **THEN** 客户端 JS SHALL 将源码占位符替换为与现有代码块一致的结构
 - **AND** 代码块 SHALL 包含工具栏、行号、复制按钮
@@ -80,6 +89,11 @@
 #### Scenario: View Transitions 兼容
 - **WHEN** 页面通过 Astro View Transitions 导航
 - **THEN** 切换功能 SHALL 重新初始化并正常工作
+
+#### Scenario: 动态创建按钮的事件绑定
+- **WHEN** 客户端 JavaScript 动态创建源码代码块和"图片"按钮
+- **THEN** 系统 SHALL 使用事件委托机制确保动态创建的"图片"按钮点击事件能正确触发
+- **AND** 点击"图片"按钮 SHALL 成功切换回图片视图
 
 ### Requirement: 插件配置选项
 
