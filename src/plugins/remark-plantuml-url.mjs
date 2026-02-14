@@ -33,11 +33,27 @@ function createPlantUMLHtml(code, imageUrl) {
   // Base64 encode the source code to preserve it safely
   const base64Code = Buffer.from(code, 'utf-8').toString('base64');
 
-  // Image wrapper with floating toggle button (no border)
+  // Add cache-busting parameter to avoid browser/CDN caching issues
+  const cacheBuster = `t=${Date.now()}`;
+  const urlWithCache = imageUrl.includes('?') ? `${imageUrl}&${cacheBuster}` : `${imageUrl}?${cacheBuster}`;
+
+  // Image wrapper with loading/error states and floating toggle button
   // Store source code in a data attribute for JS to create code block dynamically
-  return `<div class="plantuml-container" data-state="image" data-plantuml-source="${base64Code}">
+  return `<div class="plantuml-container plantuml-loading" data-state="image" data-plantuml-source="${base64Code}">
   <div class="plantuml-image-wrapper">
-    <img class="plantuml-image" src="${imageUrl}" alt="PlantUML Diagram" loading="lazy" />
+    <div class="plantuml-loading-container">
+      <div class="plantuml-spinner"></div>
+    </div>
+    <div class="plantuml-error-container">
+      <svg class="plantuml-error-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <p class="plantuml-error-text">图片加载失败，请检查网络连接后重试</p>
+      <button class="plantuml-retry-btn" type="button">重新加载</button>
+    </div>
+    <img class="plantuml-image" src="${urlWithCache}" alt="PlantUML Diagram" loading="lazy" />
     <button class="plantuml-toggle-to-code" type="button" title="查看源码">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
     </button>

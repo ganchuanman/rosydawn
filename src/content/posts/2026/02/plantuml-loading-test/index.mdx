@@ -1,0 +1,145 @@
+---
+title: "PlantUML 加载状态功能测试"
+date: 2026-02-14
+description: "测试 PlantUML 图片的 loading 动画、错误处理和重试功能"
+tags: ["test", "plantuml"]
+---
+
+本文用于测试 PlantUML 图片的加载状态管理功能，包括 loading 动画、错误提示和重试按钮。
+
+## 功能清单
+
+- ⏳ Loading 动画显示
+- ❌ 加载失败错误提示  
+- 🔄 手动重试功能
+- ⏱️ 30秒超时机制
+- 🌓 暗色模式支持
+
+## 1. 简单时序图（快速加载）
+
+这是一个简单的时序图，用于测试正常的加载流程。
+
+```plantuml
+Alice -> Bob: Hello
+Bob -> Alice: Hi!
+```
+
+## 2. 类图（中等加载时间）
+
+这是一个包含类定义的图表，加载时间适中。
+
+```plantuml
+class Animal {
+  +String name
+  +int age
+  +void eat()
+}
+
+class Dog extends Animal {
+  +String breed
+  +void bark()
+}
+
+class Cat extends Animal {
+  +String color
+  +void meow()
+}
+```
+
+## 3. 用例图（复杂图表）
+
+这是一个包含中文的复杂用例图，用于测试慢速加载场景。
+
+```plantuml
+left to right direction
+actor "用户" as User
+actor "管理员" as Admin
+
+rectangle "在线购物系统" {
+  usecase "浏览商品" as UC1
+  usecase "搜索商品" as UC2
+  usecase "查看详情" as UC3
+  usecase "添加购物车" as UC4
+  usecase "结算支付" as UC5
+  usecase "管理商品" as UC6
+}
+
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+
+Admin --> UC6
+
+UC1 ..> UC3 : <<include>>
+UC2 ..> UC3 : <<include>>
+UC4 ..> UC5 : <<extend>>
+```
+
+## 测试步骤
+
+### 测试 1: Loading 状态
+
+1. 刷新页面
+2. 观察图片加载过程
+3. 应该看到旋转的 spinner 动画
+4. 图片加载完成后，spinner 消失
+
+### 测试 2: Error 状态和重试
+
+1. 打开 Chrome DevTools (F12)
+2. 进入 **Network** 标签
+3. 勾选 **Offline** 模拟断网
+4. 刷新页面
+5. 应该看到：
+   - 错误图标（感叹号圆圈）
+   - 提示文字："图片加载失败，请检查网络连接后重试"
+   - "重新加载"按钮
+
+### 测试 3: 重试功能
+
+1. 在 error 状态下
+2. 取消 **Offline** 勾选，恢复网络
+3. 点击"重新加载"按钮
+4. 应该看到：
+   - Loading 动画重新出现
+   - 图片成功加载
+   - 按钮在 2 秒内不可重复点击
+
+### 测试 4: 超时机制
+
+1. F12 → Network → Throttling 选择 "Slow 3G"
+2. 刷新页面
+3. 等待 30 秒
+4. 应该自动触发超时错误
+
+### 测试 5: 暗色模式
+
+1. 点击页面右上角主题切换按钮
+2. 切换到暗色模式
+3. 观察 loading 和 error 状态
+4. 验证所有元素清晰可见
+
+### 测试 6: 图片/源码切换
+
+1. 图片加载完成后
+2. 鼠标悬停在图片上
+3. 点击右上角的代码图标
+4. 验证可以正常切换到源码视图
+5. 点击"图片"按钮切换回图片视图
+
+## 预期行为
+
+| 状态 | 显示内容 | 特征 |
+|------|---------|------|
+| Loading | 旋转 spinner | 居中显示，持续旋转 |
+| Error | 错误图标 + 文字 + 重试按钮 | 红色或灰色调 |
+| Loaded | 正常图片 | 可切换到源码 |
+
+## 性能指标
+
+- **零额外请求** - 纯 CSS 动画
+- **超时时间** - 30 秒
+- **防抖时间** - 2 秒（重试按钮）
+- **内存管理** - 页面切换时自动清理
