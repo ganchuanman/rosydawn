@@ -128,6 +128,13 @@ const readingTime = Math.max(1, Math.ceil(charCount / 400));
     const from = url.searchParams.get('from');
     const ref = url.searchParams.get('ref');
 
+    // 根据来源类型控制导航可见性
+    const nav = document.querySelector('.post-nav');
+    const shouldShowNav = !from || from === 'home' || from === 'blog-list';
+    if (nav) {
+      nav.style.display = shouldShowNav ? '' : 'none';
+    }
+
     if (from) {
       const postNavLinks = document.querySelectorAll('[data-post-nav]');
       postNavLinks.forEach((link) => {
