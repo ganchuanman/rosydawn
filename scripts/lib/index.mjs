@@ -48,12 +48,6 @@ export {
   showSSLStatusInNginx,
 } from './nginx.mjs';
 
-// 邮件通知
-export {
-  createMailTransporter,
-  sendDeployNotification,
-} from './mail.mjs';
-
 // 自动部署 (Cron 模式)
 export {
   writeLog,

@@ -18,7 +18,6 @@ import { homedir } from 'os';
 import { CONFIG, PROJECT_ROOT } from './config.mjs';
 import { logger, colorize } from './logger.mjs';
 import { commandExists, countFiles } from './utils.mjs';
-import { sendDeployNotification } from './mail.mjs';
 
 // ==================== 常量 ====================
 
@@ -343,8 +342,7 @@ export function showCronStatus() {
   console.log(`  ${colorize('gray', '检查间隔:')} 每 ${intervalMinutes} 分钟`);
   console.log(`  ${colorize('gray', 'Git 分支:')} ${CONFIG.watch.branch}`);
   console.log(`  ${colorize('gray', '日志文件:')} ${CONFIG.watch.logFile}`);
-  console.log(`  ${colorize('gray', '邮件通知:')} ${CONFIG.mail.enabled && CONFIG.mail.smtp.auth.user ? '✓ 已启用' : '○ 未启用'}`);
-  
+
   console.log('');
   console.log(colorize('cyan', 'Cron 任务:'));
   
@@ -420,58 +418,33 @@ export async function checkAndDeploy(buildAndDeploy) {
   
   // 拉取代码
   if (!pullLatestCode()) {
-    await sendDeployNotification(false, {
-      commitHash: remoteHash,
-      commitMessage: commitInfo.message,
-      commitAuthor: commitInfo.author,
-      error: 'Git pull 失败',
-    });
+    writeLog('Git pull 失败');
     return false;
   }
-  
+
   // 执行部署
   try {
     writeLog('开始自动部署...');
     await buildAndDeploy();
-    
+
     const fileCount = countFiles(CONFIG.webRoot);
     writeLog(`部署成功！共 ${fileCount} 个文件`);
-    
+
     // 部署完成后清理日志
     trimLogFile();
-    
-    await sendDeployNotification(true, {
-      commitHash: remoteHash,
-      commitMessage: commitInfo.message,
-      commitAuthor: commitInfo.author,
-      fileCount,
-    });
-    
+
     return true;
   } catch (err) {
     writeLog(`部署失败: ${err.message}`);
-    
-    await sendDeployNotification(false, {
-      commitHash: remoteHash,
-      commitMessage: commitInfo.message,
-      commitAuthor: commitInfo.author,
-      error: err.message,
-    });
-    
     return false;
   }
 }
 
 /**
- * 单次执行检查和部署（供 cron 调用）
+ * 单次执行检查和部署(供 cron 调用)
  * @param {Function} buildAndDeploy - 构建部署函数
  */
 export async function runCronCheck(buildAndDeploy) {
-  // 检查邮件配置
-  if (CONFIG.mail.enabled && (!CONFIG.mail.smtp.auth.user || !CONFIG.mail.smtp.auth.pass)) {
-    writeLog('警告: 邮件配置不完整，部署通知将被禁用');
-  }
-  
   await checkAndDeploy(buildAndDeploy);
 }
 

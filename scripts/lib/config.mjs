@@ -108,24 +108,6 @@ export const CONFIG = {
     // 日志文件路径（默认在项目目录下，避免权限问题）
     logFile: join(PROJECT_ROOT, 'logs/deploy.log'),
   },
-
-  // 邮件通知配置 (SMTP)
-  mail: {
-    // 是否启用邮件通知
-    enabled: true,
-    // 收件人邮箱（部署结果通知）
-    to: 'aaron_oh@163.com',
-    // SMTP 配置（支持 Gmail、QQ邮箱、163邮箱等）
-    smtp: {
-      host: 'smtp.163.com',
-      port: 465,
-      secure: true, // true for 465, false for other ports
-      auth: {
-        user: '', // 发件人邮箱（环境变量 SMTP_USER 覆盖）
-        pass: '', // 邮箱授权码（环境变量 SMTP_PASS 覆盖）
-      },
-    },
-  },
 };
 
 // ==================== 环境变量覆盖配置 ====================
@@ -138,22 +120,6 @@ if (process.env.ENABLE_SSL === 'true' || process.env.SSL === 'true') {
 }
 if (process.env.SSL_EMAIL) {
   CONFIG.ssl.email = process.env.SSL_EMAIL;
-}
-// 邮件配置环境变量
-if (process.env.SMTP_USER) {
-  CONFIG.mail.smtp.auth.user = process.env.SMTP_USER;
-}
-if (process.env.SMTP_PASS) {
-  CONFIG.mail.smtp.auth.pass = process.env.SMTP_PASS;
-}
-if (process.env.SMTP_HOST) {
-  CONFIG.mail.smtp.host = process.env.SMTP_HOST;
-}
-if (process.env.SMTP_PORT) {
-  CONFIG.mail.smtp.port = parseInt(process.env.SMTP_PORT, 10);
-}
-if (process.env.MAIL_TO || process.env.NOTIFY_EMAIL) {
-  CONFIG.mail.to = process.env.MAIL_TO || process.env.NOTIFY_EMAIL;
 }
 // 监控配置环境变量
 if (process.env.WATCH_INTERVAL) {
