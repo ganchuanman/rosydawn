@@ -1,10 +1,10 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Detect article changes
-The system SHALL detect new and modified articles in `src/content/posts/` using git status.
+The system SHALL detect new and modified articles in `src/content/posts/` using git status when running `npm run content:publish`.
 
 #### Scenario: New article detected
-- **WHEN** user runs `npm run publish`
+- **WHEN** user runs `npm run content:publish`
 - **THEN** system runs `git status` to find changes in `src/content/posts/`
 - **THEN** system identifies new files as "[新增]"
 - **THEN** system displays article title and file path

@@ -1,10 +1,10 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Interactive topic input
-The system SHALL prompt the user to enter a topic description when running `npm run new`.
+The system SHALL prompt the user to enter a topic description when running `npm run content:new`.
 
 #### Scenario: User enters topic description
-- **WHEN** user runs `npm run new`
+- **WHEN** user runs `npm run content:new`
 - **THEN** system displays prompt "这篇文章的核心主题是什么？"
 - **THEN** user can enter free-form text describing the article topic
 
@@ -80,7 +80,7 @@ The system SHALL display a summary with file path and preview URL after completi
 - **WHEN** all steps complete successfully
 - **THEN** system displays the file path for editing
 - **THEN** system displays the preview URL
-- **THEN** system suggests running `npm run publish` when done
+- **THEN** system suggests running `npm run content:publish` when done (updated from `npm run publish`)
 
 ### Requirement: Graceful degradation without AI
 The system SHALL allow manual input when AI service is unavailable.
