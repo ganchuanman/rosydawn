@@ -44,7 +44,7 @@
 代码高亮: Shiki (内置于 Astro)
 图表: PlantUML (自定义 remark 插件，URL 编码)
 部署: Nginx + Let's Encrypt (自动化脚本)
-自动化: Cron + Git 监听 + 邮件通知
+自动化: Cron + Git 监听 + 日志记录
 开发模式: OpenSpec SDD (Spec-Driven Development)
 ```
 
@@ -163,7 +163,6 @@ rosydawn/
 │       ├── utils.mjs           # 工具函数 (getCurrentUser 等)
 │       ├── nginx.mjs           # Nginx 配置管理
 │       ├── ssl.mjs             # SSL 证书管理
-│       ├── mail.mjs            # 邮件通知
 │       ├── watch.mjs           # Cron 自动部署、日志轮转
 │       └── index.mjs           # 模块统一导出
 │
@@ -651,22 +650,17 @@ SSL 证书:
 3. **自动拉取** - 检测到更新后执行 `git pull`
 4. **构建部署** - 自动执行构建和部署流程
 5. **日志轮转** - 部署成功后自动清理日志，保留最近 500 行
-6. **邮件通知** - 部署完成后发送邮件通知（可选）
 
 #### 快速开始
 
 ```bash
-# 1. 配置邮件通知（可选）
-cp .env.example .env
-nano .env  # 填写 SMTP 配置
-
-# 2. 安装 Cron 任务
+# 1. 安装 Cron 任务
 npm run deploy:cron:install
 
-# 3. 查看状态
+# 2. 查看状态
 npm run deploy:cron:status
 
-# 4. 查看实时日志
+# 3. 查看实时日志
 tail -f logs/deploy.log
 ```
 
@@ -694,18 +688,15 @@ ssh -i ~/.ssh/id_github -T git@github.com
 
 #### 配置项
 
-自动部署相关的环境变量：
+自动部署相关的环境变量:
 
 | 变量 | 说明 | 默认值 |
 |------|------|--------|
 | `WATCH_INTERVAL` | 检查间隔（分钟） | `5` |
 | `GIT_BRANCH` | Git 分支 | `main` |
 | `SSH_KEY_PATH` | SSH 私钥路径（可选） | 自动检测 |
-| `SMTP_HOST` | SMTP 服务器 | `smtp.163.com` |
-| `SMTP_PORT` | SMTP 端口 | `465` |
-| `SMTP_USER` | 发件人邮箱 | - |
-| `SMTP_PASS` | 邮箱授权码 | - |
-| `NOTIFY_EMAIL` | 收件人邮箱 | - |
+
+**监控部署状态**: 通过日志文件 `logs/deploy.log` 查看部署过程和结果。建议配合日志监控工具(如 Logwatch)或系统监控工具(如 Supervisor)实现告警通知。
 
 #### 日志管理
 
@@ -740,7 +731,6 @@ npm run deploy:cron:status
   检查间隔: 每 5 分钟
   Git 分支: main
   日志文件: /path/to/project/logs/deploy.log
-  邮件通知: ✓ 已启用
 
 Cron 任务:
   ✓ 已安装并运行中
