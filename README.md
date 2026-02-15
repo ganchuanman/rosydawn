@@ -375,6 +375,10 @@ coverImage: ./cover.jpg  # 可选
 
 ## 🔧 开发命令
 
+运行 `npm run help` 查看所有可用命令的详细说明。
+
+### 开发命令 (dev)
+
 ```bash
 # 安装依赖
 npm install
@@ -389,6 +393,38 @@ npm run build
 npm run preview
 ```
 
+### 内容创作命令 (content)
+
+```bash
+# 交互式创建新博客文章
+npm run content:new
+
+# 发布文章到 Git 仓库
+npm run content:publish
+```
+
+**注意**：
+- `content:new` 会提示输入主题，AI 自动生成标题和 slug
+- `content:publish` 会检测文章变更，AI 生成描述和标签
+- 两个命令都需要配置 AI 服务
+
+### 帮助命令 (help)
+
+```bash
+# 显示所有可用命令及详细说明
+npm run help
+```
+
+### ⚠️ Breaking Changes (2026-02-15)
+
+**旧命令已移除**：
+- ~~`npm run new`~~ → 使用 `npm run content:new`
+- ~~`npm run publish`~~ → 使用 `npm run content:publish`
+- ~~`npm run deploy`~~ → 使用 `npm run deploy:build`
+
+所有旧命令不再可用，请使用新的分类命令。
+```
+
 ## 🚀 部署命令
 
 部署脚本位于 `scripts/deploy.mjs`，基于 Node.js 实现，提供完整的一键部署能力，包括**自动配置 Nginx**、**HTTPS 证书管理**和**基于 Cron 的自动部署**。
@@ -399,7 +435,7 @@ npm run preview
 
 | 命令 | npm 脚本 | 说明 |
 |------|----------|------|
-| `build` | `npm run deploy` | 构建项目、部署文件、自动配置 Nginx (HTTP) |
+| `build` | `npm run deploy:build` | 构建项目、部署文件、自动配置 Nginx (HTTP) |
 | `ssl` | `npm run deploy:ssl` | 申请 SSL 证书并配置 HTTPS (Let's Encrypt) |
 | `renew` | `npm run deploy:renew` | 手动续期 SSL 证书 |
 | `status` | `npm run deploy:status` | 显示部署状态、Nginx 和 SSL 证书信息 |
@@ -416,10 +452,10 @@ npm run preview
 
 ```bash
 # 一键构建部署（HTTP）
-npm run deploy
+npm run deploy:build
 
 # 指定域名部署
-DOMAIN=blog.example.com npm run deploy
+DOMAIN=blog.example.com npm run deploy:build
 
 # 启用 HTTPS（需要先完成 HTTP 部署）
 SSL_EMAIL=admin@example.com npm run deploy:ssl
@@ -480,7 +516,7 @@ const CONFIG = {
 
 #### HTTP 部署
 
-运行 `npm run deploy` 后，脚本会自动完成以下步骤：
+运行 `npm run deploy:build` 后，脚本会自动完成以下步骤：
 
 1. ✅ **环境检查** - 验证 Node.js 版本和 Nginx 安装
 2. ✅ **安装依赖** - 运行 `npm install`
