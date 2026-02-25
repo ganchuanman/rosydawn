@@ -1,19 +1,85 @@
 # schema: spec-driven
 schema: rosydawn-sdd
 
+# Project context (shown to AI when creating artifacts)
 context: |
+  ## 基础配置
   语言：中文（简体）
   所有产出物必须用简体中文撰写。
 
+  ## 技术栈
+  - 框架: Astro 5.x（静态站点生成器 SSG）
+  - 语言: TypeScript（strict mode）
+  - 内容: Markdown + MDX（通过 @astrojs/mdx）
+  - 样式: Scoped CSS + CSS 变量（无预处理器）
+  - 代码高亮: Shiki（双主题：one-light / github-dark）
+  - 主要依赖: @inquirer/prompts, openai, pako, unist-util-visit
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+  ## 项目类型
+  个人技术博客系统，包含三大模块：
+  1. 静态博客前端（文章列表、详情、标签分类、暗黑模式）
+  2. 内容创作工具链（CLI: content:new, content:publish, help）
+  3. 自动化部署系统（Nginx + Let's Encrypt + Cron）
+
+  ## 业务领域
+  个人知识管理与技术分享平台
+  - 零成本托管（静态站点）
+  - 极致阅读体验（系统字体、零外部请求、阅读进度条）
+  - 强大代码展示（Shiki 双主题、代码块折叠/复制/行号）
+  - 技术图表支持（PlantUML 在线渲染、图/码切换）
+  - AI 辅助创作（自动生成标题、描述、标签）
+
+  ## 代码结构
+  - src/components/ - 可复用组件（Header, Footer, BackButton）
+  - src/content/posts/ - 博客文章（{year}/{month}/{slug}/index.md）
+  - src/layouts/ - 布局组件（Layout.astro）
+  - src/pages/ - 页面路由（blog/, tags/, about, 404）
+  - src/plugins/ - 自定义插件（remark-plantuml-url.mjs）
+  - scripts/ - CLI 工具和部署脚本
+  - openspec/ - OpenSpec SDD 规范目录
+
+  ## 开发约定
+  - Commit: Conventional Commits（feat/fix/refactor/docs）
+  - TypeScript: astro/tsconfigs/strict
+  - CSS: Scoped CSS，全局样式用 <style is:global>，Markdown 样式用 :global()
+  - 命名: 组件 PascalCase，函数 camelCase，常量 UPPER_SNAKE_CASE，目录 kebab-case
+
+  ## 文章 Frontmatter 规范
+  ```yaml
+  title: "文章标题"
+  date: 2026-02-14
+  description: "一句话描述"
+  tags: ["标签1", "标签2"]  # 可选
+  coverImage: ./cover.jpg  # 可选
+  ```
+
+  ## 架构模式
+  - SSG（Static Site Generation）+ File-based Routing
+  - 组件化设计（Header/Footer 独立组件）
+  - 内容与展示分离（Astro Content Collections + Zod Schema）
+  - 渐进增强（基础功能无 JS，高级功能用内联脚本）
+  - 插件架构（Remark Transformer for PlantUML）
+
+  ## OpenSpec SDD 工作流程
+  1. /opsx:new <change-name> → 创建新变更
+  2. /opsx:continue → 逐步创建 artifacts（proposal, design, specs, tasks）
+  3. /opsx:apply → 实现任务
+  4. /opsx:verify → 验证实现
+  5. /opsx:archive → 归档变更
+
+  ## 核心特性
+  - 性能优化：零字体请求、单一 Favicon、零框架运行时
+  - 主题系统：CSS 变量 + 无 FOUC（内联脚本同步执行）
+  - AI 集成：OpenAI/Azure/DeepSeek/Ollama 兼容（通过 OPENAI_BASE_URL）
+  - PlantUML：Blum Blum Shub 加密 + pako 压缩 + Base64 编码
+  - 自动部署：Cron 监听 Git 更新 → 自动构建 → Nginx 部署
+
+  ## 关键技术约束
+  - 使用系统原生字体栈（零网络请求）
+  - 内联脚本处理主题切换（避免 FOUC）
+  - PlantUML 依赖公共服务器（http://www.plantuml.com/plantuml/svg/）
+  - 部署需要 Node.js 18+, Nginx, Certbot, Cron
+  - AI 功能需要配置 OPENAI_API_KEY 环境变量
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.
