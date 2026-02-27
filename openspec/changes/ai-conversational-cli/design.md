@@ -166,33 +166,121 @@ src/
 - 需要自行维护 Prompt 工程
 - 避免了额外的依赖和学习成本
 
+## Implementation Strategy
+
+### 分层分批实现原则
+
+由于本需求涉及 12 个 capability specs，一次性实现会导致：
+- 上下文溢出，AI 开发效果下降
+- 复杂度指数增长，难以追踪问题
+- 缺乏中间验证点，风险集中
+
+采用**分层分批**策略，将实现拆分为 5 个子 change：
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Change 5: polish                                          │
+│  - cli-help-system, cli-category-system                    │
+│  - 命令行模式完善                                           │
+├─────────────────────────────────────────────────────────────┤
+│  Change 4: extend                                          │
+│  - article-publish-cli, deploy-workflow                    │
+│  - system-workflows (start_dev, build, check_status)       │
+├─────────────────────────────────────────────────────────────┤
+│  Change 3: mvp ← 第一个端到端验证                           │
+│  - article-create-cli (完整业务流程)                        │
+├─────────────────────────────────────────────────────────────┤
+│  Change 2: interaction                                     │
+│  - repl-interface, ai-intent-recognizer                    │
+│  - knowledge-generator                                     │
+├─────────────────────────────────────────────────────────────┤
+│  Change 1: core ← 基础设施                                  │
+│  - workflow-engine, step-registry                          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 依赖关系
+
+```
+core → interaction → mvp → extend → polish
+  │         │         │        │        │
+  └─────────┴─────────┴────────┴────────┴──→ 所有 specs 定义在父 change
+```
+
+### 每个 Change 的交付物
+
+| Change | 交付物 | 验证方式 |
+|--------|--------|----------|
+| core | Workflow 引擎 + Step 注册表 | 单元测试 + demo workflow |
+| interaction | AI 意图识别 + REPL 循环 | 输入自然语言 → 打印识别结果 |
+| mvp | 创建文章完整流程 | **端到端：用户输入 → 文章创建成功** |
+| extend | 发布、部署、系统 workflows | 各 workflow 独立验证 |
+| polish | 帮助系统、命令分类 | 完整功能验收 |
+
 ## Migration Plan
 
-### Phase 1: 基础架构
-1. 创建 `src/cli/`, `src/ai/`, `src/workflow/` 目录
-2. 实现 REPL 入口和基础循环
-3. 实现 AI 客户端和意图识别
-4. 实现 Workflow 引擎核心
+### Change 1: ai-conversational-cli-core
 
-### Phase 2: 首个 Workflow
-1. 实现 `create-article` workflow
-2. 从 `scripts/content/new.js` 迁移核心逻辑到 `src/core/content/`
-3. 创建相关 steps（validators, actions）
-4. 验证完整链路
+**目标**: 建立基础设施层
 
-### Phase 3: 扩展 Workflows
+1. 创建 `src/workflow/` 目录
+2. 实现 `workflow-engine`: defineWorkflow, executeWorkflow, context 传递
+3. 创建 `src/steps/` 目录结构
+4. 实现 `step-registry`: registerStep, getStep, 按类型分类
+5. 编写单元测试验证引擎正确性
+
+**验证**: 能定义并执行一个简单的 demo workflow
+
+### Change 2: ai-conversational-cli-interaction
+
+**目标**: 建立 AI 交互层
+
+1. 创建 `src/ai/` 目录
+2. 实现 AI 客户端（复用现有 OpenAI 配置）
+3. 实现 `knowledge-generator`: 从 workflow 提取知识
+4. 实现 `ai-intent-recognizer`: 意图识别 + 参数提取
+5. 创建 `src/cli/` 目录
+6. 实现 `repl-interface`: 基础输入循环
+
+**验证**: REPL 中输入自然语言，正确打印识别的 intent 和 params
+
+### Change 3: ai-conversational-cli-mvp
+
+**目标**: 第一个完整业务流程
+
+1. 从 `scripts/content/new.js` 迁移逻辑到 `src/core/content/`
+2. 实现相关 steps: inputTopic, generateMetadata, createFile 等
+3. 定义 `create-article` workflow
+4. 连接 REPL → 意图识别 → workflow 执行 → 结果返回
+
+**验证**: 用户输入 "创建一篇关于 WebSocket 的文章" → 文件创建成功
+
+### Change 4: ai-conversational-cli-extend
+
+**目标**: 扩展其他 workflows
+
 1. 实现 `publish-article` workflow
 2. 实现 `deploy` workflow
-3. 实现其他 workflows（start-dev, build, check-status 等）
+3. 实现 `system-workflows`: start-dev, build, check-status
+4. 从 `scripts/` 迁移相关逻辑
 
-### Phase 4: 收尾
-1. 完善知识库
-2. 添加帮助和错误处理
-3. 删除 `scripts/` 目录（保留 dev/build/preview）
+**验证**: 各 workflow 独立功能测试
+
+### Change 5: ai-conversational-cli-polish
+
+**目标**: 完善和收尾
+
+1. 实现 `cli-help-system`: AI 问答式帮助
+2. 实现 `cli-category-system`: 意图分类
+3. 完善 `unified-cli-interface`: 命令行模式参数解析
 4. 更新 package.json bin 入口
+5. 删除 `scripts/` 目录（保留 dev/build/preview）
+
+**验证**: 完整功能验收测试
 
 ### Rollback
-- 保留 `scripts/` 目录直到 Phase 4 完成
+- 每个子 change 可独立回滚
+- 保留 `scripts/` 目录直到 Change 5 完成
 - 通过 git 分支隔离变更
 
 ## Open Questions
