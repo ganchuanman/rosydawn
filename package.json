@@ -20,7 +20,9 @@
     "deploy:cron:install": "node scripts/deploy.mjs cron:install",
     "deploy:cron:remove": "node scripts/deploy.mjs cron:remove",
     "deploy:cron:status": "node scripts/deploy.mjs cron:status",
-    "help": "tsx scripts/help.ts"
+    "help": "tsx scripts/help.ts",
+    "repl": "tsx src/cli/repl.ts",
+    "build:knowledge": "tsx scripts/build-knowledge.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",

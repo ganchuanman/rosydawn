@@ -6,6 +6,7 @@
 
 - **静态生成** - 基于 Astro SSG，无需服务器
 - **内容管理** - 使用 Astro Content Collections 管理博客文章
+- **AI 交互** - 通过自然语言与博客系统对话（支持 OpenAI/Azure/Ollama/DeepSeek）
 - **Markdown/MDX** - 支持标准 Markdown 和 MDX 扩展语法
 - **代码高亮** - 集成 Shiki（支持 light/dark 双主题）
 - **暗黑模式** - 支持系统偏好检测和手动切换，无 FOUC
@@ -54,9 +55,17 @@ npm run build
 
 # 预览构建结果
 npm run preview
+
+# 构建 AI 知识库
+npm run build:knowledge
+
+# 启动 AI 对话式 REPL
+npm run repl
 ```
 
 ## 内容创作
+
+### 传统方式
 
 ```bash
 # 交互式创建新博客文章
@@ -65,6 +74,27 @@ npm run content:new
 # 发布文章到 Git 仓库
 npm run content:publish
 ```
+
+### AI 对话式（实验性）
+
+```bash
+# 首次使用需要配置 OPENAI_API_KEY 环境变量
+cp .env.example .env
+# 编辑 .env 文件，填入你的 API Key
+
+# 构建知识库
+npm run build:knowledge
+
+# 启动 AI REPL
+npm run repl
+
+# 示例对话
+🤖 > 创建一篇关于 WebSocket 的文章
+🤖 > 显示所有文章
+🤖 > 发布最新文章
+```
+
+详细使用说明请参考 [docs/ai-interaction.md](docs/ai-interaction.md)。
 
 ### 文章结构
 
