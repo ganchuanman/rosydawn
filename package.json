@@ -7,6 +7,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
     "content:new": "tsx scripts/new.ts",
     "content:publish": "tsx scripts/publish.ts",
     "deploy:build": "node scripts/deploy.mjs build",
@@ -29,5 +31,9 @@
     "pako": "^2.1.0",
     "tsx": "^4.21.0",
     "unist-util-visit": "^5.1.0"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.18",
+    "vitest": "^4.0.18"
   }
 }
