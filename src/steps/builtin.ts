@@ -13,7 +13,10 @@ import {
   checkDirectory,
   validateGitStatus,
   checkWorkingDirectory,
-  validateArticlesDirectory
+  validateArticlesDirectory,
+  checkPort,
+  checkArticleStats,
+  checkDeploymentStatus
 } from './validators/index.js';
 
 // Processors
@@ -24,13 +27,14 @@ import {
   updateFrontmatter,
   buildFrontmatter,
   generateSlug,
+  optimizeAssets,
 } from './processors/index.js';
 
 // Actions
-import { createFile, commitAndPush, startDevServer, gitAdd } from './actions/index.js';
+import { createFile, commitAndPush, startDevServer, gitAdd, buildProject, executeDeploy, cleanDist } from './actions/index.js';
 
 // Notifiers
-import { confirmCreation, editConfirm, showSummary } from './notifiers/index.js';
+import { confirmCreation, editConfirm, showSummary, confirmDeploy } from './notifiers/index.js';
 
 /**
  * 注册所有内置步骤
@@ -51,6 +55,9 @@ export function registerBuiltinSteps(): void {
   registerStep(validateGitStatus);
   registerStep(checkWorkingDirectory);
   registerStep(validateArticlesDirectory);
+  registerStep(checkPort);
+  registerStep(checkArticleStats);
+  registerStep(checkDeploymentStatus);
 
   // Processors
   registerStep(generateMetadata);
@@ -59,17 +66,22 @@ export function registerBuiltinSteps(): void {
   registerStep(updateFrontmatter);
   registerStep(buildFrontmatter);
   registerStep(generateSlug);
+  registerStep(optimizeAssets);
 
   // Actions
   registerStep(createFile);
   registerStep(commitAndPush);
   registerStep(startDevServer);
   registerStep(gitAdd);
+  registerStep(buildProject);
+  registerStep(executeDeploy);
+  registerStep(cleanDist);
 
   // Notifiers
   registerStep(confirmCreation);
   registerStep(editConfirm);
   registerStep(showSummary);
+  registerStep(confirmDeploy);
 }
 
 // 导出所有内置步骤,便于单独使用
@@ -81,6 +93,9 @@ export {
   validateGitStatus,
   checkWorkingDirectory,
   validateArticlesDirectory,
+  checkPort,
+  checkArticleStats,
+  checkDeploymentStatus,
   // Processors
   generateMetadata,
   collectExistingTags,
@@ -88,13 +103,18 @@ export {
   updateFrontmatter,
   buildFrontmatter,
   generateSlug,
+  optimizeAssets,
   // Actions
   createFile,
   commitAndPush,
   startDevServer,
   gitAdd,
+  buildProject,
+  executeDeploy,
+  cleanDist,
   // Notifiers
   confirmCreation,
   editConfirm,
   showSummary,
+  confirmDeploy,
 };

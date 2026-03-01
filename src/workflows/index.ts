@@ -1,5 +1,10 @@
 import { registerWorkflow } from '../workflow/registry.js';
 import { createArticleWorkflow } from './create-article.js';
+import { publishArticleWorkflow } from './publish-article.js';
+import { deployWorkflow } from './deploy.js';
+import { startDevWorkflow } from './start-dev.js';
+import { buildWorkflow } from './build.js';
+import { checkStatusWorkflow } from './check-status.js';
 import { mockListArticlesWorkflow } from './mock-list-articles.js';
 import { mockPublishWorkflow } from './mock-publish.js';
 
@@ -11,12 +16,17 @@ import { mockPublishWorkflow } from './mock-publish.js';
 export function registerAllWorkflows(): void {
   // 注册真实的 Workflows
   registerWorkflow(createArticleWorkflow);
+  registerWorkflow(publishArticleWorkflow);
+  registerWorkflow(deployWorkflow);
+  registerWorkflow(startDevWorkflow);
+  registerWorkflow(buildWorkflow);
+  registerWorkflow(checkStatusWorkflow);
 
   // 注册 Mock Workflows（用于测试）
   registerWorkflow(mockListArticlesWorkflow);
   registerWorkflow(mockPublishWorkflow);
 
-  console.log('✅ 已注册 3 个 Workflows (1 real, 2 mock)');
+  console.log('✅ 已注册 8 个 Workflows (6 real, 2 mock)');
 }
 
 /**
@@ -24,6 +34,11 @@ export function registerAllWorkflows(): void {
  */
 export {
   createArticleWorkflow,
+  publishArticleWorkflow,
+  deployWorkflow,
+  startDevWorkflow,
+  buildWorkflow,
+  checkStatusWorkflow,
   mockListArticlesWorkflow,
   mockPublishWorkflow
 };

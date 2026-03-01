@@ -1,22 +1,32 @@
 #!/usr/bin/env node
 
 /**
+ * @deprecated
+ * 此脚本已被新的 workflow 系统替代。
+ *
+ * 请使用以下新命令：
+ * - REPL 模式: rosydawn（然后输入"部署"）
+ * - 命令行模式: rosydawn deploy
+ *
+ * 新的 workflow 提供了更好的用户体验和更强大的功能。
+ * 此脚本将在未来 1-2 个版本后移除。
+ *
  * ============================================
  * Rosydawn 博客部署脚本 (Node.js 版本)
  * ============================================
- * 
+ *
  * 基础命令:
  *   node scripts/deploy.mjs build         - 构建并部署到 Nginx 目录
  *   node scripts/deploy.mjs ssl           - 配置 HTTPS
  *   node scripts/deploy.mjs status        - 显示部署状态
  *   node scripts/deploy.mjs help          - 显示帮助信息
- * 
+ *
  * 自动部署命令 (Cron):
  *   node scripts/deploy.mjs cron          - 单次检查更新（供 cron 调用）
  *   node scripts/deploy.mjs cron:install  - 安装 cron 定时任务
  *   node scripts/deploy.mjs cron:remove   - 移除 cron 定时任务
  *   node scripts/deploy.mjs cron:status   - 查看任务状态
- * 
+ *
  * npm 脚本:
  *   npm run deploy              # 构建并部署
  *   npm run deploy:ssl          # 配置 HTTPS

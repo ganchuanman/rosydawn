@@ -10,3 +10,4 @@ export { inputTopic } from './input-topic.js';
 export { updateFrontmatter } from './frontmatter.js';
 export { buildFrontmatter } from './build-frontmatter.js';
 export { generateSlug } from './slug.js';
+export { optimizeAssets } from './optimize.js';

@@ -7,3 +7,4 @@
 export { confirmCreation } from './confirm.js';
 export { editConfirm } from './edit.js';
 export { showSummary } from './summary.js';
+export { confirmDeploy } from './deploy-confirm.js';

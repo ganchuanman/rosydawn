@@ -1,3 +1,15 @@
+/**
+ * @deprecated
+ * 此脚本已被新的 workflow 系统替代。
+ *
+ * 请使用以下新命令：
+ * - REPL 模式: rosydawn（然后输入"发布"）
+ * - 命令行模式: rosydawn content publish
+ *
+ * 新的 workflow 提供了更好的用户体验和更强大的功能。
+ * 此脚本将在未来 1-2 个版本后移除。
+ */
+
 import 'dotenv/config';
 import { input, confirm, select } from '@inquirer/prompts';
 import { readFileSync, readdirSync, statSync } from 'node:fs';

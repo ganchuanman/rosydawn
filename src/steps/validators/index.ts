@@ -7,3 +7,6 @@
 export { checkGitChanges, validateGitStatus, checkWorkingDirectory } from './git.js';
 export { getChangedArticles } from './articles.js';
 export { checkDirectory, validateArticlesDirectory } from './directory.js';
+export { checkPort } from './port.js';
+export { checkArticleStats } from './article-stats.js';
+export { checkDeploymentStatus } from './deployment-status.js';

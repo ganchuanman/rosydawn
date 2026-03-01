@@ -9,6 +9,63 @@
 
 ### 新增
 
+#### AI 对话式 CLI 扩展 - 5 个新 Workflows
+
+**日期**: 2026-03-01
+
+**功能概述**:
+扩展了 AI 对话式 CLI 系统，新增 5 个业务 Workflows，覆盖发布、部署、系统操作三大场景。
+
+**新增 Workflows**:
+
+1. **publish-article Workflow**
+   - 检测未发布的文章变更
+   - 生成元数据（标签、分类等）
+   - 用户确认和编辑
+   - Git 提交和推送
+   - 命令: `rosydawn content publish` 或 REPL 中输入"发布"
+
+2. **deploy Workflow**
+   - 检查 Git 状态
+   - 构建项目
+   - 部署前确认
+   - 部署到 Nginx 服务器
+   - 命令: `rosydawn deploy` 或 REPL 中输入"部署"
+
+3. **start-dev Workflow**
+   - 检查端口可用性
+   - 启动本地开发服务器
+   - 端口冲突自动处理
+   - 命令: `rosydawn dev` 或 REPL 中输入"启动开发服务器"
+
+4. **build Workflow**
+   - 清理构建目录
+   - 构建项目
+   - 优化资源
+   - 命令: `rosydawn build` 或 REPL 中输入"构建项目"
+
+5. **check-status Workflow**
+   - 检查 Git 状态
+   - 统计文章数量（已发布/未发布）
+   - 显示部署状态
+   - 命令: `rosydawn status` 或 REPL 中输入"检查状态"
+
+**新增 Steps**:
+
+- `buildProject` - 执行项目构建
+- `executeDeploy` - 部署到服务器
+- `confirmDeploy` - 部署前确认
+- `checkPort` - 检查端口可用性
+- `cleanDist` - 清理构建目录
+- `optimizeAssets` - 优化构建资源
+- `checkArticleStats` - 文章统计
+- `checkDeploymentStatus` - 部署状态检查
+
+**迁移说明**:
+- 旧脚本 `scripts/publish.ts` 和 `scripts/deploy.mjs` 已标记为 deprecated
+- 建议使用新的 workflow 系统替代
+- 旧脚本将在未来 1-2 个版本后移除
+
 #### AI 对话式 CLI MVP
 
 **日期**: 2026-03-01
