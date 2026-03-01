@@ -2,7 +2,8 @@
 
 import fs from 'fs';
 import path from 'path';
-import { registerMockWorkflows } from '../src/workflows/index.js';
+import { registerAllWorkflows } from '../src/workflows/index.js';
+import { registerBuiltinSteps } from '../src/steps/builtin.js';
 import { workflowRegistry } from '../src/workflow/registry.js';
 import { generateKnowledgeBase } from '../src/knowledge/generator.js';
 
@@ -17,9 +18,10 @@ async function buildKnowledge(): Promise<void> {
   console.log('');
 
   try {
-    // 1. 注册所有 Workflows
-    console.log('📦 Step 1: 注册 Workflows...');
-    registerMockWorkflows();
+    // 1. 注册 Steps 和 Workflows
+    console.log('📦 Step 1: 注册 Steps 和 Workflows...');
+    registerBuiltinSteps();
+    registerAllWorkflows();
 
     // 获取所有已注册的 Workflows
     const workflowNames = workflowRegistry.getAllNames();

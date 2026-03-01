@@ -8,3 +8,5 @@ export { generateMetadata } from './metadata.js';
 export { collectExistingTags } from './tags.js';
 export { inputTopic } from './input-topic.js';
 export { updateFrontmatter } from './frontmatter.js';
+export { buildFrontmatter } from './build-frontmatter.js';
+export { generateSlug } from './slug.js';

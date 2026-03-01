@@ -1,0 +1,36 @@
+#!/usr/bin/env node
+
+/**
+ * Rosydawn CLI 入口
+ *
+ * 根据参数判断进入 REPL 模式还是命令行模式
+ */
+
+import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// 判断运行模式
+const args = process.argv.slice(2);
+
+// 使用 npx 运行 tsx
+const tsxPath = join(__dirname, '../node_modules/.bin/tsx');
+
+if (args.length === 0) {
+  // 无参数 -> REPL 模式
+  const child = spawn(tsxPath, [join(__dirname, '../src/cli/repl.ts')], {
+    stdio: 'inherit',
+    env: process.env
+  });
+  child.on('exit', (code) => process.exit(code || 0));
+} else {
+  // 有参数 -> 命令行模式
+  const child = spawn(tsxPath, [join(__dirname, '../src/cli/cli.ts'), ...args], {
+    stdio: 'inherit',
+    env: process.env
+  });
+  child.on('exit', (code) => process.exit(code || 0));
+}

@@ -12,8 +12,9 @@ export const createFile = defineStep({
   name: 'createFile',
   description: '创建新的文章 markdown 文件',
   execute: async (ctx) => {
-    const filePath = ctx.params.filePath;
-    const content = ctx.params.content || '';
+    // 从上下文获取文件路径（优先从 generateSlug step 获取）
+    const filePath = ctx.params.filePath || ctx.steps.generateSlug?.filePath;
+    const frontmatter = ctx.steps.buildFrontmatter?.frontmatter || '';
     const template = ctx.params.template;
 
     if (!filePath) {
@@ -27,14 +28,22 @@ export const createFile = defineStep({
         fs.mkdirSync(dir, { recursive: true });
       }
 
+      // 准备文件内容
+      let finalContent = frontmatter;
+
       // 如果提供了模板,使用模板内容
-      let finalContent = content;
       if (template && fs.existsSync(template)) {
-        finalContent = fs.readFileSync(template, 'utf-8');
+        const templateContent = fs.readFileSync(template, 'utf-8');
+        finalContent = frontmatter + templateContent;
+      } else {
+        // 默认添加一个简单的 TODO 提示
+        finalContent += '\n<!-- 在这里编写文章内容 -->\n';
       }
 
-      // 写入文件
-      fs.writeFileSync(filePath, finalContent, 'utf-8');
+      // 写入文件（使用原子操作）
+      const tempPath = filePath + '.tmp';
+      fs.writeFileSync(tempPath, finalContent, 'utf-8');
+      fs.renameSync(tempPath, filePath);
 
       return {
         success: true,

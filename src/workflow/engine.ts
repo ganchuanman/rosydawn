@@ -52,6 +52,7 @@ export function defineWorkflow(definition: Workflow): Workflow {
  *
  * @param workflow - Workflow 对象
  * @param params - 执行参数
+ * @param customMetadata - 自定义元数据（可选）
  * @returns Workflow 执行结果
  *
  * @example
@@ -66,7 +67,8 @@ export function defineWorkflow(definition: Workflow): Workflow {
  */
 export async function executeWorkflow(
   workflow: Workflow,
-  params: Record<string, any> = {}
+  params: Record<string, any> = {},
+  customMetadata: Record<string, any> = {}
 ): Promise<WorkflowResult> {
   // 初始化上下文
   const context: WorkflowContext = {
@@ -75,12 +77,19 @@ export async function executeWorkflow(
     metadata: {
       workflowName: workflow.name,
       startTime: new Date().toISOString(),
+      ...customMetadata,
     },
   };
 
   try {
     // 按顺序执行 steps
-    for (const step of workflow.steps) {
+    console.log(`\n📋 开始执行 Workflow: ${workflow.name}`);
+    console.log(`   共 ${workflow.steps.length} 个步骤\n`);
+
+    for (let i = 0; i < workflow.steps.length; i++) {
+      const step = workflow.steps[i];
+      console.log(`[${i + 1}/${workflow.steps.length}] 执行: ${step.name} (${step.type})`);
+
       const stepResult = await executeStep(step, context);
 
       // 如果 step 执行失败

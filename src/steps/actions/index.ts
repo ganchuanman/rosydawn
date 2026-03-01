@@ -5,5 +5,5 @@
  */
 
 export { createFile } from './file.js';
-export { commitAndPush } from './git.js';
+export { commitAndPush, gitAdd } from './git.js';
 export { startDevServer } from './server.js';

@@ -67,7 +67,7 @@ rosydawn
 
 # 期望输出
 已创建文章《WebSocket 实时通信详解》
-文件路径: src/content/posts/2026/02/websocket-shi-shi-tong-xin-xiang-jie.md
+文件路径: src/content/posts/2026/02/websocket-shi-shi-tong-xin-xiang-jie/index.md
 预览地址: http://localhost:4321/posts/websocket-shi-shi-tong-xin-xiang-jie
 ```
 

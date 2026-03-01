@@ -5,6 +5,64 @@ import { promisify } from 'util';
 const execAsync = promisify(exec);
 
 /**
+ * 验证 Git 仓库状态
+ *
+ * 检查当前目录是否为 Git 仓库
+ */
+export const validateGitStatus = defineStep({
+  type: 'validator',
+  name: 'validateGitStatus',
+  description: '检查当前目录是否为 Git 仓库',
+  execute: async (ctx) => {
+    try {
+      await execAsync('git rev-parse --git-dir');
+
+      return {
+        isGitRepo: true,
+      };
+    } catch (error) {
+      throw new Error('当前目录不是 Git 仓库。请先运行 git init 初始化仓库');
+    }
+  },
+});
+
+/**
+ * 检查工作目录状态
+ *
+ * 检查是否有未提交的更改，仅警告不中断
+ */
+export const checkWorkingDirectory = defineStep({
+  type: 'validator',
+  name: 'checkWorkingDirectory',
+  description: '检查工作目录是否干净',
+  execute: async (ctx) => {
+    try {
+      const { stdout } = await execAsync('git status --porcelain');
+
+      if (stdout && stdout.trim() !== '') {
+        console.warn('⚠️  警告: 工作目录有未提交的更改');
+        return {
+          isClean: false,
+          hasUncommittedChanges: true,
+        };
+      }
+
+      return {
+        isClean: true,
+        hasUncommittedChanges: false,
+      };
+    } catch (error) {
+      // 如果检查失败，继续执行（不阻塞流程）
+      console.warn('⚠️  警告: 无法检查工作目录状态');
+      return {
+        isClean: true,
+        hasUncommittedChanges: false,
+      };
+    }
+  },
+});
+
+/**
  * 检查 Git 变更
  *
  * @returns 变更文件列表或抛出错误

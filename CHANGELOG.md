@@ -7,6 +7,71 @@
 
 ## [Unreleased]
 
+### 新增
+
+#### AI 对话式 CLI MVP
+
+**日期**: 2026-03-01
+
+**功能概述**:
+实现了基于 Step 架构的 AI 对话式 CLI,支持通过自然语言或命令行创建博客文章。
+
+**新增功能**:
+
+1. **双模式 CLI**
+   - REPL 模式: 通过自然语言与 AI 交互创建文章
+   - 命令行模式: 使用传统命令行参数创建文章
+   - 自动模式切换: 无参数启动 REPL,有参数执行命令
+
+2. **Step 架构**
+   - Validators: Git 状态验证、目录结构验证
+   - Processors: 主题输入、元数据生成、Frontmatter 构建、Slug 生成
+   - Notifiers: 用户确认、完成摘要显示
+   - Actions: 文件创建、开发服务器管理、Git 操作
+
+3. **create-article Workflow**
+   - 11 步完整文章创建流程
+   - 支持参数: `topic` (必填), `tags`, `category`, `date` (可选)
+   - 中文标题自动转拼音 slug
+   - 自动添加 Git 暂存区
+   - 自动启动开发服务器
+
+4. **命令行接口**
+   ```bash
+   # REPL 模式
+   rosydawn
+
+   # 命令行模式
+   rosydawn content new --topic "文章标题" --tags "标签1,标签2" --category "分类" --date "2026-03-01"
+
+   # 帮助
+   rosydawn --help
+   ```
+
+5. **AI 集成**
+   - 意图识别: 自动识别用户意图并路由到对应 Workflow
+   - 参数提取: 从自然语言中提取 topic、tags、category 等参数
+   - 元数据生成: AI 生成文章标题、描述和标签
+   - 降级处理: AI 服务不可用时使用基础模板
+
+**技术特性**:
+- TypeScript + ESM 模块
+- 完整的错误处理和用户反馈
+- 原子操作避免半成品状态
+- 参数验证和类型推断
+- 工作流引擎支持顺序执行和上下文传递
+
+**文件变更**:
+- 新增 `bin/rosydawn` - CLI 入口
+- 新增 `src/cli/cli.ts` - 命令行模式
+- 新增 `src/cli/repl.ts` - REPL 模式
+- 新增 `src/cli/help.ts` - 帮助系统
+- 新增 `src/workflows/create-article.ts` - 文章创建工作流
+- 新增 `src/steps/` - Step 架构实现
+- 更新 `package.json` - 添加 bin 字段和 pinyin 依赖
+
+---
+
 ### 移除
 
 #### ⚠️ 破坏性变更: 移除邮件通知服务

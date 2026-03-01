@@ -6,7 +6,8 @@ dotenv.config();
 
 import { input } from '@inquirer/prompts';
 import { version } from '../../package.json' with { type: 'json' };
-import { registerMockWorkflows } from '../workflows/index.js';
+import { registerAllWorkflows } from '../workflows/index.js';
+import { registerBuiltinSteps } from '../steps/builtin.js';
 import { executeWorkflow } from '../workflow/engine.js';
 import { routeWorkflow } from '../workflow/registry.js';
 import { recognizeIntent } from '../ai/intent-recognizer.js';
@@ -107,7 +108,16 @@ async function processInput(userInput: string, knowledge: KnowledgeBase): Promis
         // 执行 Workflow
         const workflow = routeWorkflow(result.intent);
         if (workflow) {
-          await executeWorkflow(workflow, result.params);
+          console.log('\n🚀 开始执行 Workflow:', workflow.name);
+          console.log('   参数:', JSON.stringify(result.params, null, 2));
+          console.log('');
+          try {
+            await executeWorkflow(workflow, result.params, { mode: 'repl' });
+            console.log('\n✅ Workflow 执行完成\n');
+          } catch (error: any) {
+            console.error('\n❌ Workflow 执行失败:', error.message);
+            console.error('');
+          }
         } else {
           console.log('❌ 未找到对应的 Workflow:', result.intent);
           console.log('');
@@ -161,11 +171,14 @@ async function startREPL(): Promise<void> {
     process.exit(1);
   }
 
-  // 加载知识库
-  const knowledge = await loadKnowledge();
+  // 注册内置 Steps
+  registerBuiltinSteps();
 
-  // 注册 Mock Workflows
-  registerMockWorkflows();
+  // 注册 Workflows
+  registerAllWorkflows();
+
+  // 加载知识库（在 Workflows 注册后）
+  const knowledge = await loadKnowledge();
 
   // 主循环
   while (true) {

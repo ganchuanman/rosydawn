@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import type { KnowledgeBase } from './types.js';
 import { generateKnowledgeBase } from './generator.js';
-import { registerMockWorkflows } from '../workflows/index.js';
 import { workflowRegistry } from '../workflow/registry.js';
 
 /**
@@ -31,10 +30,7 @@ async function loadKnowledgeDev(): Promise<KnowledgeBase> {
 
   const startTime = Date.now();
 
-  // 注册 Workflows
-  registerMockWorkflows();
-
-  // 生成知识库
+  // 生成知识库（Workflows 应该在调用此函数前已注册）
   const workflowNames = workflowRegistry.getAllNames();
   const workflows = workflowNames
     .map((name) => workflowRegistry.getByName(name)!)

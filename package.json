@@ -2,6 +2,9 @@
   "name": "rosydawn",
   "type": "module",
   "version": "0.0.1",
+  "bin": {
+    "rosydawn": "./bin/rosydawn"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -27,10 +30,12 @@
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
     "@inquirer/prompts": "^8.2.0",
+    "@types/pinyin": "^2.10.2",
     "astro": "^5.17.1",
     "dotenv": "^17.2.4",
     "openai": "^6.18.0",
     "pako": "^2.1.0",
+    "pinyin": "^4.0.0",
     "tsx": "^4.21.0",
     "unist-util-visit": "^5.1.0"
   },
