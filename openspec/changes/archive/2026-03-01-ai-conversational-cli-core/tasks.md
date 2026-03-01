@@ -55,7 +55,7 @@
 - [x] 7.1 实现 checkGitChanges step - 检查 Git 变更
 - [x] 7.2 实现 getChangedArticles step - 检测文章变更
 - [x] 7.3 实现 checkDirectory step - 检查目录存在性
-- [ ] 7.4 编写 validators 单元测试
+- [x] 7.4 编写 validators 单元测试
 
 ## 8. 内置 Steps - Processors
 
@@ -63,20 +63,20 @@
 - [x] 8.2 实现 collectExistingTags step - 收集现有标签
 - [x] 8.3 实现 inputTopic step - 处理主题参数缺失
 - [x] 8.4 实现 updateFrontmatter step - 更新文章 frontmatter
-- [ ] 8.5 编写 processors 单元测试
+- [x] 8.5 编写 processors 单元测试
 
 ## 9. 内置 Steps - Actions
 
 - [x] 9.1 实现 createFile step - 创建文件
 - [x] 9.2 实现 commitAndPush step - Git 提交和推送
 - [x] 9.3 实现 startDevServer step - 启动开发服务器
-- [ ] 9.4 编写 actions 单元测试
+- [x] 9.4 编写 actions 单元测试
 
 ## 10. 内置 Steps - Notifiers
 
 - [x] 10.1 实现 confirmCreation step - 确认创建
 - [x] 10.2 实现 editConfirm step - 编辑确认
-- [ ] 10.3 编写 notifiers 单元测试
+- [x] 10.3 编写 notifiers 单元测试
 
 ## 11. 内置 Steps - 注册和导出
 
@@ -86,43 +86,43 @@
 
 ## 12. 单元测试 - Workflow 引擎
 
-- [ ] 12.1 编写 defineWorkflow 测试（TC-01）
-- [ ] 12.2 编写 Workflow 参数定义测试（TC-02, TC-03）
-- [ ] 12.3 编写 step 顺序执行测试（TC-04）
-- [ ] 12.4 编写 Validator 失败中断测试（TC-05）
-- [ ] 12.5 编写 Processor 失败中断测试（TC-06）
-- [ ] 12.6 编写 Action 失败中断测试（TC-07）
-- [ ] 12.7 编写 Notifier 失败不中断测试（TC-08）
-- [ ] 12.8 编写 context 写入测试（TC-09）
-- [ ] 12.9 编写 context 读取测试（TC-10）
-- [ ] 12.10 编写意图路由测试（TC-11, TC-12）
-- [ ] 12.11 编写结果返回测试（TC-13, TC-14）
+- [x] 12.1 编写 defineWorkflow 测试（TC-01）
+- [x] 12.2 编写 Workflow 参数定义测试（TC-02, TC-03）
+- [x] 12.3 编写 step 顺序执行测试（TC-04）
+- [x] 12.4 编写 Validator 失败中断测试（TC-05）
+- [x] 12.5 编写 Processor 失败中断测试（TC-06）
+- [x] 12.6 编写 Action 失败中断测试（TC-07）
+- [x] 12.7 编写 Notifier 失败不中断测试（TC-08）
+- [x] 12.8 编写 context 写入测试（TC-09）
+- [x] 12.9 编写 context 读取测试（TC-10）
+- [x] 12.10 编写意图路由测试（TC-11, TC-12）
+- [x] 12.11 编写结果返回测试（TC-13, TC-14）
 
 ## 13. 单元测试 - Step 注册表
 
-- [ ] 13.1 编写 defineStep 测试（TC-15）
-- [ ] 13.2 编写 Step 类型约束测试（TC-16）
-- [ ] 13.3 编写注册 Step 测试（TC-17）
-- [ ] 13.4 编写查找 Step 测试（TC-18）
-- [ ] 13.5 编写重复注册警告测试（TC-19）
-- [ ] 13.6 编写按 type 分类存储测试（TC-20）
-- [ ] 13.7 编写列出某类型所有 steps 测试（TC-21）
+- [x] 13.1 编写 defineStep 测试（TC-15）
+- [x] 13.2 编写 Step 类型约束测试（TC-16）
+- [x] 13.3 编写注册 Step 测试（TC-17）
+- [x] 13.4 编写查找 Step 测试（TC-18）
+- [x] 13.5 编写重复注册警告测试（TC-19）
+- [x] 13.6 编写按 type 分类存储测试（TC-20）
+- [x] 13.7 编写列出某类型所有 steps 测试（TC-21）
 
 ## 14. 集成测试 - 内置 Steps
 
-- [ ] 14.1 编写 checkGitChanges 测试（TC-22, TC-23）
-- [ ] 14.2 编写 getChangedArticles 测试（TC-24, TC-25）
-- [ ] 14.3 编写 checkDirectory 测试（TC-26, TC-27）
-- [ ] 14.4 编写 generateMetadata 测试（TC-28）
-- [ ] 14.5 编写 collectExistingTags 测试（TC-29）
-- [ ] 14.6 编写 inputTopic 测试（TC-30）
-- [ ] 14.7 编写 updateFrontmatter 测试（TC-31）
-- [ ] 14.8 编写 createFile 测试（TC-32）
-- [ ] 14.9 编写 commitAndPush 测试（TC-33）
-- [ ] 14.10 编写 startDevServer 测试（TC-34）
-- [ ] 14.11 编写 confirmCreation 测试（TC-35, TC-36）
-- [ ] 14.12 编写 editConfirm 测试（TC-37）
-- [ ] 14.13 编写跨 Workflow 复用测试（TC-38）
+- [x] 14.1 编写 checkGitChanges 测试（TC-22, TC-23）
+- [x] 14.2 编写 getChangedArticles 测试（TC-24, TC-25）
+- [x] 14.3 编写 checkDirectory 测试（TC-26, TC-27）
+- [x] 14.4 编写 generateMetadata 测试（TC-28）
+- [x] 14.5 编写 collectExistingTags 测试（TC-29）
+- [x] 14.6 编写 inputTopic 测试（TC-30）
+- [x] 14.7 编写 updateFrontmatter 测试（TC-31）
+- [x] 14.8 编写 createFile 测试（TC-32）
+- [x] 14.9 编写 commitAndPush 测试（TC-33）
+- [x] 14.10 编写 startDevServer 测试（TC-34）
+- [x] 14.11 编写 confirmCreation 测试（TC-35, TC-36）
+- [x] 14.12 编写 editConfirm 测试（TC-37）
+- [x] 14.13 编写跨 Workflow 复用测试（TC-38）
 
 ## 15. 端到端测试
 
@@ -139,8 +139,8 @@
 
 ## 17. 回归测试
 
-- [ ] 17.1 验证向后兼容性（RT-01）- 运行现有 CLI 命令
-- [ ] 17.2 验证 TypeScript strict mode（RT-02）- 运行 tsc --noEmit
+- [x] 17.1 验证向后兼容性（RT-01）- 运行现有 CLI 命令
+- [x] 17.2 验证 TypeScript strict mode（RT-02）- 运行 tsc --noEmit
 
 ## 18. 文档和注释
 

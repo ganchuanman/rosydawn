@@ -65,7 +65,68 @@ npm run repl
 
 ## 内容创作
 
-### 传统方式
+### 统一 CLI（推荐）
+
+Rosydawn 提供统一的命令行接口，支持两种模式：
+
+#### REPL 模式（AI 对话）
+
+```bash
+# 启动交互式 REPL
+rosydawn
+
+# 或使用 npm
+npm run repl
+```
+
+进入 REPL 后，可以用自然语言与系统对话：
+
+```
+🤖 > 怎么创建文章？
+🤖 > 创建一篇关于 WebSocket 的文章
+🤖 > 如何部署？
+🤖 > 能做什么？
+```
+
+#### 命令行模式
+
+```bash
+# 查看帮助
+rosydawn --help
+
+# 创建文章
+rosydawn new --topic "WebSocket 实战指南"
+
+# 发布文章
+rosydawn publish --slug "2026/03/my-article"
+
+# 部署博客
+rosydawn deploy
+
+# 启动开发服务器
+rosydawn dev
+
+# 构建站点
+rosydawn build
+
+# 检查状态
+rosydawn status
+```
+
+#### 命令别名
+
+为方便使用，所有命令都支持短别名：
+
+| 完整命令 | 别名 | 说明 |
+|---------|------|------|
+| `rosydawn content:new` | `rosydawn new` | 创建文章 |
+| `rosydawn content:publish` | `rosydawn publish` | 发布文章 |
+| `rosydawn deploy:apply` | `rosydawn deploy` | 部署 |
+| `rosydawn dev:start` | `rosydawn dev` | 开发服务器 |
+| `rosydawn build:run` | `rosydawn build` | 构建 |
+| `rosydawn status:check` | `rosydawn status` | 检查状态 |
+
+### 传统方式（已废弃）
 
 ```bash
 # 交互式创建新博客文章

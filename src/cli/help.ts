@@ -1,5 +1,27 @@
 /**
- * 显示帮助信息
+ * 帮助系统
+ *
+ * 提供命令行模式的帮助信息生成
+ */
+
+import type { CommandRegistry } from './command-registry.js';
+
+/**
+ * 显示全局帮助
+ */
+export function showGlobalHelp(registry: CommandRegistry): void {
+  console.log(registry.getHelp());
+}
+
+/**
+ * 显示命令帮助
+ */
+export function showCommandHelp(registry: CommandRegistry, command: string): void {
+  console.log(registry.getHelp(command));
+}
+
+/**
+ * 显示旧版帮助（向后兼容）
  */
 export function showHelp(): void {
   console.log('');
@@ -11,29 +33,31 @@ export function showHelp(): void {
   console.log('  rosydawn --help                    显示帮助信息');
   console.log('');
   console.log('COMMANDS:');
-  console.log('  content new --topic <topic>        创建一篇新文章');
-  console.log('    Options:');
-  console.log('      --topic <topic>                (必需) 文章主题');
-  console.log('      --tags <tags>                  (可选) 标签，逗号分隔');
-  console.log('      --category <category>          (可选) 分类');
+  console.log('  new, content:new        创建新文章');
+  console.log('  publish, content:publish 发布文章');
+  console.log('  deploy, deploy:apply    部署博客');
+  console.log('  dev, dev:start          启动开发服务器');
+  console.log('  build, build:run        构建站点');
+  console.log('  status, status:check    检查状态');
   console.log('');
   console.log('REPL MODE:');
   console.log('  启动 REPL 模式后，可以使用自然语言与 AI 对话：');
   console.log('');
   console.log('  示例:');
-  console.log('    🤖 > 创建一篇关于 WebSocket 的文章');
-  console.log('    🤖 > 列出所有文章');
-  console.log('    🤖 > 发布最新文章');
+  console.log('    🤖 > 怎么创建文章？');
+  console.log('    🤖 > 如何部署？');
+  console.log('    🤖 > 能做什么？');
   console.log('    🤖 > exit                        退出 REPL');
   console.log('');
   console.log('EXAMPLES:');
   console.log('  # REPL 模式（推荐）');
   console.log('  $ rosydawn');
-  console.log('  🤖 > 创建一篇关于 GraphQL 的文章');
+  console.log('  🤖 > 创建一篇关于 WebSocket 的文章');
   console.log('');
   console.log('  # 命令行模式');
-  console.log('  $ rosydawn content new --topic "GraphQL 入门教程"');
-  console.log('  $ rosydawn content new --topic "WebSocket" --tags "network,realtime"');
+  console.log('  $ rosydawn new --topic "WebSocket 实战"');
+  console.log('  $ rosydawn publish --slug "2026/03/my-article"');
+  console.log('  $ rosydawn deploy');
   console.log('');
   console.log('CONFIGURATION:');
   console.log('  创建 .env 文件并配置以下环境变量：');

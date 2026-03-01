@@ -8,8 +8,15 @@ import { registerAllWorkflows } from '../workflows/index.js';
 import { registerBuiltinSteps } from '../steps/builtin.js';
 import { executeWorkflow } from '../workflow/engine.js';
 import { getWorkflowByName } from '../workflow/registry.js';
-import { showHelp } from './help.js';
+import { showGlobalHelp, showCommandHelp } from './help.js';
+import { CommandRegistry } from './command-registry.js';
+import { setupCommands, getRegisteredWorkflows } from './command-setup.js';
+import { parseCommandArgs, showParamErrors } from './param-parser.js';
 import type { Workflow } from '../workflow/types.js';
+
+// 初始化 CommandRegistry
+const registry = new CommandRegistry();
+setupCommands(registry);
 
 /**
  * 命令到 Workflow 的映射表
@@ -159,52 +166,68 @@ async function main(): Promise<void> {
   // 获取命令行参数（排除 node 和脚本路径）
   const args = process.argv.slice(2);
 
-  // 检查帮助标志
-  if (args.includes('--help') || args.includes('-h') || args.length === 0) {
-    showHelp();
-    process.exit(0);
-  }
-
   // 注册 Steps 和 Workflows
   registerBuiltinSteps();
   registerAllWorkflows();
 
-  // 解析参数
-  const { command, params } = parseArgs(args);
+  // 验证命令映射完整性
+  const warnings = registry.validateCompleteness(getRegisteredWorkflows());
+  if (warnings.length > 0) {
+    console.warn('⚠️  命令映射警告:');
+    warnings.forEach(w => console.warn(`   ${w}`));
+  }
 
-  // 检查命令是否存在
-  if (!command) {
-    console.error('Error: No command specified');
-    console.log('\nRun "rosydawn --help" for usage information');
+  // 检查无参数 - 显示全局帮助
+  if (args.length === 0) {
+    showGlobalHelp(registry);
+    process.exit(0);
+  }
+
+  // 提取命令和参数
+  let commandInput = args[0];
+  let commandArgs = args.slice(1);
+
+  // 检查是否是多词命令 (如 "content new")
+  if (args.length > 1 && !args[1].startsWith('-')) {
+    commandInput = `${args[0]} ${args[1]}`;
+    commandArgs = args.slice(2);
+  }
+
+  // 检查全局帮助标志
+  if ((args[0] === '--help' || args[0] === '-h') && args.length === 1) {
+    showGlobalHelp(registry);
+    process.exit(0);
+  }
+
+  // 检查命令帮助请求
+  if (commandArgs.includes('--help') || commandArgs.includes('-h')) {
+    showCommandHelp(registry, commandInput);
+    process.exit(0);
+  }
+
+  // 解析命令
+  const config = registry.resolve(commandInput);
+  if (!config) {
+    console.error(`❌ 未知命令: ${commandInput}`);
+    console.error('');
+    console.error('运行 "rosydawn --help" 查看所有可用命令');
     process.exit(1);
   }
 
-  // 查找对应的 Workflow
-  const workflowName = COMMAND_WORKFLOW_MAP[command];
-  if (!workflowName) {
-    console.error(`Error: Unknown command '${command}'`);
-    console.log('\nAvailable commands:');
-    Object.keys(COMMAND_WORKFLOW_MAP).forEach(cmd => {
-      console.log(`  ${cmd}`);
-    });
+  // 解析参数
+  const { params, errors } = parseCommandArgs(commandArgs, config);
+
+  // 显示参数错误
+  if (errors.length > 0) {
+    showParamErrors(errors, config);
     process.exit(1);
   }
 
   // 获取 Workflow
-  const workflow = getWorkflowByName(workflowName);
+  const workflow = getWorkflowByName(config.workflow);
   if (!workflow) {
-    console.error(`Error: Workflow '${workflowName}' not found`);
+    console.error(`❌ Workflow 未找到: ${config.workflow}`);
     process.exit(1);
-  }
-
-  // 验证必填参数
-  if (workflow.params?.required) {
-    const validation = validateRequiredParams(params, workflow.params.required);
-    if (!validation.valid) {
-      console.error(`Error: Missing required argument: ${validation.missing[0]}`);
-      showUsage(command, workflow);
-      process.exit(1);
-    }
   }
 
   // 执行 Workflow

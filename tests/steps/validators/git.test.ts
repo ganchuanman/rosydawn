@@ -146,5 +146,4 @@ describe('validateArticlesDirectory', () => {
       await fs.rmdirSync(protectedDir, { recursive: true });
     }
   });
-  }
-());
+});

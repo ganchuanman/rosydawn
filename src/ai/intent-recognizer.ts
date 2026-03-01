@@ -4,6 +4,79 @@ import { aiCache } from './cache.js';
 import type { KnowledgeBase } from '../knowledge/types.js';
 
 /**
+ * 意图分类映射
+ *
+ * 将意图按能力域分类，便于组织和显示
+ */
+export const CATEGORY_MAP: Record<string, {
+  category: 'content' | 'deploy' | 'system' | 'help';
+  description: string;
+}> = {
+  // Content 类意图（内容管理）
+  create_article: {
+    category: 'content',
+    description: '创建新文章'
+  },
+  publish_article: {
+    category: 'content',
+    description: '发布文章到博客'
+  },
+
+  // Deploy 类意图（部署运维）
+  deploy: {
+    category: 'deploy',
+    description: '部署博客到生产环境'
+  },
+  check_status: {
+    category: 'deploy',
+    description: '检查系统状态'
+  },
+  setup_ssl: {
+    category: 'deploy',
+    description: '配置 SSL 证书'
+  },
+
+  // System 类意图（系统命令）
+  help: {
+    category: 'help',
+    description: '显示帮助信息'
+  },
+  start_dev: {
+    category: 'system',
+    description: '启动开发服务器'
+  },
+  build: {
+    category: 'system',
+    description: '构建生产版本'
+  }
+};
+
+/**
+ * 获取意图的分类信息
+ */
+export function getIntentCategory(intent: string): string {
+  const mapping = CATEGORY_MAP[intent];
+  return mapping?.category || 'other';
+}
+
+/**
+ * 按类别分组意图
+ */
+export function groupIntentsByCategory(intents: string[]): Map<string, string[]> {
+  const grouped = new Map<string, string[]>();
+
+  for (const intent of intents) {
+    const category = getIntentCategory(intent);
+    if (!grouped.has(category)) {
+      grouped.set(category, []);
+    }
+    grouped.get(category)!.push(intent);
+  }
+
+  return grouped;
+}
+
+/**
  * 构建 System Prompt
  */
 function buildSystemPrompt(knowledge: KnowledgeBase): string {
