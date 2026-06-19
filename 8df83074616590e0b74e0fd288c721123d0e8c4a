@@ -1,0 +1,1116 @@
+.gitignore
+  352bd9774e9b39bc 52
+src/components/PostList.astro
+  352bd9774e9b39bc 1-5,8,10-12,14-17,19-47,50-59,61-63,65-67,69-71,74-81,83-92,94-100,103-108,110-115,118-122,125-126,129-130,133
+src/content/posts/2026/02/mermaid-runtime-test/index.mdx
+  352bd9774e9b39bc 2,4-5,8,12-16,18,20,22-27,30,32,34-40,42-45,47-50,52-54,56-82,87-90
+src/content/posts/2026/06/markdown-rendering-lab/index.md
+  352bd9774e9b39bc 2-5,8,10,12,14,16,18,20-21,23-24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54-63,65,67,69-78,80,82,84-89,91,93,95,97-99,101-103,105,107,109-115,117,119-127,129,131,134-137,140-163,165-166,168,170-171,173-177,179-183,185-187,189-192,195-211,214,216-220,223-256,258,260,262,264,266,268-271,273,275-286,289-300,302,304,306-324,326,328,330,332,334,336-362,364,366,368,370-379,381
+src/pages/tags/[tag].astro
+  352bd9774e9b39bc 7,42,50,52,59-61,66,81-82
+package.json
+  352bd9774e9b39bc 18,23
+.env.example
+  352bd9774e9b39bc 1-4,6-8,10-15
+src/layouts/Layout.astro
+  352bd9774e9b39bc 23-31,43-45,48-62,64-66,68-81,85-97,100,103-107,109,112-114,116-123,125-132,135-141,143-146,148-150,152-155,157,160-162,164-184,186-199,203-211,213-225,232-249,255-296,317-320,379-386,388-392,394-396,398-399,401-402,405-410,412-415,417,420-421,424-426,430-435,439,441-442,518
+src/content/posts/2026/04/deployment-observability-checklist/index.md
+  352bd9774e9b39bc 1-6,8,10,12,14,16-22,24,26,28,30-33,35,37,39,41-45,47,49,51-83,85-101,104-119
+scripts/deploy.mjs
+  352bd9774e9b39bc 21,264,307,325,395
+src/plugins/remark-mermaid.mjs
+  352bd9774e9b39bc 3-4,7-11,15-18
+src/pages/blog/[...slug].astro
+  352bd9774e9b39bc 14,22,41,75-91,106-145,171,237-265,278-293,318-521,532,537-544,547-552,561-564,568,571-573,580-581,583,593-594,597,601-682,707,709-710,716-718,720,725-727,729,734-736,738,741,745-751,754-760,767-768,770,772,778,789,830,842-843,864,931-933,935-941,944-962,964-966,969-971,981,1004-1007,1010-1012,1014-1023,1026-1040,1045-1055,1065-1066,1069-1075,1078,1082-1088,1091-1104,1107-1109,1112-1113,1116-1151,1153-1155,1157-1167
+src/pages/404.astro
+  352bd9774e9b39bc 27
+astro.config.mjs
+  352bd9774e9b39bc 4,13,27
+src/pages/index.astro
+  352bd9774e9b39bc 6,9,25-26,34-42,45,75,77,83-86,90-93,95,98-99,101-103,106-108,110-111,114,116-118,120-121,124-126,129-131,137-139,142-143,146-149,151,162-163,165-167,173-174,179,184-185,188,190-191,194
+src/pages/tags/index.astro
+  352bd9774e9b39bc 22-26,43,45,51-70,73-78,90-91,93-95,97,102-103,107-114,119-120
+src/content/posts/2026/04/content-architecture-review/index.md
+  352bd9774e9b39bc 2-5,8,10,12,14,16,18-22,24,26,28,30-35,37,39,41,43,45-52,54,56,58-65,67,69,71,73,75,77,79-82,84,86,88,90-95,97,99,101,103-108,110,112,114,116-118,120,122
+src/content/posts/2026/02/test8/index.mdx
+  352bd9774e9b39bc 2-3,5,8,10,12,14-19,22-50,53-82,87-89,92-94,97-101,104,106-110
+README.md
+  352bd9774e9b39bc 3,5,7-13,19-24,28,30,32,34-36,38,41,48,51-52,55,57,59,61,63-64,67,74,78,80,82-86,88,90,92,95-97,100
+src/content/posts/2026/04/static-blog-reading-notes/index.md
+  352bd9774e9b39bc 1-5,8,10,12,14,16,18-21,23,25,27,29,31,33-36,38,40,42,44,46-50,52,54-57,59,61,63,65,67,69,71-74,76,78,80,82,86,89,91,93,95-97,99
+src/content/posts/2026/06/markdown-rendering-lab/assets/markdown-sample.svg
+  352bd9774e9b39bc 1-43
+src/components/Footer.astro
+  352bd9774e9b39bc 5
+src/components/Header.astro
+  352bd9774e9b39bc 4,7,18,38-40,44-50,54-56,58,80,82-86,90-93,95,97,103-104,115-121
+src/pages/blog/[...page].astro
+  352bd9774e9b39bc 6,21,25-28,31-32,72,74,80-82,86-87,89-91,94-99,102-103,105,111-113,116-117,120-123,125,136-137,139-141,147-148,153,158-159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "8df83074616590e0b74e0fd288c721123d0e8c4a",
+  "prompts": {
+    "352bd9774e9b39bc": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ec4b9-6841-7382-943a-f8615ffa0b7c",
+        "model": "gpt-5.5"
+      },
+      "human_author": "ganchuanman",
+      "messages": [],
+      "total_additions": 6612,
+      "total_deletions": 37976,
+      "accepted_lines": 2463,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-core/design.md": {
+          "deletions": 316
+        },
+        "openspec/changes/archive/2026-02-11-smart-back-button/specs/prev-next-nav/spec.md": {
+          "deletions": 31
+        },
+        "scripts/lib/frontmatter.ts": {
+          "deletions": 135
+        },
+        "src/cli/cli.ts": {
+          "deletions": 250
+        },
+        "openspec/changes/ai-conversational-cli/.openspec.yaml": {
+          "deletions": 2
+        },
+        "scripts/publish.ts": {
+          "deletions": 288
+        },
+        "internal/blog/types.go": {
+          "additions": 59
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-extend/review.md": {
+          "deletions": 360
+        },
+        "tests/steps/processors/frontmatter.test.ts": {
+          "deletions": 119
+        },
+        "docs/ai-interaction.md": {
+          "deletions": 279
+        },
+        "openspec/changes/archive/2026-02-09-fix-article-cli-issues/.openspec.yaml": {
+          "deletions": 2
+        },
+        "src/layouts/Layout.astro": {
+          "additions": 471,
+          "deletions": 702,
+          "accepted_lines": 298
+        },
+        "openspec/changes/archive/2026-02-14-plantuml-render-loading-states/specs/plantuml-loading-states/spec.md": {
+          "deletions": 143
+        },
+        "openspec/changes/archive/2026-02-14-contextual-post-navigation/.openspec.yaml": {
+          "deletions": 2
+        },
+        "openspec/changes/ai-conversational-cli/specs/ai-intent-recognizer/spec.md": {
+          "deletions": 101
+        },
+        "openspec/schemas/rosydawn-sdd/templates/spec.md": {
+          "deletions": 8
+        },
+        "src/steps/notifiers/edit.ts": {
+          "deletions": 55
+        },
+        "openspec/changes/archive/2026-02-09-article-writing-cli/specs/article-create-cli/spec.md": {
+          "deletions": 96
+        },
+        "internal/blog/server_test.go": {
+          "additions": 47
+        },
+        "openspec/changes/archive/2026-02-11-smart-back-button/testcases.md": {
+          "deletions": 255
+        },
+        "openspec/changes/archive/2026-02-11-smart-back-button/design.md": {
+          "deletions": 100
+        },
+        "src/ai/types.ts": {
+          "deletions": 101
+        },
+        "openspec/changes/archive/2026-02-13-plantuml-url-encoding/proposal.md": {
+          "deletions": 44
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-interaction/design.md": {
+          "deletions": 505
+        },
+        "src/steps/notifiers/confirm.ts": {
+          "deletions": 37
+        },
+        "scripts/lib/ai.ts": {
+          "deletions": 150
+        },
+        "openspec/changes/archive/2026-02-09-extract-nav-components/.openspec.yaml": {
+          "deletions": 2
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-core/specs/workflow-engine/spec.md": {
+          "deletions": 90
+        },
+        "src/steps/actions/deploy.ts": {
+          "deletions": 73
+        },
+        "src/content/posts/2026/02/rosydawn-blog-framework/assets/deployment-flow.drawio": {
+          "deletions": 46
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-extend/specs/spec.md": {
+          "deletions": 46
+        },
+        "openspec/specs/plantuml-loading-states/spec.md": {
+          "deletions": 143
+        },
+        "src/steps/validators/directory.ts": {
+          "deletions": 111
+        },
+        "openspec/changes/archive/2026-02-13-plantuml-url-encoding/review.md": {
+          "deletions": 68
+        },
+        "src/workflows/mock-create-article.ts": {
+          "deletions": 49
+        },
+        "src/knowledge/help-knowledge.ts": {
+          "deletions": 118
+        },
+        "src/steps/processors/optimize.ts": {
+          "deletions": 42
+        },
+        "openspec/changes/archive/2026-02-15-refactor-cli-structure/specs/cli-help-system/spec.md": {
+          "deletions": 147
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-polish/testcases.md": {
+          "deletions": 362
+        },
+        "openspec/changes/archive/2026-02-15-refactor-cli-structure/design.md": {
+          "deletions": 289
+        },
+        "openspec/changes/archive/2026-02-14-plantuml-render-loading-states/design.md": {
+          "deletions": 188
+        },
+        "openspec/schemas/rosydawn-sdd/templates/testcases.md": {
+          "deletions": 18
+        },
+        "tests/ai/param-collector.test.ts": {
+          "deletions": 294
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-mvp/specs/article-create-cli/spec.md": {
+          "deletions": 237
+        },
+        "src/steps/processors/tags.ts": {
+          "deletions": 90
+        },
+        "src/steps/index.ts": {
+          "deletions": 25
+        },
+        "scripts/lib/plantuml/plantumltest.puml": {
+          "deletions": 35
+        },
+        "src/pages/index.astro": {
+          "additions": 204,
+          "deletions": 298,
+          "accepted_lines": 167
+        },
+        "src/knowledge/types.ts": {
+          "deletions": 49
+        },
+        "src/plugins/remark-plantuml-url.mjs": {
+          "deletions": 97
+        },
+        "openspec/changes/archive/2026-02-09-fix-dark-mode-persistence/.openspec.yaml": {
+          "deletions": 2
+        },
+        "openspec/specs/ai-service-integration/spec.md": {
+          "deletions": 126
+        },
+        "openspec/changes/archive/2026-02-09-fix-article-cli-issues/proposal.md": {
+          "deletions": 26
+        },
+        "src/workflow/demo.ts": {
+          "deletions": 98
+        },
+        "tests/ai/intent-recognizer.test.ts": {
+          "deletions": 283
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-mvp/specs/unified-cli-interface/spec.md": {
+          "deletions": 209
+        },
+        "internal/blog/store.go": {
+          "additions": 453,
+          "deletions": 9
+        },
+        "src/components/Header.astro": {
+          "additions": 48,
+          "deletions": 17,
+          "accepted_lines": 40
+        },
+        "openspec/changes/archive/2026-02-15-remove-email-notification-service/testcases.md": {
+          "deletions": 148
+        },
+        "src/pages/editor.astro": {
+          "additions": 985,
+          "deletions": 462
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/specs/prev-next-nav/spec.md": {
+          "deletions": 51
+        },
+        "openspec/changes/archive/2026-02-13-fix-plantuml-encoding-and-preview/specs/plantuml-url-encoder/spec.md": {
+          "deletions": 45
+        },
+        "CHANGELOG.md": {
+          "deletions": 175
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-polish/review.md": {
+          "deletions": 142
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-interaction/specs/repl-interface/spec.md": {
+          "deletions": 53
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-extend/tasks.md": {
+          "deletions": 301
+        },
+        "src/steps/validators/git.ts": {
+          "deletions": 99
+        },
+        "openspec/changes/archive/2026-02-14-contextual-post-navigation/review.md": {
+          "deletions": 147
+        },
+        "tests/steps/validators/git.test.ts": {
+          "deletions": 149
+        },
+        "src/pages/blog/[...slug].astro": {
+          "additions": 828,
+          "deletions": 562,
+          "accepted_lines": 650
+        },
+        "src/steps/actions/file.ts": {
+          "deletions": 59
+        },
+        "src/knowledge/workflows/start-dev.md": {
+          "deletions": 75
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-polish/specs/unified-cli-interface/spec.md": {
+          "deletions": 82
+        },
+        "openspec/changes/archive/2026-02-09-extract-nav-components/specs/dark-mode/spec.md": {
+          "deletions": 27
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-interaction/review.md": {
+          "deletions": 206
+        },
+        "tests/cli/command-registry.test.ts": {
+          "deletions": 170
+        },
+        "openspec/changes/archive/2026-02-13-plantuml-url-encoding/testcases.md": {
+          "deletions": 221
+        },
+        "src/knowledge/loader.ts": {
+          "deletions": 92
+        },
+        "scripts/deploy.mjs": {
+          "additions": 5,
+          "deletions": 15,
+          "accepted_lines": 5
+        },
+        "src/content/posts/2026/06/markdown-rendering-lab/assets/markdown-sample.svg": {
+          "additions": 43,
+          "accepted_lines": 43
+        },
+        "openspec/changes/archive/2026-02-15-remove-email-notification-service/design.md": {
+          "deletions": 125
+        },
+        "openspec/specs/article-create-cli/spec.md": {
+          "deletions": 237
+        },
+        "src/steps/validators/port.ts": {
+          "deletions": 100
+        },
+        "openspec/changes/archive/2026-02-14-plantuml-render-loading-states/review.md": {
+          "deletions": 155
+        },
+        "openspec/changes/ai-conversational-cli/specs/article-create-cli/spec.md": {
+          "deletions": 48
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-interaction/specs/knowledge-generator/spec.md": {
+          "deletions": 115
+        },
+        "cmd/rosydawn-server/main.go": {
+          "additions": 58,
+          "deletions": 5
+        },
+        "src/steps/actions/build.ts": {
+          "deletions": 45
+        },
+        "tests/steps/processors/metadata.test.ts": {
+          "deletions": 217
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-interaction/proposal.md": {
+          "deletions": 86
+        },
+        "src/workflows/index.ts": {
+          "deletions": 44
+        },
+        "internal/blog/server.go": {
+          "additions": 67,
+          "deletions": 10
+        },
+        "src/components/DynamicPostList.astro": {
+          "additions": 393,
+          "deletions": 1
+        },
+        "openspec/changes/archive/2026-02-15-remove-email-notification-service/specs/README.md": {
+          "deletions": 11
+        },
+        "src/workflows/deploy.ts": {
+          "deletions": 35
+        },
+        "openspec/changes/archive/2026-02-09-article-writing-cli/design.md": {
+          "deletions": 159
+        },
+        "internal/blog/import_test.go": {
+          "additions": 48
+        },
+        "src/content/posts/2026/02/plantuml-loading-test/index.mdx": {
+          "additions": 75,
+          "deletions": 220
+        },
+        "src/steps/validators/articles.ts": {
+          "deletions": 64
+        },
+        "openspec/specs/mermaid-runtime-rendering/spec.md": {
+          "additions": 37
+        },
+        "src/cli/error-handler.ts": {
+          "deletions": 168
+        },
+        "scripts/new.ts": {
+          "deletions": 152
+        },
+        "src/content/posts/2026/02/test1/index.md": {
+          "deletions": 18
+        },
+        "src/plugins/remark-mermaid.mjs": {
+          "additions": 21,
+          "accepted_lines": 21
+        },
+        "openspec/changes/archive/2026-02-09-fix-dark-mode-persistence/tasks.md": {
+          "deletions": 10
+        },
+        "src/steps/validators/article-stats.ts": {
+          "deletions": 70
+        },
+        "openspec/changes/archive/2026-02-13-fix-plantuml-encoding-and-preview/tasks.md": {
+          "deletions": 39
+        },
+        "src/plugins/plantuml-encoder.mjs": {
+          "deletions": 114
+        },
+        "openspec/specs/ai-intent-recognizer/spec.md": {
+          "deletions": 179
+        },
+        "internal/blog/store_test.go": {
+          "additions": 155
+        },
+        "openspec/specs/prev-next-nav/spec.md": {
+          "deletions": 87
+        },
+        "openspec/changes/archive/2026-02-15-refactor-cli-structure/testcases.md": {
+          "deletions": 404
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-interaction/specs/ai-intent-recognizer/spec.md": {
+          "deletions": 77
+        },
+        "tests/knowledge/loader.test.ts": {
+          "deletions": 262
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/tasks.md": {
+          "deletions": 36
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/proposal.md": {
+          "deletions": 31
+        },
+        "vitest.config.ts": {
+          "deletions": 19
+        },
+        "openspec/changes/archive/2026-02-13-plantuml-url-encoding/design.md": {
+          "deletions": 141
+        },
+        "openspec/changes/archive/2026-02-15-refactor-cli-structure/specs/article-publish-cli/spec.md": {
+          "deletions": 149
+        },
+        "openspec/changes/archive/2026-02-15-remove-email-notification-service/review.md": {
+          "deletions": 115
+        },
+        "openspec/changes/archive/2026-02-09-article-writing-cli/proposal.md": {
+          "deletions": 42
+        },
+        "scripts/help.ts": {
+          "deletions": 187
+        },
+        "src/steps/notifiers/summary.ts": {
+          "deletions": 63
+        },
+        "openspec/changes/archive/2026-02-14-plantuml-render-loading-states/specs/plantuml-url-encoder/spec.md": {
+          "deletions": 65
+        },
+        "openspec/config.yaml": {
+          "additions": 6,
+          "deletions": 98
+        },
+        "openspec/specs/step-registry/spec.md": {
+          "deletions": 170
+        },
+        "openspec/specs/system-workflows/spec.md": {
+          "deletions": 85
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/specs/reading-progress/spec.md": {
+          "deletions": 40
+        },
+        "tests/cli/param-parser.test.ts": {
+          "deletions": 88
+        },
+        "openspec/changes/ai-conversational-cli/proposal.md": {
+          "deletions": 76
+        },
+        "openspec/changes/archive/2026-02-14-contextual-post-navigation/proposal.md": {
+          "deletions": 43
+        },
+        "openspec/changes/archive/2026-02-14-plantuml-render-loading-states/.openspec.yaml": {
+          "deletions": 2
+        },
+        "openspec/changes/archive/2026-02-09-article-writing-cli/specs/article-publish-cli/spec.md": {
+          "deletions": 149
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/specs/reading-time/spec.md": {
+          "deletions": 29
+        },
+        "src/knowledge/workflows/publish-article.md": {
+          "deletions": 90
+        },
+        "src/content/posts/2026/04/deployment-observability-checklist/index.md": {
+          "additions": 119,
+          "accepted_lines": 119
+        },
+        "CHANGELOG-AI-CLI.md": {
+          "deletions": 130
+        },
+        "src/cli/param-parser.ts": {
+          "deletions": 217
+        },
+        "src/pages/blog/[...page].astro": {
+          "additions": 52,
+          "deletions": 166,
+          "accepted_lines": 48
+        },
+        "src/cli/input-validator.ts": {
+          "deletions": 159
+        },
+        "openspec/changes/ai-conversational-cli/specs/article-publish-cli/spec.md": {
+          "deletions": 47
+        },
+        "openspec/specs/view-transitions/spec.md": {
+          "deletions": 28
+        },
+        "openspec/changes/archive/2026-02-15-refactor-cli-structure/specs/article-create-cli/spec.md": {
+          "deletions": 96
+        },
+        "openspec/changes/archive/2026-02-15-remove-email-notification-service/tasks.md": {
+          "deletions": 48
+        },
+        "openspec/changes/ai-conversational-cli/specs/cli-category-system/spec.md": {
+          "deletions": 39
+        },
+        "src/steps/registry.ts": {
+          "deletions": 169
+        },
+        "src/steps/actions/git.ts": {
+          "deletions": 81
+        },
+        "scripts/lib/git.ts": {
+          "deletions": 104
+        },
+        "openspec/changes/archive/2026-02-15-refactor-cli-structure/proposal.md": {
+          "deletions": 44
+        },
+        "openspec/changes/archive/2026-02-09-article-writing-cli/tasks.md": {
+          "deletions": 61
+        },
+        "src/steps/registry.test.ts": {
+          "deletions": 222
+        },
+        "openspec/changes/archive/2026-02-09-extract-nav-components/proposal.md": {
+          "deletions": 34
+        },
+        "src/workflows/create-article.ts": {
+          "deletions": 51
+        },
+        "src/cli/command-setup.ts": {
+          "deletions": 146
+        },
+        "src/steps/README.md": {
+          "deletions": 369
+        },
+        "src/knowledge/workflows/build.md": {
+          "deletions": 98
+        },
+        "openspec/changes/archive/2026-02-14-contextual-post-navigation/design.md": {
+          "deletions": 152
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-interaction/tasks.md": {
+          "deletions": 198
+        },
+        "tests/steps/actions/server.test.ts": {
+          "deletions": 116
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-polish/specs/cli-category-system/spec.md": {
+          "deletions": 43
+        },
+        "openspec/changes/archive/2026-02-15-refactor-cli-structure/specs/unified-cli-interface/spec.md": {
+          "deletions": 69
+        },
+        "src/workflow/index.ts": {
+          "deletions": 28
+        },
+        "src/workflow/README.md": {
+          "deletions": 241
+        },
+        "openspec/changes/archive/2026-02-13-plantuml-url-encoding/specs/plantuml-url-encoder/spec.md": {
+          "deletions": 120
+        },
+        "openspec/changes/archive/2026-02-15-refactor-cli-structure/tasks.md": {
+          "deletions": 108
+        },
+        "internal/blog/api_test.go": {
+          "additions": 125
+        },
+        "README.md": {
+          "additions": 99,
+          "deletions": 220,
+          "accepted_lines": 50
+        },
+        "src/steps/validators/index.ts": {
+          "deletions": 12
+        },
+        "openspec/changes/archive/2026-02-11-smart-back-button/tasks.md": {
+          "deletions": 46
+        },
+        "src/knowledge/static.md": {
+          "additions": 1,
+          "deletions": 200
+        },
+        "openspec/changes/archive/2026-02-11-smart-back-button/proposal.md": {
+          "deletions": 33
+        },
+        "openspec/specs/repl-interface/spec.md": {
+          "deletions": 95
+        },
+        "openspec/specs/article-publish-cli/spec.md": {
+          "deletions": 184
+        },
+        "openspec/specs/reading-time/spec.md": {
+          "deletions": 29
+        },
+        "internal/blog/import.go": {
+          "additions": 141
+        },
+        "test-git-add.txt": {
+          "additions": 1
+        },
+        "openspec/changes/archive/2026-02-13-fix-plantuml-encoding-and-preview/proposal.md": {
+          "deletions": 28
+        },
+        "src/steps/actions/index.ts": {
+          "deletions": 12
+        },
+        "openspec/schemas/rosydawn-sdd/schema.yaml": {
+          "deletions": 331
+        },
+        "tests/cli/cli.test.ts": {
+          "deletions": 248
+        },
+        "openspec/specs/deploy-workflow/spec.md": {
+          "deletions": 68
+        },
+        "src/steps/actions/clean.ts": {
+          "deletions": 40
+        },
+        "src/workflow/demo.test.ts": {
+          "deletions": 330
+        },
+        "src/steps/builtin.ts": {
+          "deletions": 120
+        },
+        "src/components/Footer.astro": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-interaction/testcases.md": {
+          "deletions": 511
+        },
+        "src/content/posts/2026/02/rosydawn-blog-tools/index.md": {
+          "deletions": 302
+        },
+        "openspec/changes/archive/2026-02-13-plantuml-url-encoding/tasks.md": {
+          "deletions": 58
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-mvp/testcases.md": {
+          "deletions": 862
+        },
+        "tests/steps/actions/file.test.ts": {
+          "deletions": 87
+        },
+        "openspec/changes/ai-conversational-cli/specs/repl-interface/spec.md": {
+          "deletions": 61
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/reading-experience-enhancements/specs/view-transitions/spec.md": {
+          "deletions": 30
+        },
+        "openspec/changes/archive/2026-02-09-fix-dark-mode-persistence/proposal.md": {
+          "deletions": 25
+        },
+        "src/content/posts/2026/06/markdown-rendering-lab/index.md": {
+          "additions": 381,
+          "accepted_lines": 381
+        },
+        "tests/steps/actions/git.test.ts": {
+          "deletions": 127
+        },
+        "internal/blog/api.go": {
+          "additions": 191,
+          "deletions": 1
+        },
+        "openspec/changes/archive/2026-02-15-remove-email-notification-service/proposal.md": {
+          "deletions": 51
+        },
+        "src/steps/notifiers/deploy-confirm.ts": {
+          "deletions": 32
+        },
+        "openspec/changes/archive/2026-02-09-extract-nav-components/tasks.md": {
+          "deletions": 32
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/reading-experience-enhancements/tasks.md": {
+          "deletions": 23
+        },
+        ".gitignore": {
+          "additions": 3,
+          "deletions": 3,
+          "accepted_lines": 1
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-extend/proposal.md": {
+          "deletions": 96
+        },
+        "src/steps/processors/frontmatter.ts": {
+          "deletions": 67
+        },
+        "src/workflows/start-dev.ts": {
+          "deletions": 24
+        },
+        "openspec/changes/archive/2026-02-14-contextual-post-navigation/tasks.md": {
+          "deletions": 41
+        },
+        "src/workflows/publish-article.ts": {
+          "deletions": 41
+        },
+        "src/steps/processors/metadata.ts": {
+          "deletions": 81
+        },
+        "src/content/posts/2026/02/test8/index.mdx": {
+          "additions": 89,
+          "deletions": 168,
+          "accepted_lines": 88
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/.openspec.yaml": {
+          "deletions": 2
+        },
+        "src/content/posts/2026/02/rosydawn-blog-framework/assets/deployment-flow.svg": {
+          "deletions": 4
+        },
+        ".env.example": {
+          "additions": 25,
+          "deletions": 19,
+          "accepted_lines": 15
+        },
+        "openspec/schemas/rosydawn-sdd/prompt.txt": {
+          "deletions": 300
+        },
+        "openspec/changes/archive/2026-02-14-plantuml-render-loading-states/proposal.md": {
+          "deletions": 40
+        },
+        "openspec/changes/ai-conversational-cli/specs/system-workflows/spec.md": {
+          "deletions": 83
+        },
+        "openspec/changes/archive/2026-02-09-extract-nav-components/specs/shared-layout-components/spec.md": {
+          "deletions": 74
+        },
+        "src/knowledge/workflows/create-article.md": {
+          "deletions": 94
+        },
+        "bin/rosydawn": {
+          "deletions": 36
+        },
+        "openspec/changes/ai-conversational-cli/specs/workflow-engine/spec.md": {
+          "deletions": 90
+        },
+        "tests/steps/processors/slug.test.ts": {
+          "deletions": 143
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-mvp/review.md": {
+          "deletions": 199
+        },
+        "src/ai/param-collector.ts": {
+          "deletions": 160
+        },
+        "openspec/changes/archive/2026-02-11-smart-back-button/.openspec.yaml": {
+          "deletions": 2
+        },
+        "scripts/lib/config.ts": {
+          "deletions": 83
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-polish/design.md": {
+          "deletions": 220
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-polish/proposal.md": {
+          "deletions": 114
+        },
+        "openspec/specs/cli-help-system/spec.md": {
+          "deletions": 189
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/reading-experience-enhancements/specs/back-to-top/spec.md": {
+          "deletions": 45
+        },
+        "openspec/schemas/rosydawn-sdd/templates/design.md": {
+          "deletions": 19
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-polish/tasks.md": {
+          "deletions": 117
+        },
+        "openspec/changes/archive/2026-02-09-extract-nav-components/design.md": {
+          "deletions": 102
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/reading-experience-enhancements/.openspec.yaml": {
+          "deletions": 2
+        },
+        "src/workflows/mock-publish.ts": {
+          "deletions": 48
+        },
+        "src/workflow/registry.ts": {
+          "deletions": 158
+        },
+        "openspec/specs/unified-cli-interface/spec.md": {
+          "deletions": 352
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-mvp/proposal.md": {
+          "deletions": 94
+        },
+        "openspec/changes/archive/2026-02-13-fix-plantuml-encoding-and-preview/design.md": {
+          "deletions": 153
+        },
+        "openspec/specs/reading-progress/spec.md": {
+          "deletions": 40
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-core/tasks.md": {
+          "deletions": 201
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/design.md": {
+          "deletions": 84
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-mvp/tasks.md": {
+          "deletions": 277
+        },
+        "src/pages/blog/post.astro": {
+          "additions": 492
+        },
+        "tests/cli/repl.test.ts": {
+          "deletions": 215
+        },
+        "openspec/specs/shared-layout-components/spec.md": {
+          "deletions": 74
+        },
+        "openspec/schemas/rosydawn-sdd/templates/proposal.md": {
+          "deletions": 23
+        },
+        "tests/integration/repl-flow.test.ts": {
+          "deletions": 408
+        },
+        "scripts/build-knowledge.ts": {
+          "deletions": 74
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-core/specs/step-registry/spec.md": {
+          "deletions": 122
+        },
+        "src/steps/validators/deployment-status.ts": {
+          "deletions": 77
+        },
+        "src/steps/actions/server.ts": {
+          "deletions": 45
+        },
+        "openspec/changes/archive/2026-02-11-smart-back-button/review.md": {
+          "deletions": 60
+        },
+        "openspec/specs/cli-category-system/spec.md": {
+          "deletions": 91
+        },
+        "src/content/posts/2026/04/static-blog-reading-notes/index.md": {
+          "additions": 100,
+          "accepted_lines": 100
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-polish/specs/cli-help-system/spec.md": {
+          "deletions": 43
+        },
+        "src/steps/processors/index.ts": {
+          "deletions": 13
+        },
+        "go.mod": {
+          "additions": 24,
+          "deletions": 3
+        },
+        "astro.config.mjs": {
+          "additions": 3,
+          "deletions": 3,
+          "accepted_lines": 3
+        },
+        "src/knowledge/workflows/check-status.md": {
+          "deletions": 105
+        },
+        "openspec/specs/knowledge-generator/spec.md": {
+          "deletions": 177
+        },
+        "src/content/posts/2026/02/mermaid-runtime-test/index.mdx": {
+          "additions": 90,
+          "accepted_lines": 90
+        },
+        "src/workflows/build.ts": {
+          "deletions": 27
+        },
+        "openspec/changes/archive/2026-02-15-refactor-cli-structure/.openspec.yaml": {
+          "deletions": 2
+        },
+        "openspec/changes/archive/2026-02-13-fix-plantuml-encoding-and-preview/testcases.md": {
+          "deletions": 226
+        },
+        "openspec/changes/archive/2026-02-14-plantuml-render-loading-states/tasks.md": {
+          "deletions": 146
+        },
+        "src/workflows/mock-list-articles.ts": {
+          "deletions": 49
+        },
+        "openspec/changes/ai-conversational-cli/specs/knowledge-generator/spec.md": {
+          "deletions": 69
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-extend/testcases.md": {
+          "deletions": 502
+        },
+        "src/pages/tags/tag.astro": {
+          "additions": 90
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/reading-experience-enhancements/proposal.md": {
+          "deletions": 27
+        },
+        "openspec/changes/ai-conversational-cli/specs/cli-help-system/spec.md": {
+          "deletions": 60
+        },
+        "openspec/specs/workflow-engine/spec.md": {
+          "deletions": 92
+        },
+        "openspec/changes/archive/2026-02-09-fix-dark-mode-persistence/design.md": {
+          "deletions": 49
+        },
+        "openspec/schemas/rosydawn-sdd/templates/tasks.md": {
+          "deletions": 9
+        },
+        "featurelist.md": {
+          "deletions": 1
+        },
+        "openspec/changes/archive/2026-02-15-remove-email-notification-service/.openspec.yaml": {
+          "deletions": 2
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-mvp/design.md": {
+          "deletions": 308
+        },
+        "openspec/changes/archive/2026-02-09-fix-dark-mode-persistence/specs/dark-mode/spec.md": {
+          "deletions": 23
+        },
+        "src/knowledge/workflows/deploy.md": {
+          "deletions": 135
+        },
+        "openspec/changes/archive/2026-02-13-fix-plantuml-encoding-and-preview/.openspec.yaml": {
+          "deletions": 2
+        },
+        "openspec/changes/archive/2026-02-14-contextual-post-navigation/testcases.md": {
+          "deletions": 231
+        },
+        "openspec/changes/archive/2026-02-09-fix-article-cli-issues/tasks.md": {
+          "deletions": 9
+        },
+        "src/steps/notifiers/index.ts": {
+          "deletions": 10
+        },
+        "package.json": {
+          "additions": 9,
+          "deletions": 30,
+          "accepted_lines": 3
+        },
+        "src/workflow/types.ts": {
+          "deletions": 91
+        },
+        "openspec/changes/archive/2026-02-11-smart-back-button/specs/smart-back-button/spec.md": {
+          "deletions": 75
+        },
+        "openspec/changes/archive/2026-02-15-refactor-cli-structure/review.md": {
+          "deletions": 179
+        },
+        "knowledge/static.md": {
+          "deletions": 142
+        },
+        "openspec/changes/ai-conversational-cli/specs/unified-cli-interface/spec.md": {
+          "deletions": 79
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/specs/dark-mode/spec.md": {
+          "deletions": 80
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-core/review.md": {
+          "deletions": 219
+        },
+        "openspec/specs/back-to-top/spec.md": {
+          "deletions": 43
+        },
+        "src/ai/intent-recognizer.ts": {
+          "deletions": 347
+        },
+        "internal/blog/markdown.go": {
+          "additions": 37
+        },
+        "openspec/changes/archive/2026-02-14-plantuml-render-loading-states/testcases.md": {
+          "deletions": 507
+        },
+        "src/knowledge/generator.ts": {
+          "deletions": 192
+        },
+        "src/pages/tags/index.astro": {
+          "additions": 125,
+          "deletions": 106,
+          "accepted_lines": 73
+        },
+        "src/steps/processors/build-frontmatter.ts": {
+          "deletions": 67
+        },
+        "openspec/changes/ai-conversational-cli/specs/deploy-workflow/spec.md": {
+          "deletions": 66
+        },
+        "openspec/changes/archive/2026-02-13-fix-plantuml-encoding-and-preview/review.md": {
+          "deletions": 124
+        },
+        "src/steps/processors/slug.ts": {
+          "deletions": 81
+        },
+        "src/pages/404.astro": {
+          "additions": 1,
+          "deletions": 1,
+          "accepted_lines": 1
+        },
+        "openspec/changes/archive/2026-02-13-plantuml-url-encoding/.openspec.yaml": {
+          "deletions": 2
+        },
+        "package.json.backup": {
+          "deletions": 32
+        },
+        "src/cli/command-registry.ts": {
+          "deletions": 219
+        },
+        "openspec/specs/dark-mode/spec.md": {
+          "deletions": 91
+        },
+        "openspec/changes/archive/2026-02-09-article-writing-cli/specs/ai-service-integration/spec.md": {
+          "deletions": 126
+        },
+        "openspec/changes/archive/2026-02-15-refactor-cli-structure/specs/cli-category-system/spec.md": {
+          "deletions": 49
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-core/proposal.md": {
+          "deletions": 82
+        },
+        "openspec/changes/archive/2026-02-14-contextual-post-navigation/specs/prev-next-nav/spec.md": {
+          "deletions": 55
+        },
+        "src/workflows/check-status.ts": {
+          "deletions": 31
+        },
+        "src/ai/client.ts": {
+          "deletions": 175
+        },
+        "docs/compatibility-report.md": {
+          "deletions": 246
+        },
+        "src/cli/repl.ts": {
+          "deletions": 218
+        },
+        "openspec/specs/smart-back-button/spec.md": {
+          "deletions": 75
+        },
+        "src/content/posts/2026/04/content-architecture-review/index.md": {
+          "additions": 123,
+          "accepted_lines": 123
+        },
+        "openspec/changes/archive/2026-02-09-reading-experience-enhancements/reading-experience-enhancements/design.md": {
+          "deletions": 76
+        },
+        "src/pages/tags/[tag].astro": {
+          "additions": 10,
+          "deletions": 125,
+          "accepted_lines": 10
+        },
+        "src/cli/help.ts": {
+          "deletions": 71
+        },
+        "openspec/changes/archive/2026-02-09-article-writing-cli/.openspec.yaml": {
+          "deletions": 2
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-extend/design.md": {
+          "deletions": 334
+        },
+        "openspec/specs/plantuml-url-encoder/spec.md": {
+          "deletions": 65
+        },
+        "src/pages/blog/index.astro": {
+          "additions": 33
+        },
+        "src/steps/processors/input-topic.ts": {
+          "deletions": 31
+        },
+        "src/ai/cache.ts": {
+          "deletions": 150
+        },
+        "src/content/posts/2026/02/rosydawn-blog-framework/index.mdx": {
+          "additions": 27,
+          "deletions": 476
+        },
+        "tests/knowledge/generator.test.ts": {
+          "deletions": 260
+        },
+        "src/components/PostList.astro": {
+          "additions": 217,
+          "deletions": 84,
+          "accepted_lines": 133
+        },
+        "openspec/changes/ai-conversational-cli/specs/step-registry/spec.md": {
+          "deletions": 122
+        },
+        "src/workflow/engine.ts": {
+          "deletions": 157
+        },
+        "openspec/schemas/rosydawn-sdd/templates/review.md": {
+          "deletions": 19
+        },
+        "openspec/changes/archive/2026-03-01-ai-conversational-cli-core/testcases.md": {
+          "deletions": 696
+        },
+        "openspec/changes/ai-conversational-cli/design.md": {
+          "deletions": 294
+        }
+      }
+    }
+  }
+}
