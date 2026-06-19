@@ -1,0 +1,81 @@
+src/pages/tags/index.astro
+  67f76d12aaf54412 48
+src/layouts/Layout.astro
+  67f76d12aaf54412 16
+src/components/BackButton.astro
+  67f76d12aaf54412 9
+src/components/Header.astro
+  67f76d12aaf54412 23,31-32
+src/pages/404.astro
+  67f76d12aaf54412 25
+src/components/PostList.astro
+  67f76d12aaf54412 13
+src/components/BackToTop.astro
+  67f76d12aaf54412 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.8",
+  "base_commit_sha": "373e98506bf832907f00ea8ea29f9427e17639f0",
+  "prompts": {
+    "67f76d12aaf54412": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019eddcb-b129-78a3-a0fd-5edee21a6595",
+        "model": "gpt-5.5"
+      },
+      "human_author": "ganchuanman",
+      "messages": [],
+      "total_additions": 9,
+      "total_deletions": 81,
+      "accepted_lines": 9,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "src/lib/paths.ts": {
+          "deletions": 11
+        },
+        "src/pages/tags/index.astro": {
+          "additions": 1,
+          "deletions": 2,
+          "accepted_lines": 1
+        },
+        ".github/workflows/deploy.yml": {
+          "deletions": 38
+        },
+        "src/components/BackToTop.astro": {
+          "additions": 1,
+          "deletions": 4,
+          "accepted_lines": 1
+        },
+        "src/layouts/Layout.astro": {
+          "additions": 1,
+          "deletions": 3,
+          "accepted_lines": 1
+        },
+        "src/components/Header.astro": {
+          "additions": 3,
+          "deletions": 7,
+          "accepted_lines": 3
+        },
+        "src/components/PostList.astro": {
+          "additions": 1,
+          "deletions": 3,
+          "accepted_lines": 1
+        },
+        "astro.config.mjs": {
+          "deletions": 6
+        },
+        "src/pages/404.astro": {
+          "additions": 1,
+          "deletions": 3,
+          "accepted_lines": 1
+        },
+        "src/components/BackButton.astro": {
+          "additions": 1,
+          "deletions": 4,
+          "accepted_lines": 1
+        }
+      }
+    }
+  }
+}
