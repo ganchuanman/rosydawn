@@ -1,15 +1,12 @@
 ---
-import { withBase } from '../lib/paths';
-
 interface Props {
   fallbackHref?: string;
 }
 
 const { fallbackHref = '/' } = Astro.props;
-const href = withBase(fallbackHref);
 ---
 
-<a href={href} class="back-link" data-back-button>
+<a href={fallbackHref} class="back-link" data-back-button>
   <span class="back-arrow">←</span>
   <span class="back-label">返回</span>
 </a>

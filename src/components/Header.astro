@@ -1,6 +1,4 @@
 ---
-import { withBase } from '../lib/paths';
-
 interface Props {
   currentPath?: string;
   sticky?: boolean;
@@ -9,8 +7,6 @@ interface Props {
 }
 
 const { currentPath = '/', sticky = false, integrated = false, hideLogo = false } = Astro.props;
-const homeHref = withBase('/');
-const tagsHref = withBase('/tags');
 
 // Determine active link based on currentPath
 const isActive = (path: string) => {
@@ -24,7 +20,7 @@ const isActive = (path: string) => {
 <header class:list={['site-header', { sticky, integrated, 'no-logo': hideLogo }]}>
   {!hideLogo && (
     <div class="logo">
-      <a href={homeHref}>
+      <a href="/">
         <span class="prompt">$</span> rosydawn
         <span class="cursor">_</span>
       </a>
@@ -32,8 +28,8 @@ const isActive = (path: string) => {
   )}
   <nav class="nav">
     <div class="tabs-toggle" aria-label="内容视图切换">
-      <a href={homeHref} class:list={[{ active: isActive('/') }]}>列表</a>
-      <a href={tagsHref} class:list={[{ active: isActive('/tags') }]}>分类</a>
+      <a href="/" class:list={[{ active: isActive('/') }]}>列表</a>
+      <a href="/tags" class:list={[{ active: isActive('/tags') }]}>分类</a>
     </div>
     <button class="theme-toggle" aria-label="切换主题"></button>
   </nav>

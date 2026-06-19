@@ -3,14 +3,8 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import remarkMermaid from './src/plugins/remark-mermaid.mjs';
 
-const isGitHubPages = process.env.GITHUB_PAGES === 'true';
-
 // https://astro.build/config
 export default defineConfig({
-  ...(isGitHubPages ? {
-    site: 'https://aaronoho.github.io',
-    base: '/rosydawn',
-  } : {}),
   integrations: [
     mdx(),
   ],

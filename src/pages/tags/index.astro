@@ -2,7 +2,6 @@
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
-import { withBase } from '../../lib/paths';
 
 const posts = await getCollection('posts');
 const postsByTag = new Map<string, typeof posts>();
@@ -46,7 +45,7 @@ const sortedTagGroups = Array.from(postsByTag.entries()).sort((a, b) =>
           <ul class="tag-posts">
             {tagPosts.map((post) => (
               <li>
-                <a href={withBase(`/blog/${post.id}`)}>{post.data.title}</a>
+                <a href={`/blog/${post.id}`}>{post.data.title}</a>
               </li>
             ))}
           </ul>
