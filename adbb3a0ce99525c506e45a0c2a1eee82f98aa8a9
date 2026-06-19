@@ -1,0 +1,92 @@
+src/layouts/Layout.astro
+  67f76d12aaf54412 3,10,18
+.github/workflows/deploy.yml
+  67f76d12aaf54412 1-38
+astro.config.mjs
+  67f76d12aaf54412 6-7,10-13
+src/lib/paths.ts
+  67f76d12aaf54412 1-11
+src/components/PostList.astro
+  67f76d12aaf54412 2-3,15
+src/components/BackButton.astro
+  67f76d12aaf54412 2-3,9,12
+src/components/Header.astro
+  67f76d12aaf54412 2-3,12-13,27,35-36
+src/pages/tags/index.astro
+  67f76d12aaf54412 5,49
+src/components/BackToTop.astro
+  67f76d12aaf54412 2-4,8
+src/pages/404.astro
+  67f76d12aaf54412 4,7,27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.8",
+  "base_commit_sha": "adbb3a0ce99525c506e45a0c2a1eee82f98aa8a9",
+  "prompts": {
+    "67f76d12aaf54412": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019eddcb-b129-78a3-a0fd-5edee21a6595",
+        "model": "gpt-5.5"
+      },
+      "human_author": "ganchuanman",
+      "messages": [],
+      "total_additions": 87,
+      "total_deletions": 16,
+      "accepted_lines": 81,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "src/components/BackButton.astro": {
+          "additions": 4,
+          "deletions": 1,
+          "accepted_lines": 4
+        },
+        ".github/workflows/deploy.yml": {
+          "additions": 38,
+          "accepted_lines": 38
+        },
+        "src/pages/404.astro": {
+          "additions": 3,
+          "deletions": 1,
+          "accepted_lines": 3
+        },
+        "src/components/BackToTop.astro": {
+          "additions": 4,
+          "deletions": 2,
+          "accepted_lines": 4
+        },
+        "astro.config.mjs": {
+          "additions": 8,
+          "deletions": 2,
+          "accepted_lines": 6
+        },
+        "src/components/Header.astro": {
+          "additions": 7,
+          "deletions": 3,
+          "accepted_lines": 7
+        },
+        "src/components/PostList.astro": {
+          "additions": 3,
+          "deletions": 1,
+          "accepted_lines": 3
+        },
+        "src/layouts/Layout.astro": {
+          "additions": 4,
+          "deletions": 2,
+          "accepted_lines": 3
+        },
+        "src/pages/tags/index.astro": {
+          "additions": 2,
+          "deletions": 1,
+          "accepted_lines": 2
+        },
+        "src/lib/paths.ts": {
+          "additions": 14,
+          "deletions": 3,
+          "accepted_lines": 11
+        }
+      }
+    }
+  }
+}
