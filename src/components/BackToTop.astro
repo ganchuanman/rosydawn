@@ -1,8 +1,11 @@
 ---
+import { withBase } from '../lib/paths';
+
+const homeHref = withBase('/');
 ---
 
 <div id="floating-actions" class="floating-actions" aria-label="文章快捷操作">
-  <a href="/" class="floating-action floating-back" data-floating-back aria-label="返回" title="返回">
+  <a href={homeHref} class="floating-action floating-back" data-floating-back aria-label="返回" title="返回">
     <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M19 12H5"></path>
       <path d="M12 19l-7-7 7-7"></path>
@@ -35,7 +38,6 @@
     const backLink = document.querySelector('[data-floating-back]');
     const themeBtn = document.querySelector('[data-floating-theme]');
     if (!group || !btn) return;
-    backLink?.setAttribute('href', '/');
 
     const THRESHOLD = 300;
     const COLLAPSE_DELAY = 2500;

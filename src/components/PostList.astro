@@ -1,4 +1,6 @@
 ---
+import { withBase } from '../lib/paths';
+
 interface Props {
   posts: any[];
 }
@@ -10,7 +12,7 @@ function formatDate(date: Date): string {
 }
 
 function postHref(id: string): string {
-  return `/blog/${id}`;
+  return withBase(`/blog/${id}`);
 }
 ---
 
