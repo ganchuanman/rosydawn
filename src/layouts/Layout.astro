@@ -23,12 +23,13 @@ const { title = 'Rosydawn' } = Astro.props;
 					function applyTheme() {
 						try {
 							var theme = localStorage.getItem('theme');
-							if (theme === 'paper') {
-								document.documentElement.setAttribute('data-theme', 'paper');
-							} else if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+							if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
 								document.documentElement.setAttribute('data-theme', 'dark');
 							} else {
 								document.documentElement.removeAttribute('data-theme');
+								if (theme && theme !== 'light') {
+									localStorage.setItem('theme', 'light');
+								}
 						}
 					} catch (e) {}
 				}
@@ -42,42 +43,45 @@ const { title = 'Rosydawn' } = Astro.props;
 		<script is:inline>
 				(function() {
 					function currentTheme() {
-						return document.documentElement.getAttribute('data-theme') || 'light';
+						return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
 					}
 
 					function updateToggleIcon(btn) {
 						if (!btn) return;
 						var theme = currentTheme();
-						var nextLabel = theme === 'light'
-							? '切换到论文白主题'
-							: theme === 'paper'
-								? '切换到暗色主题'
-								: '切换到浅蓝主题';
+						var nextLabel = theme === 'dark' ? '切换到纯白主题' : '切换到黑色主题';
 						btn.innerHTML = theme === 'light'
-							? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>'
-							: theme === 'paper'
-								? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
-								: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+							? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+							: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
 						btn.setAttribute('aria-label', nextLabel);
 						btn.setAttribute('title', nextLabel);
 					}
+
+					function getThemeButtons() {
+						return Array.prototype.slice.call(document.querySelectorAll('.theme-toggle'));
+					}
+
+					function updateAllToggleIcons() {
+						getThemeButtons().forEach(updateToggleIcon);
+					}
 					document.addEventListener('astro:page-load', function() {
-						var btn = document.querySelector('.theme-toggle');
-						if (!btn) return;
-						updateToggleIcon(btn);
-						btn.addEventListener('click', function() {
+						var buttons = getThemeButtons();
+						if (!buttons.length) return;
+						updateAllToggleIcons();
+						buttons.forEach(function(btn) {
+							if (btn.dataset.themeToggleBound === 'true') return;
+							btn.dataset.themeToggleBound = 'true';
+							btn.addEventListener('click', function() {
 							var theme = currentTheme();
 							if (theme === 'light') {
-								document.documentElement.setAttribute('data-theme', 'paper');
-								try { localStorage.setItem('theme', 'paper'); } catch (e) {}
-							} else if (theme === 'paper') {
 								document.documentElement.setAttribute('data-theme', 'dark');
 								try { localStorage.setItem('theme', 'dark'); } catch (e) {}
 							} else {
 								document.documentElement.removeAttribute('data-theme');
 								try { localStorage.setItem('theme', 'light'); } catch (e) {}
 							}
-							updateToggleIcon(btn);
+							updateAllToggleIcons();
+							});
 						});
 				});
 			})();
@@ -229,25 +233,24 @@ const { title = 'Rosydawn' } = Astro.props;
 
 <style is:global>
 	:root {
-		--bg: #f4f9ff;
-		--bg-secondary: #eaf4ff;
-		--bg-tertiary: #dcecff;
+		--bg: #ffffff;
+		--bg-secondary: #f7f7f4;
+		--bg-tertiary: #eeeeea;
 		--surface: #ffffff;
-		--surface-muted: #f7fbff;
-		--chip-bg: #e8f3ff;
-		--text: #142033;
-		--text-muted: #506176;
-		--text-dim: #8293a8;
-		--accent: #2563eb;
-		--accent-strong: #0f5fc6;
-		--accent-dim: #164f9f;
-		--accent-light: rgba(37, 99, 235, 0.16);
-		--border: rgba(48, 112, 180, 0.16);
-		--border-light: rgba(48, 112, 180, 0.1);
-		--code-bg: #edf6ff;
-		--shadow-soft: 0 14px 30px rgba(30, 96, 160, 0.08);
-		--shadow-glow: 0 16px 34px rgba(37, 99, 235, 0.14);
-		/* 使用系统等宽字体，零网络请求，首屏秒开 */
+		--surface-muted: #fafaf8;
+		--chip-bg: #f1f1ed;
+		--text: #151515;
+		--text-muted: #55524d;
+		--text-dim: #89857e;
+		--accent: #1f4f82;
+		--accent-strong: #163f68;
+		--accent-dim: #2f5f8f;
+		--accent-light: rgba(31, 79, 130, 0.16);
+		--border: rgba(20, 20, 20, 0.16);
+		--border-light: rgba(20, 20, 20, 0.08);
+		--code-bg: #f6f6f3;
+		--shadow-soft: none;
+		--shadow-glow: none;
 		--font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 		--font-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
 	}
@@ -273,28 +276,6 @@ const { title = 'Rosydawn' } = Astro.props;
 			--shadow-glow: 0 16px 36px rgba(85, 153, 255, 0.16);
 		}
 
-		html[data-theme="paper"] {
-			--bg: #ffffff;
-			--bg-secondary: #f7f7f4;
-			--bg-tertiary: #eeeeea;
-			--surface: #ffffff;
-			--surface-muted: #fafaf8;
-			--chip-bg: #f1f1ed;
-			--text: #151515;
-			--text-muted: #55524d;
-			--text-dim: #89857e;
-			--accent: #1f4f82;
-			--accent-strong: #163f68;
-			--accent-dim: #2f5f8f;
-			--accent-light: rgba(31, 79, 130, 0.16);
-			--border: rgba(20, 20, 20, 0.16);
-			--border-light: rgba(20, 20, 20, 0.08);
-			--code-bg: #f6f6f3;
-			--shadow-soft: none;
-			--shadow-glow: none;
-			--font-sans: ui-serif, Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'Source Han Serif SC', serif;
-		}
-
 	*, *::before, *::after {
 		box-sizing: border-box;
 	}
@@ -303,6 +284,8 @@ const { title = 'Rosydawn' } = Astro.props;
 		font-family: var(--font-sans);
 		background: var(--bg);
 		color: var(--text);
+		overflow-y: scroll;
+		scrollbar-gutter: stable;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 	}

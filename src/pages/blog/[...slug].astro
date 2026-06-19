@@ -1,8 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
 import BackToTop from '../../components/BackToTop.astro';
 import BackButton from '../../components/BackButton.astro';
 
@@ -38,8 +36,6 @@ const readingTime = Math.max(1, Math.ceil(charCount / 400));
 <Layout title={`${post.data.title} | Rosydawn`}>
   <div class="reading-progress" id="reading-progress"></div>
   <div class="page-container">
-    <Header currentPath="/blog" sticky />
-
   <main class="main-wrapper">
     <article class="article">
       <header class="article-header">
@@ -55,7 +51,7 @@ const readingTime = Math.max(1, Math.ceil(charCount / 400));
           {post.data.tags && (
             <div class="tags">
               {post.data.tags.map((tag) => (
-                <a href={`/tags/${tag}`} class="tag">#{tag}</a>
+                <span class="tag">#{tag}</span>
               ))}
             </div>
           )}
@@ -93,8 +89,6 @@ const readingTime = Math.max(1, Math.ceil(charCount / 400));
       </aside>
     )}
   </main>
-
-    <Footer />
     <BackToTop />
   </div>
 </Layout>
@@ -586,8 +580,7 @@ const readingTime = Math.max(1, Math.ceil(charCount / 400));
   .meta-line time { color: var(--text-muted); }
   .reading-time { color: var(--text-muted); }
   .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .tag { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
-  .tag:hover { color: var(--accent); text-decoration: none; }
+  .tag { color: var(--text-dim); }
 
   .description {
     max-width: 42rem;
@@ -1043,10 +1036,10 @@ const readingTime = Math.max(1, Math.ceil(charCount / 400));
   .content :global(figure) { margin: 1.25rem 0; }
 
 	  .content :global(a) {
-	    color: var(--accent);
+	    color: rgb(44, 132, 219);
 	    font-style: italic;
 	    text-decoration: none;
-	    border-bottom: 1px solid var(--accent-light);
+	    border-bottom: 1px solid rgba(44, 132, 219, 0.28);
 	    transition: all 0.2s;
 	  }
 
@@ -1054,7 +1047,7 @@ const readingTime = Math.max(1, Math.ceil(charCount / 400));
 	    font-style: normal;
 	  }
 
-  .content :global(a:hover) { border-bottom-color: var(--accent); text-decoration: none; }
+  .content :global(a:hover) { border-bottom-color: rgb(44, 132, 219); text-decoration: none; }
 
   .content :global(hr) {
     border: none;

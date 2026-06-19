@@ -1,31 +1,75 @@
 ---
 ---
 
-<button
-  id="back-to-top"
-  class="back-to-top"
-  aria-label="回到顶部"
-  type="button"
->
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="18 15 12 9 6 15"></polyline>
-  </svg>
-</button>
+<div id="floating-actions" class="floating-actions" aria-label="文章快捷操作">
+  <a href="/" class="floating-action floating-back" data-floating-back aria-label="返回" title="返回">
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 12H5"></path>
+      <path d="M12 19l-7-7 7-7"></path>
+    </svg>
+  </a>
+  <button
+    class="floating-action floating-theme theme-toggle"
+    data-floating-theme
+    aria-label="切换主题"
+    title="切换主题"
+    type="button"
+  ></button>
+  <button
+    id="back-to-top"
+    class="floating-action back-to-top"
+    aria-label="回到顶部"
+    title="回到顶部"
+    type="button"
+  >
+    <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
+</div>
 
 <script>
   document.addEventListener('astro:page-load', () => {
+    const group = document.getElementById('floating-actions');
     const btn = document.getElementById('back-to-top');
-    if (!btn) return;
+    const backLink = document.querySelector('[data-floating-back]');
+    const themeBtn = document.querySelector('[data-floating-theme]');
+    if (!group || !btn) return;
+    backLink?.setAttribute('href', '/');
 
     const THRESHOLD = 300;
+    const COLLAPSE_DELAY = 2500;
     let ticking = false;
+    let collapseTimer;
+
+    function clearCollapseTimer() {
+      if (collapseTimer) {
+        window.clearTimeout(collapseTimer);
+        collapseTimer = undefined;
+      }
+    }
+
+    function expandActions() {
+      if (!group.classList.contains('visible')) return;
+      clearCollapseTimer();
+      group.classList.add('expanded');
+    }
+
+    function scheduleCollapse() {
+      clearCollapseTimer();
+      collapseTimer = window.setTimeout(() => {
+        group.classList.remove('expanded');
+      }, COLLAPSE_DELAY);
+    }
 
     function updateButtonVisibility() {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       if (scrollTop > THRESHOLD) {
-        btn.classList.add('visible');
+        group.classList.add('visible');
       } else {
-        btn.classList.remove('visible');
+        group.classList.remove('visible');
+        group.classList.remove('expanded');
+        clearCollapseTimer();
       }
       ticking = false;
     }
@@ -38,6 +82,16 @@
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
+    group.addEventListener('mouseenter', expandActions);
+    group.addEventListener('mouseleave', scheduleCollapse);
+    group.addEventListener('focusin', expandActions);
+    group.addEventListener('focusout', scheduleCollapse);
+    btn.addEventListener('mouseenter', expandActions);
+    btn.addEventListener('mouseleave', scheduleCollapse);
+    backLink?.addEventListener('mouseenter', expandActions);
+    backLink?.addEventListener('mouseleave', scheduleCollapse);
+    themeBtn?.addEventListener('mouseenter', expandActions);
+    themeBtn?.addEventListener('mouseleave', scheduleCollapse);
 
     btn.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -49,55 +103,108 @@
 </script>
 
 <style>
-  .back-to-top {
+  .floating-actions {
     position: fixed;
     bottom: 2rem;
     right: 2rem;
     width: 44px;
     height: 44px;
-    border-radius: 50%;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     opacity: 0;
     visibility: hidden;
     transform: translateY(10px);
-    transition: opacity 0.3s, visibility 0.3s, transform 0.3s, background 0.2s, color 0.2s, border-color 0.2s;
+    transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
     z-index: 1000;
   }
 
-  .back-to-top.visible {
+  .floating-actions.visible {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
   }
 
-  .back-to-top:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-    transform: translateY(-2px);
+  .floating-action {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s, color 0.2s, opacity 0.24s, transform 0.24s, visibility 0.24s;
   }
 
-  .back-to-top:focus {
+  .floating-action:hover {
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+  }
+
+  .floating-action:focus {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
 
-  .back-to-top:active {
-    transform: translateY(0);
+  .floating-action:active {
+    background: var(--accent-strong);
+  }
+
+  .floating-back,
+  .floating-theme {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(0) scale(0.82);
+  }
+
+  .floating-actions.visible:is(:hover, .expanded) .floating-theme {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(calc(-100% - 0.55rem)) scale(1);
+  }
+
+  .floating-actions.visible:is(:hover, .expanded) .floating-back {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(calc(-200% - 1.1rem)) scale(1);
+  }
+
+  .back-to-top {
+    z-index: 1;
+  }
+
+  .floating-action svg {
+    flex: 0 0 auto;
   }
 
   @media (max-width: 640px) {
-    .back-to-top {
+    .floating-actions {
       bottom: 1.5rem;
       right: 1.5rem;
       width: 40px;
       height: 40px;
+    }
+
+    .floating-action {
+      width: 40px;
+      height: 40px;
+    }
+
+    .floating-actions.visible:is(:hover, .expanded) .floating-theme {
+      transform: translateX(calc(-100% - 0.45rem)) scale(1);
+    }
+
+    .floating-actions.visible:is(:hover, .expanded) .floating-back {
+      transform: translateX(calc(-200% - 0.9rem)) scale(1);
     }
   }
 </style>

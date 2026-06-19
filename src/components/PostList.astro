@@ -1,22 +1,16 @@
 ---
 interface Props {
   posts: any[];
-  source: string;
-  refPath?: string;
 }
 
-const { posts, source, refPath } = Astro.props;
+const { posts } = Astro.props;
 
 function formatDate(date: Date): string {
   return date.toISOString().split('T')[0];
 }
 
 function postHref(id: string): string {
-  const params = new URLSearchParams({ from: source });
-  if (refPath) {
-    params.set('ref', refPath);
-  }
-  return `/blog/${id}?${params.toString()}`;
+  return `/blog/${id}`;
 }
 ---
 
@@ -74,9 +68,9 @@ function postHref(id: string): string {
   .post-title {
     margin: 0 0 0.45rem;
     color: var(--text);
-    font-size: 1.08rem;
+    font-size: 16px;
     font-weight: 600;
-    line-height: 1.42;
+    line-height: 24px;
     transition: color 0.2s;
   }
 
@@ -84,8 +78,8 @@ function postHref(id: string): string {
     display: -webkit-box;
     margin: 0;
     color: var(--text-muted);
-    font-size: 0.94rem;
-    line-height: 1.65;
+    font-size: 14px;
+    line-height: 22px;
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
@@ -121,11 +115,6 @@ function postHref(id: string): string {
       gap: 0.65rem;
       padding: 1rem 0;
     }
-
-    .post-title {
-      font-size: 1.05rem;
-    }
-
     .post-date {
       text-align: left;
     }
