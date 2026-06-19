@@ -1,0 +1,133 @@
+---
+interface Props {
+  posts: any[];
+  source: string;
+  refPath?: string;
+}
+
+const { posts, source, refPath } = Astro.props;
+
+function formatDate(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+
+function postHref(id: string): string {
+  const params = new URLSearchParams({ from: source });
+  if (refPath) {
+    params.set('ref', refPath);
+  }
+  return `/blog/${id}?${params.toString()}`;
+}
+---
+
+<section class="posts">
+  {posts.map((post) => (
+    <article class="post-item">
+      <a href={postHref(post.id)}>
+        <div class="post-main">
+          <h2 class="post-title">{post.data.title}</h2>
+          <p class="post-desc">{post.data.description}</p>
+        </div>
+        {post.data.tags && (
+          <div class="tags">
+            {post.data.tags.slice(0, 3).map((tag) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        )}
+        <time class="post-date" datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+      </a>
+    </article>
+  ))}
+</section>
+
+<style>
+  .post-item {
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-item a {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(8rem, auto) 6.4rem;
+    align-items: start;
+    gap: 1.4rem;
+    padding: 1.15rem 0;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .post-item:hover {
+    background: linear-gradient(90deg, transparent, var(--surface-muted), transparent);
+  }
+
+  .post-item:hover .post-title {
+    color: var(--accent);
+  }
+
+  .post-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .post-title {
+    margin: 0 0 0.45rem;
+    color: var(--text);
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.42;
+    transition: color 0.2s;
+  }
+
+  .post-desc {
+    display: -webkit-box;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.94rem;
+    line-height: 1.65;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: flex-start;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .tag {
+    padding: 0.18rem 0.45rem;
+    color: var(--accent-strong);
+    background: var(--chip-bg);
+    border-radius: 999px;
+  }
+
+  .post-date {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--text-dim);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 640px) {
+    .post-item a {
+      grid-template-columns: 1fr;
+      gap: 0.65rem;
+      padding: 1rem 0;
+    }
+
+    .post-title {
+      font-size: 1.05rem;
+    }
+
+    .post-date {
+      text-align: left;
+    }
+  }
+</style>

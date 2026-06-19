@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
-import remarkPlantUMLUrl from './src/plugins/remark-plantuml-url.mjs';
+import remarkMermaid from './src/plugins/remark-mermaid.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   markdown: {
     remarkPlugins: [
-      [remarkPlantUMLUrl, { format: 'svg' }],
+      remarkMermaid,
     ],
     shikiConfig: {
       themes: {

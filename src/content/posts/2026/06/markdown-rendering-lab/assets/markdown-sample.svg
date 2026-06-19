@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Markdown rendering sample</title>
+  <desc id="desc">A local SVG image used to verify Markdown image rendering.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#eef7ff"/>
+      <stop offset="56%" stop-color="#dbeafe"/>
+      <stop offset="100%" stop-color="#f8fbff"/>
+    </linearGradient>
+    <linearGradient id="line" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#1d4ed8" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="960" height="540" rx="24" fill="url(#bg)"/>
+  <g filter="url(#shadow)">
+    <rect x="96" y="78" width="768" height="384" rx="18" fill="#ffffff" stroke="#bfdbfe"/>
+  </g>
+  <text x="140" y="148" fill="#142033" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="34" font-weight="700">Markdown Render Lab</text>
+  <text x="140" y="196" fill="#506176" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="21">Local image, alt text, title, scaling and lightbox behavior.</text>
+  <rect x="140" y="246" width="680" height="10" rx="5" fill="url(#line)"/>
+  <g fill="none" stroke="#93c5fd" stroke-width="3">
+    <path d="M150 328h180"/>
+    <path d="M390 328h180"/>
+    <path d="M630 328h180"/>
+  </g>
+  <g>
+    <circle cx="150" cy="328" r="18" fill="#2563eb"/>
+    <circle cx="390" cy="328" r="18" fill="#0ea5e9"/>
+    <circle cx="630" cy="328" r="18" fill="#38bdf8"/>
+    <circle cx="810" cy="328" r="18" fill="#60a5fa"/>
+  </g>
+  <g fill="#142033" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="18" font-weight="650">
+    <text x="124" y="382">Text</text>
+    <text x="358" y="382">Code</text>
+    <text x="594" y="382">Table</text>
+    <text x="772" y="382">Image</text>
+  </g>
+  <text x="140" y="430" fill="#8293a8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15">./assets/markdown-sample.svg</text>
+</svg>

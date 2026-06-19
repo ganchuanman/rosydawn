@@ -1,16 +1,6 @@
 #!/usr/bin/env node
 
 /**
- * @deprecated
- * 此脚本已被新的 workflow 系统替代。
- *
- * 请使用以下新命令：
- * - REPL 模式: rosydawn（然后输入"部署"）
- * - 命令行模式: rosydawn deploy
- *
- * 新的 workflow 提供了更好的用户体验和更强大的功能。
- * 此脚本将在未来 1-2 个版本后移除。
- *
  * ============================================
  * Rosydawn 博客部署脚本 (Node.js 版本)
  * ============================================
@@ -28,7 +18,7 @@
  *   node scripts/deploy.mjs cron:status   - 查看任务状态
  *
  * npm 脚本:
- *   npm run deploy              # 构建并部署
+ *   npm run deploy:build        # 构建并部署
  *   npm run deploy:ssl          # 配置 HTTPS
  *   npm run deploy:status       # 查看状态
  *   npm run deploy:cron:install # 安装自动部署
@@ -271,7 +261,7 @@ ${colorize('yellow', '自动部署命令 (Cron):')}
   ${colorize('green', 'cron:status')}    查看 cron 任务状态
 
 ${colorize('yellow', 'npm 脚本:')}
-  npm run deploy              # 构建并部署
+  npm run deploy:build        # 构建并部署
   npm run deploy:ssl          # 配置 HTTPS
   npm run deploy:status       # 查看状态
   npm run deploy:cron:install # 安装自动部署
@@ -314,7 +304,7 @@ ${colorize('yellow', '配置文件 (.env):')}
 
 ${colorize('yellow', '部署流程:')}
   ${colorize('cyan', '1. 手动部署:')}
-     npm run deploy                               # 构建并部署
+     npm run deploy:build                         # 构建并部署
      SSL_EMAIL=you@example.com npm run deploy:ssl # 配置 HTTPS
   
   ${colorize('cyan', '2. 自动部署 (推荐):')}
@@ -332,7 +322,7 @@ ${colorize('yellow', '部署流程:')}
      tail -f ${CONFIG.watch.logFile}
 
 ${colorize('yellow', '示例:')}
-  npm run deploy                # HTTP 部署
+  npm run deploy:build          # HTTP 部署
   npm run deploy:ssl            # 启用 HTTPS
   npm run deploy:cron:install   # 安装自动部署
   npm run deploy:cron:status    # 查看自动部署状态

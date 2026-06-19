@@ -4,10 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 
-// 获取所有文章
 const posts = await getCollection('posts');
-
-// 统计所有标签及其文章数量
 const tagMap = new Map<string, number>();
 posts.forEach(post => {
   post.data.tags?.forEach(tag => {
@@ -15,13 +12,18 @@ posts.forEach(post => {
   });
 });
 
-// 按文章数量排序
 const sortedTags = Array.from(tagMap.entries()).sort((a, b) => b[1] - a[1]);
 ---
 
 <Layout title="Tags | Rosydawn">
   <main class="container">
     <Header currentPath="/tags" />
+
+    <section class="page-head">
+      <p class="eyebrow">TOPIC MAP</p>
+      <h1>分类索引</h1>
+      <p>从标签进入文章簇，快速回到同一组技术语境。</p>
+    </section>
 
     <section class="tags-cloud">
       {sortedTags.map(([tag, count]) => (
@@ -38,15 +40,42 @@ const sortedTags = Array.from(tagMap.entries()).sort((a, b) => b[1] - a[1]);
 
 <style>
   .container {
-    max-width: 800px;
+    width: min(920px, calc(100vw - 2rem));
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2rem 0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
   }
 
-  /* Tags Cloud */
+  .page-head {
+    margin-bottom: 1.2rem;
+    padding: 1rem 0 1.2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eyebrow {
+    margin: 0 0 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--accent-strong);
+    letter-spacing: 0.08em;
+  }
+
+  h1 {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.65rem;
+    line-height: 1.25;
+    letter-spacing: 0;
+  }
+
+  .page-head p:last-child {
+    margin: 0.55rem 0 0;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
   .tags-cloud {
     flex: 1;
     display: flex;
@@ -58,51 +87,41 @@ const sortedTags = Array.from(tagMap.entries()).sort((a, b) => b[1] - a[1]);
   .tag-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 0.875rem;
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
+    gap: 0.5rem;
+    padding: 0.4rem 0;
     color: var(--text-muted);
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 4px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
     text-decoration: none;
-    transition: all 0.15s ease;
+    transition: color 0.2s, border-color 0.2s;
   }
 
   .tag-item:hover {
     color: var(--accent);
-    border-color: var(--accent);
-    background: rgba(88, 166, 255, 0.05);
-  }
-
-  .tag-name {
-    color: inherit;
+    border-bottom-color: var(--accent);
+    text-decoration: none;
   }
 
   .tag-count {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    opacity: 0.6;
+    min-width: 1.35rem;
+    padding: 0.12rem 0.35rem;
+    color: var(--accent-strong);
+    background: var(--chip-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    text-align: center;
   }
 
-  .tag-item:hover .tag-count {
-    opacity: 1;
-  }
-
-  /* Responsive */
   @media (max-width: 640px) {
     .container {
-      padding: 1rem;
+      width: min(100vw - 1rem, 920px);
+      padding: 1rem 0;
     }
 
     .tags-cloud {
       gap: 0.5rem;
-    }
-
-    .tag-item {
-      padding: 0.4rem 0.7rem;
-      font-size: 0.8rem;
     }
   }
 </style>

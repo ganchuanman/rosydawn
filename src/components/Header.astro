@@ -1,9 +1,10 @@
 ---
 interface Props {
   currentPath?: string;
+  sticky?: boolean;
 }
 
-const { currentPath = '/' } = Astro.props;
+const { currentPath = '/', sticky = false } = Astro.props;
 
 // Determine active link based on currentPath
 const isActive = (path: string) => {
@@ -14,7 +15,7 @@ const isActive = (path: string) => {
 };
 ---
 
-<header class="site-header">
+<header class:list={['site-header', { sticky }]}>
   <div class="logo">
     <a href="/">
       <span class="prompt">$</span> rosydawn
@@ -34,14 +35,27 @@ const isActive = (path: string) => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
-    margin-bottom: 3rem;
+    gap: 1rem;
+    padding: 0.85rem 0 1rem;
+    margin-bottom: 2rem;
     border-bottom: 1px solid var(--border);
   }
 
+  .site-header.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    min-height: 62px;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(12px);
+  }
+
   .logo a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     font-family: var(--font-mono);
-    font-size: 1.25rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: var(--text);
     text-decoration: none;
@@ -63,20 +77,31 @@ const isActive = (path: string) => {
   .nav {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 0.95rem;
     font-family: var(--font-mono);
-    font-size: 0.9rem;
+    font-size: 0.82rem;
+  }
+
+  .nav :global(.theme-toggle) {
+    margin-left: 0.25rem;
   }
 
   .nav a {
+    display: inline-flex;
+    justify-content: center;
+    min-width: 2.5rem;
+    padding: 0.25rem 0;
     color: var(--text-muted);
+    border-bottom: 1px solid transparent;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color 0.2s, border-color 0.2s;
   }
 
   .nav a:hover,
   .nav a.active {
     color: var(--accent);
+    border-bottom-color: var(--accent);
+    text-decoration: none;
   }
 
   @media (max-width: 640px) {
@@ -87,7 +112,13 @@ const isActive = (path: string) => {
     }
 
     .nav {
-      gap: 1.5rem;
+      width: 100%;
+      justify-content: space-between;
+      gap: 0.25rem;
+    }
+
+    .nav :global(.theme-toggle) {
+      margin-left: 0;
     }
   }
 </style>

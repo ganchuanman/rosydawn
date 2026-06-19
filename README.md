@@ -1,221 +1,100 @@
 # Rosydawn
 
-基于 [Astro](https://astro.build) 构建的个人技术博客，采用极简主义设计风格。
+基于 [Astro](https://astro.build) 构建的极简静态个人博客。
 
-## 核心特性
+## 特性
 
-- **静态生成** - 基于 Astro SSG，无需服务器
-- **内容管理** - 使用 Astro Content Collections 管理博客文章
-- **AI 交互** - 通过自然语言与博客系统对话（支持 OpenAI/Azure/Ollama/DeepSeek）
-- **Markdown/MDX** - 支持标准 Markdown 和 MDX 扩展语法
-- **代码高亮** - 集成 Shiki（支持 light/dark 双主题）
-- **暗黑模式** - 支持系统偏好检测和手动切换，无 FOUC
-- **图表支持** - 集成 PlantUML 绘图能力
-- **响应式设计** - 移动端友好，自适应布局
-- **自动部署** - 基于 Cron 的 Git 监听自动部署
-- **SDD 开发** - 基于 OpenSpec 的规范驱动开发模式
+- **纯静态生成** - 构建后直接部署 `dist/` 静态文件
+- **内容集合** - 使用 Astro Content Collections 管理文章
+- **Markdown/MDX** - 支持标准 Markdown 和 MDX
+- **代码高亮** - 使用 Astro 内置 Shiki
+- **Mermaid 图表** - 浏览器端按需运行时渲染
+- **浅色/暗色模式** - 支持系统偏好和手动切换
+- **响应式阅读体验** - 适配桌面和移动端
 
 ## 技术栈
 
 | 类别 | 技术 |
 |------|------|
-| 框架 | Astro 5.17.x |
-| 语言 | TypeScript |
-| 样式 | Scoped CSS (无预处理器) |
-| 字体 | 系统原生字体栈（零网络请求） |
-| 代码高亮 | Shiki |
-| 图表 | PlantUML (自定义 remark 插件) |
-| 部署 | Nginx + Let's Encrypt |
+| 框架 | Astro 5 |
+| 语言 | TypeScript / Astro |
+| 样式 | Scoped CSS |
+| 内容 | Markdown / MDX |
+| 图表 | Mermaid |
+| 部署 | 静态文件 / Nginx |
 
 ## 目录结构
 
-```
+```text
 rosydawn/
+├── public/              # 静态资源
 ├── src/
-│   ├── components/      # 可复用组件 (Header, Footer)
+│   ├── components/      # 页面组件
 │   ├── content/posts/   # 博客文章
-│   ├── layouts/         # 布局组件
-│   └── pages/           # 页面路由
+│   ├── layouts/         # 布局
+│   ├── pages/           # 静态路由
+│   └── plugins/         # Markdown 插件
 ├── scripts/             # 部署脚本
-├── openspec/            # OpenSpec SDD 规范目录
-└── public/              # 静态资源
+└── astro.config.mjs
 ```
 
-## 开发命令
+## 开发
 
 ```bash
-# 安装依赖
 npm install
-
-# 开发模式
 npm run dev
+```
 
-# 构建生产版本
+## 构建
+
+```bash
 npm run build
-
-# 预览构建结果
 npm run preview
-
-# 构建 AI 知识库
-npm run build:knowledge
-
-# 启动 AI 对话式 REPL
-npm run repl
 ```
 
-## 内容创作
+构建产物位于 `dist/`。部署时只需要发布这个目录中的静态文件。
 
-### 统一 CLI（推荐）
+## 写文章
 
-Rosydawn 提供统一的命令行接口，支持两种模式：
+文章放在 `src/content/posts/` 下，推荐按年月和 slug 组织：
 
-#### REPL 模式（AI 对话）
-
-```bash
-# 启动交互式 REPL
-rosydawn
-
-# 或使用 npm
-npm run repl
-```
-
-进入 REPL 后，可以用自然语言与系统对话：
-
-```
-🤖 > 怎么创建文章？
-🤖 > 创建一篇关于 WebSocket 的文章
-🤖 > 如何部署？
-🤖 > 能做什么？
-```
-
-#### 命令行模式
-
-```bash
-# 查看帮助
-rosydawn --help
-
-# 创建文章
-rosydawn new --topic "WebSocket 实战指南"
-
-# 发布文章
-rosydawn publish --slug "2026/03/my-article"
-
-# 部署博客
-rosydawn deploy
-
-# 启动开发服务器
-rosydawn dev
-
-# 构建站点
-rosydawn build
-
-# 检查状态
-rosydawn status
-```
-
-#### 命令别名
-
-为方便使用，所有命令都支持短别名：
-
-| 完整命令 | 别名 | 说明 |
-|---------|------|------|
-| `rosydawn content:new` | `rosydawn new` | 创建文章 |
-| `rosydawn content:publish` | `rosydawn publish` | 发布文章 |
-| `rosydawn deploy:apply` | `rosydawn deploy` | 部署 |
-| `rosydawn dev:start` | `rosydawn dev` | 开发服务器 |
-| `rosydawn build:run` | `rosydawn build` | 构建 |
-| `rosydawn status:check` | `rosydawn status` | 检查状态 |
-
-### 传统方式（已废弃）
-
-```bash
-# 交互式创建新博客文章
-npm run content:new
-
-# 发布文章到 Git 仓库
-npm run content:publish
-```
-
-### AI 对话式（实验性）
-
-```bash
-# 首次使用需要配置 OPENAI_API_KEY 环境变量
-cp .env.example .env
-# 编辑 .env 文件，填入你的 API Key
-
-# 构建知识库
-npm run build:knowledge
-
-# 启动 AI REPL
-npm run repl
-
-# 示例对话
-🤖 > 创建一篇关于 WebSocket 的文章
-🤖 > 显示所有文章
-🤖 > 发布最新文章
-```
-
-详细使用说明请参考 [docs/ai-interaction.md](docs/ai-interaction.md)。
-
-### 文章结构
-
-```
+```text
 src/content/posts/2026/03/my-article/
-├── index.md          # 文章内容 (或 index.mdx)
-├── cover.jpg         # 封面图（可选）
-└── assets/           # 文章资源（可选）
+├── index.md
+└── assets/
 ```
 
-### Frontmatter
+Frontmatter 示例：
 
 ```yaml
 ---
 title: "文章标题"
 date: 2026-03-15
 description: "一句话描述"
-tags: ["标签1", "标签2"]
-coverImage: ./cover.jpg  # 可选
+tags: ["tag"]
 ---
 ```
 
-## 部署
+## Mermaid
+
+使用标准 Mermaid 代码块：
+
+````markdown
+```mermaid
+flowchart LR
+  A[Write] --> B[Build]
+  B --> C[Deploy]
+```
+````
+
+Mermaid 依赖会按需加载：普通页面不会加载图表运行时代码，只有包含 Mermaid 图表的页面才会加载。
+
+## 部署脚本
 
 ```bash
-# 构建并部署
 npm run deploy:build
-
-# 启用 HTTPS
-SSL_EMAIL=admin@example.com npm run deploy:ssl
-
-# 查看部署状态
 npm run deploy:status
-
-# 安装自动部署（每 5 分钟检查更新）
-npm run deploy:cron:install
+npm run deploy:ssl
 ```
 
-详细部署配置请参考 `scripts/lib/config.mjs`。
-
-## OpenSpec SDD
-
-本项目采用 [OpenSpec](https://github.com/Fission-AI/OpenSpec) 的规范驱动开发模式：
-
-```bash
-# 创建新变更
-/opsx:new <change-name>
-
-# 逐步创建 artifacts
-/opsx:continue
-
-# 实现任务
-/opsx:apply
-
-# 归档变更
-/opsx:archive
-```
-
-规范文件位于 `openspec/specs/`，变更记录位于 `openspec/changes/`。
-
-## 许可证
-
-MIT
+部署配置位于 `scripts/lib/config.mjs`，也可以通过 `.env` 覆盖部分配置。`.env.example` 提供了可选部署环境变量示例。
