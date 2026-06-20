@@ -15,7 +15,8 @@
     "deploy:cron": "node scripts/deploy.mjs cron",
     "deploy:cron:install": "node scripts/deploy.mjs cron:install",
     "deploy:cron:remove": "node scripts/deploy.mjs cron:remove",
-    "deploy:cron:status": "node scripts/deploy.mjs cron:status"
+    "deploy:cron:status": "node scripts/deploy.mjs cron:status",
+    "publish": "bash ./deploy.sh"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
