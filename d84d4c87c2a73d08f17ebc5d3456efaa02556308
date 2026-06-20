@@ -1,0 +1,39 @@
+package.json
+  67f76d12aaf54412 18-19
+deploy.sh
+  67f76d12aaf54412 1-157
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.8",
+  "base_commit_sha": "d84d4c87c2a73d08f17ebc5d3456efaa02556308",
+  "prompts": {
+    "67f76d12aaf54412": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019eddcb-b129-78a3-a0fd-5edee21a6595",
+        "model": "gpt-5.5"
+      },
+      "human_author": "ganchuanman",
+      "messages": [],
+      "total_additions": 159,
+      "total_deletions": 1,
+      "accepted_lines": 933,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "package.json": {
+          "additions": 2,
+          "deletions": 1,
+          "accepted_lines": 2
+        },
+        "src/content/posts/openspec-1x-analysis/index.md": {
+          "accepted_lines": 774
+        },
+        "deploy.sh": {
+          "additions": 157,
+          "accepted_lines": 157
+        }
+      }
+    }
+  }
+}
