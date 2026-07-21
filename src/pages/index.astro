@@ -8,6 +8,9 @@ const posts = await getCollection('posts');
 const sortedPosts = posts.sort((a, b) =>
   new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
 );
+
+const latestDate = sortedPosts[0]?.data.date.toISOString().split('T')[0];
+const currentYear = new Date().getFullYear();
 ---
 
 <Layout title="Rosydawn">
@@ -24,22 +27,28 @@ const sortedPosts = posts.sort((a, b) =>
     </section>
 
     <PostList posts={sortedPosts} />
+
+    <footer class="page-footer">
+      <span>© {currentYear} Rosydawn</span>
+      {latestDate && <span>最后更新：{latestDate}</span>}
+    </footer>
   </main>
 </Layout>
 
 <style>
   .container {
-    width: min(920px, calc(100vw - 2rem));
+    width: min(1030px, calc(100vw - 3rem));
     margin: 0 auto;
-    padding: 2rem 0;
+    padding: 2.8rem 0 2rem;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    font-family: var(--font-serif);
   }
 
   .signal {
     position: relative;
-    padding: 1.35rem 0 1.5rem;
+    padding: 0 0 1.55rem;
     border-bottom: 1px solid var(--border);
   }
 
@@ -57,34 +66,143 @@ const sortedPosts = posts.sort((a, b) =>
   h1 {
     margin: 0;
     color: var(--text);
-    font-size: 2.25rem;
+    font-size: 2rem;
+    font-weight: 600;
     line-height: 1.1;
-    letter-spacing: 0;
+    letter-spacing: 0.01em;
   }
 
   .intro {
-    max-width: 42rem;
-    margin: 0.75rem 0 0;
+    margin: 0.35rem 0 0;
     color: var(--text-muted);
-    font-size: 1rem;
-    line-height: 1.75;
+    font-size: 0.98rem;
+    line-height: 1.5;
+    letter-spacing: 0.08em;
+  }
+
+  .signal-row :global(.site-header.integrated) {
+    padding-top: 0.55rem;
+  }
+
+  .signal-row :global(.site-header.integrated .nav) {
+    gap: 0.85rem;
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+  }
+
+  .signal-row :global(.site-header.integrated .tabs-toggle) {
+    gap: 0.4rem;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .signal-row :global(.site-header.integrated .tabs-toggle::after) {
+    content: '';
+    width: 1px;
+    height: 1rem;
+    margin-left: 0.35rem;
+    background: var(--border);
+    order: 3;
+  }
+
+  .signal-row :global(.site-header.integrated .nav a) {
+    min-width: auto;
+    padding: 0.2rem 0.45rem;
+    color: var(--text-muted);
+    background: transparent;
+    border-radius: 0;
+  }
+
+  .signal-row :global(.site-header.integrated .nav a:hover),
+  .signal-row :global(.site-header.integrated .nav a.active) {
+    color: var(--accent);
+    background: transparent;
+  }
+
+  .signal-row :global(.site-header.integrated .theme-toggle) {
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .page-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    line-height: 1.5;
   }
 
   @media (max-width: 640px) {
     .container {
-      width: min(100vw - 1rem, 920px);
-      padding: 1rem 0;
+      width: min(100vw - 2rem, 1030px);
+      padding: 1.4rem 0 1.2rem;
     }
 
-    .signal { padding: 1rem 0 1.2rem; }
+    .signal { padding: 0 0 1.15rem; }
 
     .signal-row {
-      flex-direction: column;
-      gap: 1rem;
+      align-items: flex-start;
+      gap: 0.75rem;
     }
 
     h1 {
-      font-size: 1.8rem;
+      font-size: 1.7rem;
+    }
+
+    .intro {
+      font-size: 0.85rem;
+    }
+
+    .signal-row :global(.site-header.integrated) {
+      width: auto;
+      padding-top: 0.15rem;
+    }
+
+    .signal-row :global(.site-header.integrated .nav) {
+      width: auto;
+      gap: 0.45rem;
+    }
+
+    .signal-row :global(.site-header.integrated .tabs-toggle) {
+      flex: none;
+    }
+
+    .signal-row :global(.site-header.integrated .nav a) {
+      flex: none;
+      padding-inline: 0.28rem;
+    }
+
+    .page-footer {
+      margin-top: 3rem;
+      font-size: 0.75rem;
+    }
+  }
+
+  @media (max-width: 430px) {
+    .signal-row {
+      flex-direction: column;
+    }
+
+    .signal-row :global(.site-header.integrated) {
+      width: 100%;
+    }
+
+    .signal-row :global(.site-header.integrated .nav) {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .page-footer {
+      flex-direction: column;
+      gap: 0.2rem;
     }
   }
 </style>
