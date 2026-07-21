@@ -1,0 +1,54 @@
+src/pages/blog/[...slug].astro
+  cd5c10cf86b0a98a 40-43,52-64,67,70,171-179,538-541,554,556,566-570,574-583,586-587,589,591-595,600-602,606-610,612-615,620,623-628,632-634,636-678,680-689,691-696,701-707,709-711,715,725-726,728,738-740,742,746-752,762,773,783,795-800,803,807-812,815-816,820-831,835,838-840,846-851,853-854,859-861,864-865,870-871,873,875,878-882,886,891,893,902,1111-1115,1125-1140,1152,1201,1203-1209,1228-1239,1241-1249,1340-1344,1351-1352,1354-1377
+src/components/PostList.astro
+  cd5c10cf86b0a98a 18,22-28,33,37-38,41,43,46-48,51-59,62-65,68-70,74-76,78,82-85,89-90,92-94,97,100-104,107-110,113-114,118-119,121-123,125-146
+src/layouts/Layout.astro
+  cd5c10cf86b0a98a 256
+src/pages/index.astro
+  cd5c10cf86b0a98a 11-13,30-34,40,42,46,51,69-70,72,76,78-112,114-140,145-146,149,152-153,157-205
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8-ntes.9",
+  "base_commit_sha": "8fb42246c33d86b972ae5efda8cd4cc8be0d2bf8",
+  "prompts": {
+    "cd5c10cf86b0a98a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f82c7-23d1-7293-96c2-d75dfcdf2eb1",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "ganchuanman",
+      "messages": [],
+      "total_additions": 701,
+      "total_deletions": 275,
+      "accepted_lines": 542,
+      "overriden_lines": 0,
+      "per_file_stats": {
+        "src/pages/index.astro": {
+          "additions": 135,
+          "deletions": 17,
+          "accepted_lines": 134
+        },
+        "src/layouts/Layout.astro": {
+          "additions": 1,
+          "accepted_lines": 1
+        },
+        "design-qa.md": {
+          "additions": 95,
+          "deletions": 34
+        },
+        "src/components/PostList.astro": {
+          "additions": 109,
+          "deletions": 82,
+          "accepted_lines": 92
+        },
+        "src/pages/blog/[...slug].astro": {
+          "additions": 361,
+          "deletions": 142,
+          "accepted_lines": 315
+        }
+      }
+    }
+  }
+}
